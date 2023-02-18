@@ -15,9 +15,8 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.Cameras;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Launcher;
-import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Clamp;
+import frc.robot.subsystems.Boom;
 
 
 public class Autonomous extends SequentialCommandGroup {
@@ -29,9 +28,9 @@ public class Autonomous extends SequentialCommandGroup {
   DoubleSupplier ksupplier;
 
   /** Creates a new Autonomous. */
-  public Autonomous(Drivetrain drive, Intake intake, Lift lift, Launcher launch, Cameras cam) {
+  public Autonomous(Drivetrain drive, Clamp intake, Boom lift, Launcher launch, Cameras cam) {
     addCommands(
-      // Intake On while driving to pick up the ball
+      // Clamp On while driving to pick up the ball
       new InstantCommand(drive::setDriveBrake, drive).withTimeout(0.2),
       new InstantCommand(drive::resetEncoders, drive).withTimeout(0.2),
       parallel(
