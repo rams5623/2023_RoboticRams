@@ -4,10 +4,7 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-//import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.DriveConstants;
+import javax.security.auth.PrivateCredentialPermission;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -15,160 +12,152 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-//import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU;
+
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.driveConst;
+
 
 public class Drivetrain extends SubsystemBase {
-  private final WPI_TalonSRX m_talonLeftFront = new WPI_TalonSRX(DriveConstants.kTalonLeftFront);
-  private final WPI_TalonSRX m_talonLeftBack = new WPI_TalonSRX(DriveConstants.kTalonLeftBack);
-  private final WPI_TalonSRX m_talonRightFront = new WPI_TalonSRX(DriveConstants.kTalonRightFront);
-  private final WPI_TalonSRX m_talonRightBack = new WPI_TalonSRX(DriveConstants.kTalonRightBack);
+  /** Creates a new subsystem tilted Drivetrain. 
+   * Will be used for controlling the motors and sensors related to the drive train.
+   * These include the four drive motor controllers, the pigeon gyro, and the two drive encoders.
+   * Robot Orientation:
+   * ======================================================
+   *                 Front
+   *                +++++++
+   *                   =
+   *                   =
+   *            ++++++++++++++++
+   *            +              +
+   * Left (/\+) +              + Right (\/+)
+   *            +    Battery   +
+   *            ++++++++++++++++
+   * 
+   *                  Rear
+  */
 
-  // Gyroscope and Accelerometer
-  //private final PigeonIMU m_pidgey = new PigeonIMU(DriveConstants.kTalonLeftBack);
+  // Create motor controller objects for the drive motors
+  private final WPI_TalonSRX m_talonFR = new WPI_TalonSRX(driveConst.ktalon_FR);
+  private final WPI_TalonSRX m_talonFL = new WPI_TalonSRX(driveConst.ktalon_FL);
+  private final WPI_TalonSRX m_talonRR = new WPI_TalonSRX(driveConst.ktalon_RR);
+  private final WPI_TalonSRX m_talonRL = new WPI_TalonSRX(driveConst.ktalon_RL);
 
-  // Robot drive for talon followers
-  //private final DifferentialDrive m_drive = new DifferentialDrive(m_talonLeftFront, m_talonRightFront);
+  //\private final PigeonIMU s_pidgey = new PigeonIMU(driveConst.kpidgey); // ###Change to the motor controller that this is plugged into###
 
-
-  /** Creates a new Drivetrain. */
   public Drivetrain() {
-    // Reset talonSRX's to default factory settings to prevent any carryovers
-    m_talonLeftFront.configFactoryDefault();
-    m_talonLeftBack.configFactoryDefault();
-    m_talonRightFront.configFactoryDefault();
-    m_talonRightBack.configFactoryDefault();
+    //Reset the talons to factory default to remove any configurations that may cause issues this time around
+    m_talonFR.configFactoryDefault();
+    m_talonFL.configFactoryDefault();
+    m_talonRR.configFactoryDefault();
+    m_talonRL.configFactoryDefault();
 
-    // Set the back motors to follow the front motors
-    m_talonLeftBack.follow(m_talonLeftFront);
-    m_talonRightBack.follow(m_talonRightFront);
+    // Set rear motor controllers to follow the front motor controller commands
+    m_talonRR.follow(m_talonFR);
+    m_talonRL.follow(m_talonFL);
 
-    // Set the right side to be inverted and the followers will follow inversion of master
-    m_talonLeftFront.setInverted(false);
-    m_talonLeftBack.setInverted(InvertType.FollowMaster);
-    m_talonRightFront.setInverted(true);
-    m_talonRightBack.setInverted(InvertType.FollowMaster);
+    // Set one side of the robot to be inverse, followers will follow master.
+    m_talonFL.setInverted(false);
+    m_talonRL.setInverted(InvertType.FollowMaster);
+    m_talonFR.setInverted(true); // Inverse right side because + command should produce forward movement
+    m_talonRR.setInverted(InvertType.FollowMaster);
 
-    // Set Neutral mode of drive motors to coast
-    m_talonLeftFront.setNeutralMode(NeutralMode.Coast);
-    m_talonLeftBack.setNeutralMode(NeutralMode.Coast);
-    m_talonRightFront.setNeutralMode(NeutralMode.Coast);
-    m_talonRightBack.setNeutralMode(NeutralMode.Coast);
+    // Set initial drive mode to Coast. Later operations in the match may switch this back and forth between brake and coast.
+    m_talonFR.setNeutralMode(NeutralMode.Coast);
+    m_talonFL.setNeutralMode(NeutralMode.Coast);
+    m_talonRR.setNeutralMode(NeutralMode.Coast);
+    m_talonRL.setNeutralMode(NeutralMode.Coast);
 
-    // Encoder Setup
-    m_talonLeftFront.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-    m_talonRightFront.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-    
-    m_talonLeftFront.setSensorPhase(true);
-    m_talonRightFront.setSensorPhase(true);
+    // Set a deadband for motor control command. This will eliminate minor jostick drift from sending commands to the motor at null position
+    m_talonFR.configNeutralDeadband(driveConst.kDeadbandLeft);
+    m_talonFL.configNeutralDeadband(driveConst.kDeadbandLeft);
+    m_talonRR.configNeutralDeadband(driveConst.kDeadbandRight);
+    m_talonRL.configNeutralDeadband(driveConst.kDeadbandRight);
 
-    m_talonLeftFront.configNominalOutputForward(0.0, DriveConstants.kPIDTimeout);
-    m_talonRightFront.configNominalOutputForward(0.0, DriveConstants.kPIDTimeout);
-    m_talonLeftFront.configNominalOutputReverse(0.0, DriveConstants.kPIDTimeout);
-    m_talonRightFront.configNominalOutputReverse(0.0, DriveConstants.kPIDTimeout);
+    // ENCODER SETUP
+    // Attach encoder to master motor controllers (front)
+    m_talonFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+    m_talonFR.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
 
-    m_talonLeftFront.configPeakOutputForward(0.9, DriveConstants.kPIDTimeout);
-    m_talonRightFront.configPeakOutputForward(0.9, DriveConstants.kPIDTimeout);
-    m_talonLeftFront.configPeakOutputReverse(-0.9, DriveConstants.kPIDTimeout);
-    m_talonRightFront.configPeakOutputReverse(-0.9, DriveConstants.kPIDTimeout);
+    m_talonFL.configNominalOutputForward(0);
+    m_talonFR.configNominalOutputForward(0);
+    m_talonFL.configNominalOutputReverse(0);
+    m_talonFR.configNominalOutputReverse(0);
 
-    m_talonLeftFront.selectProfileSlot(DriveConstants.kSlotidx, DriveConstants.kPIDidx);
-    m_talonRightFront.selectProfileSlot(DriveConstants.kSlotidx, DriveConstants.kPIDidx);
+    m_talonFL.configPeakOutputForward(0.9);
+    m_talonFR.configPeakOutputForward(0.9);
+    m_talonFL.configPeakOutputReverse(0.9);
+    m_talonFR.configPeakOutputReverse(0.9);
 
-    m_talonLeftFront.config_kF(DriveConstants.kSlotidx, 0.9, DriveConstants.kPIDTimeout);
-    m_talonLeftFront.config_kP(DriveConstants.kSlotidx, 0.01, DriveConstants.kPIDTimeout);
-    m_talonLeftFront.config_kI(DriveConstants.kSlotidx, 0.0, DriveConstants.kPIDTimeout);
-    m_talonLeftFront.config_kD(DriveConstants.kSlotidx, 0.0, DriveConstants.kPIDTimeout);
+    m_talonFL.selectProfileSlot(driveConst.kSlotidx, driveConst.kPIDidx);
+    m_talonFR.selectProfileSlot(driveConst.kSlotidx, driveConst.kPIDidx);
 
-    m_talonRightFront.config_kF(DriveConstants.kSlotidx, 0.9, DriveConstants.kPIDTimeout);
-    m_talonRightFront.config_kP(DriveConstants.kSlotidx, 0.01, DriveConstants.kPIDTimeout);
-    m_talonRightFront.config_kI(DriveConstants.kSlotidx, 0.0, DriveConstants.kPIDTimeout);
-    m_talonRightFront.config_kD(DriveConstants.kSlotidx, 0.0, DriveConstants.kPIDTimeout);
+    m_talonFL.config_kF(driveConst.kSlotidx, 0.9);
+    m_talonFL.config_kP(driveConst.kSlotidx, 0.0);
+    m_talonFL.config_kI(driveConst.kSlotidx, 0.0);
+    m_talonFL.config_kD(driveConst.kSlotidx, 0.0);
 
-    m_talonLeftFront.setSelectedSensorPosition(0.0);
-    m_talonRightFront.setSelectedSensorPosition(0.0);
-    
-    // Pidgeon IMU Gyroscope reset to default condifguration
-    //m_pidgey.configFactoryDefault();
+    m_talonFR.config_kF(driveConst.kSlotidx, 0.9);
+    m_talonFR.config_kP(driveConst.kSlotidx, 0.0);
+    m_talonFR.config_kI(driveConst.kSlotidx, 0.0);
+    m_talonFR.config_kD(driveConst.kSlotidx, 0.0);
 
+    m_talonFL.setSelectedSensorPosition(0.0);
+    m_talonFR.setSelectedSensorPosition(0.0);
+
+    //s_pidgey.configFactoryDefault();
+    //s_pidgey.setYaw(0);
   }
 
-  /**
-   * The Periodic will continue to run all the time while the robot is running.
-   * The encoder values will be sent to the dashboard all the time.
-   */
-  @Override
-  public void periodic() {
-    SmartDashboard.putNumber("AvgEncoder", getAvgEncoder());
-    SmartDashboard.putNumber("Inches", getAvgEncoder() * DriveConstants.kEncDistancePerPulse);
-    SmartDashboard.putNumber("LeftEncoder", getLeftEncoder() * DriveConstants.kEncDistancePerPulse);
-    SmartDashboard.putNumber("RightEncoder", getRightEncoder() * DriveConstants.kEncDistancePerPulse);
-  }
 
-  /**
-   * Replaced the DifferentialDrive arcade drive command with a talonSRX version that
-   * should perform in the same manner but allow for greater motion control during
-   * autonomous mode.
-   * @param forward
-   * @param rotate
-   */
   public void arcadeDrive(double forward, double rotate) {
-    m_talonLeftFront.set(ControlMode.PercentOutput, forward * DriveConstants.SPEED_STRAIGHT, DemandType.ArbitraryFeedForward, rotate * DriveConstants.SPEED_TURN);
-    m_talonRightFront.set(ControlMode.PercentOutput, forward * DriveConstants.SPEED_STRAIGHT, DemandType.ArbitraryFeedForward, -rotate * DriveConstants.SPEED_TURN);
-    
-    //m_talonLeftFront.set(ControlMode.PercentOutput, forward * DriveConstants.SPEED_STRAIGHT + rotate * DriveConstants.SPEED_TURN);
-    //m_talonRightFront.set(ControlMode.PercentOutput, forward * DriveConstants.SPEED_STRAIGHT - rotate * DriveConstants.SPEED_TURN);
-    
-    //m_drive.arcadeDrive(forward * DriveConstants.SPEED_STRAIGHT, rotate * DriveConstants.SPEED_TURN);
-  }
-
-  /**
-   * Drive a set distance using the drive encoders
-   * @param distance
-   */
-  public void driveDistance(double distance) {
-    // Inch / EncoderCount
-    m_talonLeftFront.set(ControlMode.Position, distance / DriveConstants.kEncDistancePerPulse);
-    m_talonRightFront.set(ControlMode.Position, distance / DriveConstants.kEncDistancePerPulse);
+    m_talonFL.set(ControlMode.Position, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, rotate * driveConst.SPEED_TURN);
+    m_talonFR.set(ControlMode.Position, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, -rotate * driveConst.SPEED_TURN);
   }
 
   public void setDriveCoast() {
-    m_talonLeftFront.setNeutralMode(NeutralMode.Coast);
-    m_talonLeftBack.setNeutralMode(NeutralMode.Coast);
-    m_talonRightFront.setNeutralMode(NeutralMode.Coast);
-    m_talonRightBack.setNeutralMode(NeutralMode.Coast);
+    m_talonFL.setNeutralMode(NeutralMode.Coast);
+    m_talonFR.setNeutralMode(NeutralMode.Coast);
+    m_talonRL.setNeutralMode(NeutralMode.Coast);
+    m_talonRR.setNeutralMode(NeutralMode.Coast);
   }
 
   public void setDriveBrake() {
-    m_talonLeftFront.setNeutralMode(NeutralMode.Brake);
-    m_talonLeftBack.setNeutralMode(NeutralMode.Brake);
-    m_talonRightFront.setNeutralMode(NeutralMode.Brake);
-    m_talonRightBack.setNeutralMode(NeutralMode.Brake);
+    m_talonFL.setNeutralMode(NeutralMode.Brake);
+    m_talonFR.setNeutralMode(NeutralMode.Brake);
+    m_talonRL.setNeutralMode(NeutralMode.Brake);
+    m_talonRR.setNeutralMode(NeutralMode.Brake);
   }
 
-  /**
-   * ENCODER FUNCTIONS
-   * 1 Encoder Revolution = 4096 Encoder Counts = 1 Wheel Revolution = 18.84956 Travel Distance (Inches)
-   */
-
-  // Reset the drive encoders to read zero
-  public void resetEncoders() {
-    m_talonLeftFront.setSelectedSensorPosition(0.0);
-    m_talonRightFront.setSelectedSensorPosition(0.0);
+  public void resetEncoder() {
+    m_talonFL.setSelectedSensorPosition(0.0);
+    m_talonFR.setSelectedSensorPosition(0.0);
   }
 
-  // Get the position of the Left Encoder
   public double getLeftEncoder() {
-    return m_talonLeftFront.getSelectedSensorPosition();
+    return m_talonFL.getSelectedSensorPosition();
   }
 
-  // Get the position of the Left Encoder
   public double getRightEncoder() {
-    return m_talonRightFront.getSelectedSensorPosition();
+    return m_talonFR.getSelectedSensorPosition();
   }
 
-  // Get Average Encoder Distance
   public double getAvgEncoder() {
-    return (getRightEncoder() + getLeftEncoder()) / 2.0;
+    return (getRightEncoder() + getLeftEncoder())/2;
   }
-  
+
+  /*
+  public double getPitch() {
+    return s_pidgey.getPitch();
+  }
+
+  public double getYaw() {
+    return s_pidgey.getYaw();
+  }
+  */
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
 }

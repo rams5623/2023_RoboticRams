@@ -4,43 +4,39 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.IntakeConstants;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-public class Intake extends SubsystemBase {
-  private final WPI_TalonSRX m_talonIntake = new WPI_TalonSRX(IntakeConstants.kTalonIntake);
-  private final DigitalInput m_proxLift = new DigitalInput(IntakeConstants.kSensorProxDIO);
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.clampConst;
 
-  /** Creates a new Intake. */
-  public Intake() {
-    // Name everything for the live dashboard
-    addChild("Motor", m_talonIntake);
-    addChild("Ball Prox", m_proxLift);
+public class Clamp extends SubsystemBase {
+  /** Creates a new Clamp. */
+  private final WPI_TalonSRX m_talonClamp = new WPI_TalonSRX(clampConst.ktalon_clamp);
 
-    // Settings for the talonSRX lift motor
-    m_talonIntake.configFactoryDefault();
-    m_talonIntake.setInverted(true);
-    m_talonIntake.setNeutralMode(NeutralMode.Coast);
+  public Clamp() {
+    m_talonClamp.configFactoryDefault();
+
+    m_talonClamp.setInverted(false);
+    m_talonClamp.setNeutralMode(NeutralMode.Brake);
+    m_talonClamp.configNeutralDeadband(clampConst.kDeadbandClamp);
   }
 
-  public boolean hasTwoBalls() {
-    return !m_proxLift.get();
+  public void clamp() {
+    m_talonClamp.set(ControlMode.PercentOutput, clampConst.SPEED_CLAMP);
   }
 
-  public void ballIn() {
-    m_talonIntake.set(ControlMode.PercentOutput, IntakeConstants.SPEED_INTAKE);
-  }
-
-  public void ballOut() {
-    m_talonIntake.set(ControlMode.PercentOutput, IntakeConstants.SPEED_OUTTAKE);
+  public void unclamp() {
+    m_talonClamp.set(ControlMode.PercentOutput, clampConst.SPEED_RELEASE);
   }
 
   public void stop() {
-    m_talonIntake.set(ControlMode.PercentOutput, 0.0);
+    m_talonClamp.set(ControlMode.PercentOutput, 0);
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
   }
 }

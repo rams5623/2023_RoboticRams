@@ -5,35 +5,76 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.LiftConstants;
+import frc.robot.Constants.boomConst;
 
-public class Lift extends SubsystemBase {
-  private final WPI_TalonSRX m_talonLift = new WPI_TalonSRX(LiftConstants.kTalonLift);
-  
-  /** Creates a new Lift. */
-  public Lift() {
-    // Name everything for the live dashboard
-    addChild("Motor", m_talonLift);
+public class Boom extends SubsystemBase {
+  /** Creates a new Boom. */
+  private final WPI_TalonSRX m_talonBoom = new WPI_TalonSRX(boomConst.ktalon_boom);
 
-    // Settings for the talonSRX lift motor
-    m_talonLift.configFactoryDefault();
-    m_talonLift.setInverted(true);
-    m_talonLift.setNeutralMode(NeutralMode.Coast);
+  private final DigitalInput s_boomSwitch = new DigitalInput(boomConst.kswitch_boom);
+
+  public Boom() {
+    // Reset the talon settings
+    m_talonBoom.configFactoryDefault();
+
+    // Motor controller settings
+    m_talonBoom.setInverted(false);
+    m_talonBoom.setNeutralMode(NeutralMode.Brake);
+    m_talonBoom.configNeutralDeadband(boomConst.kDeadbandBoom);
+
+    // Encoder Stuff
+    m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+    m_talonBoom.setSensorPhase(false);
+    m_talonBoom.configNominalOutputForward(0.0);
+    m_talonBoom.configNominalOutputReverse(0.0);
+    m_talonBoom.configPeakOutputForward(0.9);
+    m_talonBoom.configPeakOutputReverse(0.9);
+    m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
+    m_talonBoom.config_kF(boomConst.kSlotidx, 0.9);
+    m_talonBoom.config_kP(boomConst.kSlotidx, 0.0);
+    m_talonBoom.config_kI(boomConst.kSlotidx, 0.0);
+    m_talonBoom.config_kD(boomConst.kSlotidx, 0.0);
+    m_talonBoom.setSelectedSensorPosition(0.0);
+    //m_talonBoom.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+
   }
 
-  public void ballUp() {
-    m_talonLift.set(ControlMode.PercentOutput, LiftConstants.SPEED_LIFTUP);
+  public void gotoPosition(double position) {
+    m_talonBoom.set(ControlMode.PercentOutput, position);
   }
 
-  public void ballDown() {
-    m_talonLift.set(ControlMode.PercentOutput, LiftConstants.SPEED_LIFTDOWN);
+  public void up() {
+    m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_UP);
+  }
+
+  public void down() {
+    m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN);
   }
 
   public void stop() {
-    m_talonLift.set(ControlMode.PercentOutput, 0.0);
+    m_talonBoom.set(ControlMode.PercentOutput, 0);
+  }
+
+  public void resetEncoder() {
+    m_talonBoom.setSelectedSensorPosition(0);
+  }
+
+  public double getPosition() {
+    return m_talonBoom.getSelectedSensorPosition();
+  }
+
+  public boolean getSwitch() {
+    return s_boomSwitch.get();
+  }
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
   }
 }
