@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import javax.security.auth.PrivateCredentialPermission;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -115,6 +113,11 @@ public class Drivetrain extends SubsystemBase {
     m_talonFR.set(ControlMode.Position, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, -rotate * driveConst.SPEED_TURN);
   }
 
+  public void stop() {
+    m_talonFL.set(ControlMode.PercentOutput, 0.0);
+    m_talonFR.set(ControlMode.PercentOutput, 0.0);
+  }
+
   public void setDriveCoast() {
     m_talonFL.setNeutralMode(NeutralMode.Coast);
     m_talonFR.setNeutralMode(NeutralMode.Coast);
@@ -150,7 +153,9 @@ public class Drivetrain extends SubsystemBase {
   public double getPitch() {
     return s_pidgey.getPitch();
   }
+  */
 
+  /*
   public double getYaw() {
     return s_pidgey.getYaw();
   }
