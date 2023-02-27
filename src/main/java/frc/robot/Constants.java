@@ -69,10 +69,10 @@ public final class Constants {
 
   public static class driveConst {
     // Talon CAN IDs
-    public static final int ktalon_FR = 1;
-    public static final int ktalon_FL = 2;
-    public static final int ktalon_RR = 3;
-    public static final int ktalon_RL = 4;
+    public static final int ktalon_FR = 14;
+    public static final int ktalon_FL = 13;
+    public static final int ktalon_RR = 12;
+    public static final int ktalon_RL = 11;
     // Pidgey 1.0 CAN ID
     public static final int kpidgey = 5;
     // Talon SRX command deadband zone
