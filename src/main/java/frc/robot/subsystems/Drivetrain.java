@@ -108,9 +108,9 @@ public class Drivetrain extends SubsystemBase {
   }
 
 
-  public void arcadeDrive(double forward, double rotate) {
-    m_talonFL.set(ControlMode.Position, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, rotate * driveConst.SPEED_TURN);
-    m_talonFR.set(ControlMode.Position, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, -rotate * driveConst.SPEED_TURN);
+  public void drive(double forward, double rotate) {
+    m_talonFL.set(ControlMode.PercentOutput, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, rotate * driveConst.SPEED_TURN);
+    m_talonFR.set(ControlMode.PercentOutput, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, -rotate * driveConst.SPEED_TURN);
   }
 
   public void stop() {
