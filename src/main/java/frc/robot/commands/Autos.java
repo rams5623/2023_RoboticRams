@@ -21,7 +21,7 @@ public final class Autos {
   // Fill in autos here I guess instead of in the RobotContainer
   public static CommandBase driveStraightAuto(Drivetrain drive, Boom boom) {
     return Commands.parallel(
-    new StartEndCommand(() -> drive.arcadeDrive(.4, 0), drive::stop, drive).withTimeout(2.0),
+    new StartEndCommand(() -> drive.drive(.4, 0), drive::stop, drive).withTimeout(2.0),
     new StartEndCommand(boom::down,boom::stop,boom).withTimeout(2)
   );
   }
