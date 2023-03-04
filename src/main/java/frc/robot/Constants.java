@@ -23,15 +23,21 @@ public final class Constants {
   public static class posConst {
     // Pickup Position
     public static final int kPickupBoom = 0;
-    public static final int kPickupColm = 500;
+    public static final int kPickupColm = 1000;
 
     // Middle Poll Position
-    public static final int kMidBoom = 1000;
+    public static final int kMidBoom = 1500;
     public static final int kMidColm = 400;
 
     // Top Poll Position
-    public static final int kTopBoom = 1500;
+    public static final int kTopBoom = 3800;
     public static final int kTopColm = 500;
+
+    // Floor Position
+    public static final int kBotBoom = 200;
+
+    // MAX BOOM HEIGHT AT FULL COLUMN FORWARD
+    public static final int kMaxBoom = 4300;
   }
 
 
@@ -62,9 +68,9 @@ public final class Constants {
     // Talon CAN ID
     public static final int ktalon_boom = 16;
     // Talon SRX command deadband zone
-    public static final double kDeadbandBoom = 0.10;
+    public static final double kDeadbandBoom = 0.20;
     // Talon SRX Arbitrarty Feedback for Gravity
-    public static final double karbitraryBoom = 0.05;
+    public static final double karbitraryBoom = -0.08;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
@@ -73,8 +79,8 @@ public final class Constants {
     public static final double kEncDistancePerPulse = 0.0;
     
     // Speed reducer commands
-    public static final double SPEED_UP = 0.6;
-    public static final double SPEED_DOWN = 0.4;
+    public static final double SPEED_UP = 0.5;
+    public static final double SPEED_DOWN = 0.3;
     // Boom rear limit switch for reseting encoder
     public static final int kswitch_boom = 2;
   }

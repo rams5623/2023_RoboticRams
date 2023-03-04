@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -42,7 +43,7 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX m_talonRR = new WPI_TalonSRX(driveConst.ktalon_RR);
   private final WPI_TalonSRX m_talonRL = new WPI_TalonSRX(driveConst.ktalon_RL);
 
-  private final PigeonIMU s_pidgey = new PigeonIMU(driveConst.kpidgey); // ###Change to the motor controller that this is plugged into###
+  private final PigeonIMU s_pidgey = new PigeonIMU(m_talonRL); // ###Change to the motor controller that this is plugged into###
   private double [] ypr_rot = new double [3];
   private PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
 
@@ -110,6 +111,7 @@ public class Drivetrain extends SubsystemBase {
     s_pidgey.configFactoryDefault();
     s_pidgey.setFusedHeading(0.0);
     s_pidgey.setTemperatureCompensationDisable(false);
+    //s_pidgey.enterCalibrationMode(CalibrationMode.Temperature);
   }
 
 
@@ -172,6 +174,8 @@ public class Drivetrain extends SubsystemBase {
     s_pidgey.getFusedHeading(fusionStatus);
     return fusionStatus.heading;
   }
+
+
   
 
   @Override
@@ -182,7 +186,7 @@ public class Drivetrain extends SubsystemBase {
     //Smartdahsboard Stuff
     SmartDashboard.putNumber("Raw Left Drive Encoder", getLeftEncoder());
     SmartDashboard.putNumber("Raw Right Drive Encoder", getRightEncoder());
-    SmartDashboard.putNumber("Yaw", getYaw());
+    SmartDashboard.putNumber("Yaw", getHeading());
     SmartDashboard.putNumber("Pitch",getPitch());
   }
 }

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.boomConst;
+import frc.robot.Constants.posConst;
 
 public class Boom extends SubsystemBase {
   /** Creates a new Boom. */
@@ -29,31 +31,34 @@ public class Boom extends SubsystemBase {
     m_talonBoom.setNeutralMode(NeutralMode.Brake);
     m_talonBoom.configNeutralDeadband(boomConst.kDeadbandBoom);
     m_talonBoom.configOpenloopRamp(0.2);
+    m_talonBoom.configClosedloopRamp(0.2);
 
     // Encoder Stuff
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-    m_talonBoom.setSensorPhase(false);
+    m_talonBoom.setSensorPhase(true);
     m_talonBoom.configNominalOutputForward(0.0);
     m_talonBoom.configNominalOutputReverse(0.0);
     m_talonBoom.configPeakOutputForward(0.9);
     m_talonBoom.configPeakOutputReverse(-0.9);
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
-    m_talonBoom.config_kF(boomConst.kSlotidx, 0.9);
-    m_talonBoom.config_kP(boomConst.kSlotidx, 0.0);
+    m_talonBoom.config_kF(boomConst.kSlotidx, 0.0);
+    m_talonBoom.config_kP(boomConst.kSlotidx, 2.0);
     m_talonBoom.config_kI(boomConst.kSlotidx, 0.0);
     m_talonBoom.config_kD(boomConst.kSlotidx, 0.0);
     m_talonBoom.setSelectedSensorPosition(0.0);
+    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom);
+    m_talonBoom.configForwardSoftLimitEnable(true);
     //m_talonBoom.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 
   }
 
   public void gotoPosition(double position) {
-    m_talonBoom.set(ControlMode.PercentOutput, position);
+    m_talonBoom.set(ControlMode.Position, position);
   }
 
   public void move(Double speed) {
     //m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, .05);
-    m_talonBoom.set(ControlMode.PercentOutput, speed);
+    m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
   }
   public void up() {
     m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_UP);

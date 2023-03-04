@@ -4,8 +4,10 @@
 
 package frc.robot;
 
+import frc.robot.Constants.posConst;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.Autos;
+import frc.robot.commands.BoomPosition;
 import frc.robot.commands.MoveBoom;
 import frc.robot.commands.MoveColumn;
 import frc.robot.subsystems.Boom;
@@ -20,9 +22,11 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -128,12 +132,22 @@ public class RobotContainer {
       //Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
 
       // Clamp motor clamp
-      new JoystickButton(s_Jop, Button.kX.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
+      new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
       //Jop_7.onTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp)); // onTrue does not perform the End portion of this command
 
       // Clamp motor unclamp
-      new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
+      new JoystickButton(s_Jop, Button.kX.value).whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
       //Jop_8.onTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp)); // onTrue does not perform the End portion of this command
+
+      // Reset encoders to zero on the boom and column
+      new JoystickButton(s_Jop, Button.kBack.value).whileTrue(new ParallelCommandGroup(
+        new InstantCommand(m_boom::resetEncoder,m_boom),
+        new InstantCommand(m_column::resetEncoder, m_column)
+      ));
+
+      new POVButton(s_Jop, 90).onTrue(new BoomPosition((double) posConst.kMidBoom, m_boom));
+      new POVButton(s_Jop, 0).onTrue(new BoomPosition((double) posConst.kTopBoom, m_boom));
+      new POVButton(s_Jop, 180).onTrue(new BoomPosition((double) posConst.kBotBoom, m_boom));
     }
   }
 
