@@ -29,7 +29,8 @@ public final class Constants {
     public static final double SPEED_FORWARD = 0.8;
     public static final double SPEED_BACKWARD = 0.8;
     // Column rear limit switch for reseting encoder
-    public static final int kswitch_column = 0;
+    public static final int kswitchRev_column = 0;
+    public static final int kswitchFwd_column = 1;
   }
 
   public static class boomConst {
@@ -44,7 +45,7 @@ public final class Constants {
     public static final double SPEED_UP = 0.8;
     public static final double SPEED_DOWN = 0.8;
     // Boom rear limit switch for reseting encoder
-    public static final int kswitch_boom = 1;
+    public static final int kswitch_boom = 2;
   }
 
   public static class intakeConst {
@@ -76,8 +77,8 @@ public final class Constants {
     // Pidgey 1.0 CAN ID
     public static final int kpidgey = 5;
     // Talon SRX command deadband zone
-    public static final double kDeadbandLeft = 0.10;
-    public static final double kDeadbandRight = 0.05;
+    public static final double kDeadbandLeft = 0.15;
+    public static final double kDeadbandRight = 0.10;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;

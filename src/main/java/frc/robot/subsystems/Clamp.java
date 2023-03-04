@@ -28,7 +28,7 @@ public class Clamp extends SubsystemBase {
   }
 
   public void unclamp() {
-    m_talonClamp.set(ControlMode.PercentOutput, clampConst.SPEED_RELEASE);
+    m_talonClamp.set(ControlMode.PercentOutput, -clampConst.SPEED_RELEASE);
   }
 
   public void stop() {

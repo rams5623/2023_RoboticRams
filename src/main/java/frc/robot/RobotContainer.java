@@ -4,18 +4,26 @@
 
 package frc.robot;
 
+import frc.robot.Constants.boomConst;
+import frc.robot.Constants.columnConst;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.Autos;
-
+import frc.robot.commands.MoveBoom;
+import frc.robot.commands.MoveColumn;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Column;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import edu.wpi.first.wpilibj.DigitalInput;
 //import frc.robot.subsystems.Cameras;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -41,7 +49,12 @@ public class RobotContainer {
 
   // Controller creation
   private final Joystick s_Jdriver = new Joystick(0);
-  private final Joystick s_Jop = new Joystick(1);
+  //private final Joystick s_Jop = new Joystick(1);
+  private final XboxController s_Jop = new XboxController(1);
+
+  //Limit Switches
+  //private final DigitalInput s_columnSwitch = new DigitalInput(columnConst.kswitch_column);
+  //private final DigitalInput s_boomSwitch = new DigitalInput(boomConst.kswitch_boom);
 
   // The sendable chooser will show up on the shuffle board for the driver to select the automode they would like to perform for the match.
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -58,6 +71,14 @@ public class RobotContainer {
     // Set the default command of the drivetrain to be the ArcadeDrive command so the dirvers can just drive automatically
     m_drivetrain.setDefaultCommand(
       new ArcadeDrive(s_Jdriver::getY, s_Jdriver::getZ, m_drivetrain)
+    );
+
+    m_column.setDefaultCommand(
+      new MoveColumn(s_Jop::getRightY, m_column)
+    );
+
+    m_boom.setDefaultCommand(
+      new MoveBoom(s_Jop::getLeftY, m_boom)
     );
     
     // Configure button bindings for controllers and such
@@ -76,6 +97,11 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    Trigger columnResetTrigger = new Trigger(m_column::getRevSwitch);
+    columnResetTrigger.whileTrue(new InstantCommand(m_column::resetEncoder, m_column));
+
+    Trigger boomResetTrigger = new Trigger(m_boom::getSwitch);
+    boomResetTrigger.whileTrue(new InstantCommand(m_boom::resetEncoder, m_boom));
     /*
      * If the driver joystick (USB 0) is connected then run this section, otherwise move on.
      * This prevents the buttons from being created on joystick that isnt present and causing a list of errors to appear on connection to the rio.
@@ -110,43 +136,47 @@ public class RobotContainer {
     if (s_Jop.isConnected()) {
       /* Create all button objects */
       // Cut this list down as needed, it was created with joysticks in mind not xbox.
-      final JoystickButton Jop_1 = new JoystickButton(s_Jdriver, 1);
-      final JoystickButton Jop_2 = new JoystickButton(s_Jdriver, 2);
-      final JoystickButton Jop_3 = new JoystickButton(s_Jdriver, 3);
-      final JoystickButton Jop_4 = new JoystickButton(s_Jdriver, 4);
-      final JoystickButton Jop_5 = new JoystickButton(s_Jdriver, 5);
-      final JoystickButton Jop_6 = new JoystickButton(s_Jdriver, 6);
-      final JoystickButton Jop_7 = new JoystickButton(s_Jdriver, 7);
-      final JoystickButton Jop_8 = new JoystickButton(s_Jdriver, 8);
+      //final JoystickButton Jop_1 = new JoystickButton(s_Jdriver, 1);
+      //final JoystickButton Jop_2 = new JoystickButton(s_Jdriver, 2);
+      //final JoystickButton Jop_3 = new JoystickButton(s_Jdriver, 3);
+      //final JoystickButton Jop_4 = new JoystickButton(s_Jdriver, 4);
+      //final JoystickButton Jop_5 = new JoystickButton(s_Jdriver, 5);
+      //final JoystickButton Jop_6 = new JoystickButton(s_Jdriver, 6);
+      //final JoystickButton Jop_7 = new JoystickButton(s_Jdriver, 7);
+      //final JoystickButton Jop_8 = new JoystickButton(s_Jdriver, 8);
       //final JoystickButton Jop_9 = new JoystickButton(s_Jdriver, 9);
       //final JoystickButton Jop_10 = new JoystickButton(s_Jdriver, 10);
       //final JoystickButton Jop_11 = new JoystickButton(s_Jdriver, 11);
       //final JoystickButton Jop_12 = new JoystickButton(s_Jdriver, 12);
-
+      
       /* Use the button objects for operator controller */
       // Move boom Up
-      Jop_5.onTrue(new StartEndCommand(m_boom::up, m_boom::stop, m_boom));
+      //Jop_5.onTrue(new StartEndCommand(m_boom::up, m_boom::stop, m_boom));
 
       // Move boom down
-      Jop_3.onTrue(new StartEndCommand(m_boom::down, m_boom::stop, m_boom));
+      //Jop_3.onTrue(new StartEndCommand(m_boom::down, m_boom::stop, m_boom));
 
       // Move column forward
-      Jop_6.onTrue(new StartEndCommand(m_column::forward, m_column::stop, m_column));
+      //Jop_6.onTrue(new StartEndCommand(m_column::forward, m_column::stop, m_column));
 
       // Move column backwards
-      Jop_4.onTrue(new StartEndCommand(m_column::reverse, m_column::stop, m_column));
+      //Jop_4.onTrue(new StartEndCommand(m_column::reverse, m_column::stop, m_column));
 
       // Intake motor intake
-      Jop_1.onTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
+      new JoystickButton(s_Jop, Button.kA.value).whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
+      //Jop_1.onTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
 
       // Intake motor outake
-      Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
+      new JoystickButton(s_Jop, Button.kB.value).whileTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
+      //Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
 
       // Clamp motor clamp
-      Jop_7.onTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
+      new JoystickButton(s_Jop, Button.kX.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
+      //Jop_7.onTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
 
       // Clamp motor unclamp
-      Jop_8.onTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
+      new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
+      //Jop_8.onTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
     }
   }
 

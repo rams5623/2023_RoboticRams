@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.boomConst;
 
@@ -27,6 +28,7 @@ public class Boom extends SubsystemBase {
     m_talonBoom.setInverted(false);
     m_talonBoom.setNeutralMode(NeutralMode.Brake);
     m_talonBoom.configNeutralDeadband(boomConst.kDeadbandBoom);
+    m_talonBoom.configOpenloopRamp(0.2);
 
     // Encoder Stuff
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
@@ -34,7 +36,7 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configNominalOutputForward(0.0);
     m_talonBoom.configNominalOutputReverse(0.0);
     m_talonBoom.configPeakOutputForward(0.9);
-    m_talonBoom.configPeakOutputReverse(0.9);
+    m_talonBoom.configPeakOutputReverse(-0.9);
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
     m_talonBoom.config_kF(boomConst.kSlotidx, 0.9);
     m_talonBoom.config_kP(boomConst.kSlotidx, 0.0);
@@ -49,6 +51,10 @@ public class Boom extends SubsystemBase {
     m_talonBoom.set(ControlMode.PercentOutput, position);
   }
 
+  public void move(Double speed) {
+    //m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, .05);
+    m_talonBoom.set(ControlMode.PercentOutput, speed);
+  }
   public void up() {
     m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_UP);
   }
@@ -76,5 +82,7 @@ public class Boom extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Boom Zero Switch", getSwitch());
+    SmartDashboard.putNumber("Raw Boom Encoder", getPosition());
   }
 }

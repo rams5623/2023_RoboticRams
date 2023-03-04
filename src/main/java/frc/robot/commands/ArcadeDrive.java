@@ -30,7 +30,7 @@ public class ArcadeDrive extends CommandBase {
     if (m_straight.getAsDouble() < 0.1 && m_straight.getAsDouble() > -0.1) {
       m_drive.drive(0.0, m_turn.getAsDouble());
     } else if (m_straight.getAsDouble() > 0.1) {
-      m_drive.drive(m_straight.getAsDouble(), m_turn.getAsDouble()+0.15);
+      m_drive.drive(m_straight.getAsDouble(), m_turn.getAsDouble()+0.05);
     } else if (m_straight.getAsDouble() < -0.1) {
       m_drive.drive(m_straight.getAsDouble(), m_turn.getAsDouble()-0.05);
     }

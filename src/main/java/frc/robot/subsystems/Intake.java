@@ -28,7 +28,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void outake() {
-    m_talonIntake.set(ControlMode.PercentOutput, intakeConst.SPEED_OUT);
+    m_talonIntake.set(ControlMode.PercentOutput, -intakeConst.SPEED_OUT);
   }
 
   public void stop() {

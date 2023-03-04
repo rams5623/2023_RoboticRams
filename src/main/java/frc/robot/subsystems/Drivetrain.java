@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.driveConst;
 
@@ -84,8 +85,8 @@ public class Drivetrain extends SubsystemBase {
 
     m_talonFL.configPeakOutputForward(0.9);
     m_talonFR.configPeakOutputForward(0.9);
-    m_talonFL.configPeakOutputReverse(0.9);
-    m_talonFR.configPeakOutputReverse(0.9);
+    m_talonFL.configPeakOutputReverse(-0.9); // Peak Reverse NEED TO BE NEGATIVE!!!
+    m_talonFR.configPeakOutputReverse(-0.9);
 
     m_talonFL.selectProfileSlot(driveConst.kSlotidx, driveConst.kPIDidx);
     m_talonFR.selectProfileSlot(driveConst.kSlotidx, driveConst.kPIDidx);
@@ -164,5 +165,7 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.getNumber("Raw Left Drive Encoder", getLeftEncoder());
+    SmartDashboard.getNumber("Raw Right Drive Encoder", getRightEncoder());
   }
 }
