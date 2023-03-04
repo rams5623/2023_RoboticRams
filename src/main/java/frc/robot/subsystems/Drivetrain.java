@@ -42,7 +42,9 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX m_talonRR = new WPI_TalonSRX(driveConst.ktalon_RR);
   private final WPI_TalonSRX m_talonRL = new WPI_TalonSRX(driveConst.ktalon_RL);
 
-  //\private final PigeonIMU s_pidgey = new PigeonIMU(driveConst.kpidgey); // ###Change to the motor controller that this is plugged into###
+  private final PigeonIMU s_pidgey = new PigeonIMU(driveConst.kpidgey); // ###Change to the motor controller that this is plugged into###
+  private double [] ypr_rot = new double [3];
+  private PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
 
   public Drivetrain() {
     //Reset the talons to factory default to remove any configurations that may cause issues this time around
@@ -104,8 +106,10 @@ public class Drivetrain extends SubsystemBase {
     m_talonFL.setSelectedSensorPosition(0.0);
     m_talonFR.setSelectedSensorPosition(0.0);
 
-    //s_pidgey.configFactoryDefault();
-    //s_pidgey.setYaw(0);
+    // Pigeon IMU Sensor Settings
+    s_pidgey.configFactoryDefault();
+    s_pidgey.setFusedHeading(0.0);
+    s_pidgey.setTemperatureCompensationDisable(false);
   }
 
 
@@ -133,6 +137,9 @@ public class Drivetrain extends SubsystemBase {
     m_talonRR.setNeutralMode(NeutralMode.Brake);
   }
 
+  /*
+   * ENCODER FUNCTIONS
+   */
   public void resetEncoder() {
     m_talonFL.setSelectedSensorPosition(0.0);
     m_talonFR.setSelectedSensorPosition(0.0);
@@ -149,23 +156,33 @@ public class Drivetrain extends SubsystemBase {
   public double getAvgEncoder() {
     return (getRightEncoder() + getLeftEncoder())/2;
   }
-
+  
   /*
-  public double getPitch() {
-    return s_pidgey.getPitch();
-  }
-  */
-
-  /*
+   * PIDGEON FUNCTIONS
+   */
   public double getYaw() {
-    return s_pidgey.getYaw();
+    return ypr_rot[0];
   }
-  */
+
+  public double getPitch() {
+    return ypr_rot[1];
+  }
+  
+  public double getHeading() {
+    s_pidgey.getFusedHeading(fusionStatus);
+    return fusionStatus.heading;
+  }
+  
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.getNumber("Raw Left Drive Encoder", getLeftEncoder());
-    SmartDashboard.getNumber("Raw Right Drive Encoder", getRightEncoder());
+    s_pidgey.getYawPitchRoll(ypr_rot);
+
+    //Smartdahsboard Stuff
+    SmartDashboard.putNumber("Raw Left Drive Encoder", getLeftEncoder());
+    SmartDashboard.putNumber("Raw Right Drive Encoder", getRightEncoder());
+    SmartDashboard.putNumber("Yaw", getYaw());
+    SmartDashboard.putNumber("Pitch",getPitch());
   }
 }

@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.clampConst;
 
@@ -21,6 +22,9 @@ public class Clamp extends SubsystemBase {
     m_talonClamp.setInverted(false);
     m_talonClamp.setNeutralMode(NeutralMode.Brake);
     m_talonClamp.configNeutralDeadband(clampConst.kDeadbandClamp);
+    //m_talonClamp.configPeakCurrentLimit(0);
+    //m_talonClamp.configPeakCurrentDuration(500);
+    //m_talonClamp.enableCurrentLimit(true);
   }
 
   public void clamp() {
@@ -38,5 +42,6 @@ public class Clamp extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Clamp Current", m_talonClamp.getSupplyCurrent());
   }
 }

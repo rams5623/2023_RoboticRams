@@ -23,7 +23,6 @@ public class MoveBoom extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
     m_boom.move(m_speed.getAsDouble());
   }
 
