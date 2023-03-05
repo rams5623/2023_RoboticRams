@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.driveConst;
 import frc.robot.subsystems.Drivetrain;
 
 public class ArcadeDrive extends CommandBase {
@@ -24,16 +25,12 @@ public class ArcadeDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //m_drive.drive(m_straight.getAsDouble(), m_turn.getAsDouble());
-
-    // Straight speed adjustment
-    if (m_straight.getAsDouble() < 0.1 && m_straight.getAsDouble() > -0.1) {
-      m_drive.drive(0.0, m_turn.getAsDouble());
-    } else if (m_straight.getAsDouble() > 0.1) {
-      m_drive.drive(m_straight.getAsDouble(), m_turn.getAsDouble()+0.05);
-    } else if (m_straight.getAsDouble() < -0.1) {
-      m_drive.drive(m_straight.getAsDouble(), m_turn.getAsDouble()-0.05);
-    }
+    m_drive.drive(
+      // Straight Double Parameter (Forward/Reverse)
+      m_straight.getAsDouble() * driveConst.SPEED_STRT,
+      // Turn Double Parameter (Rotate CW/CCW)
+      m_turn.getAsDouble() * driveConst.SPEED_TURN
+    );
   }
 
   // Called once the command ends or is interrupted.
@@ -45,6 +42,12 @@ public class ArcadeDrive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    return false;
+  }
+
+  // Decides if command should run during disabled
+  @Override
+  public boolean runsWhenDisabled() {
     return false;
   }
 }

@@ -17,9 +17,8 @@ import frc.robot.Constants.boomConst;
 import frc.robot.Constants.posConst;
 
 public class Boom extends SubsystemBase {
-  /** Creates a new Boom. */
+  /** Creates the objects that will reside only in the Boom Subsystem */
   private final WPI_TalonSRX m_talonBoom = new WPI_TalonSRX(boomConst.ktalon_boom);
-
   private final DigitalInput s_boomSwitch = new DigitalInput(boomConst.kswitch_boom);
 
   public Boom() {
@@ -32,24 +31,25 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configNeutralDeadband(boomConst.kDeadbandBoom);
     m_talonBoom.configOpenloopRamp(0.2);
     m_talonBoom.configClosedloopRamp(0.2);
+    m_talonBoom.configNominalOutputForward(0.0);
+    m_talonBoom.configNominalOutputReverse(0.0);
+    m_talonBoom.configPeakOutputForward(0.75);
+    m_talonBoom.configPeakOutputReverse(-0.75);
 
     // Encoder Stuff
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
     m_talonBoom.setSensorPhase(true);
-    m_talonBoom.configNominalOutputForward(0.0);
-    m_talonBoom.configNominalOutputReverse(0.0);
-    m_talonBoom.configPeakOutputForward(0.9);
-    m_talonBoom.configPeakOutputReverse(-0.9);
+    m_talonBoom.setSelectedSensorPosition(0.0);
+    
+    // PID for talon controller position
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
     m_talonBoom.config_kF(boomConst.kSlotidx, 0.0);
     m_talonBoom.config_kP(boomConst.kSlotidx, 2.0);
     m_talonBoom.config_kI(boomConst.kSlotidx, 0.0);
     m_talonBoom.config_kD(boomConst.kSlotidx, 0.0);
-    m_talonBoom.setSelectedSensorPosition(0.0);
-    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom);
-    m_talonBoom.configForwardSoftLimitEnable(true);
-    //m_talonBoom.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
 
+    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom); // Should prevent it from going to high???
+    m_talonBoom.configForwardSoftLimitEnable(true);
   }
 
   public void gotoPosition(double position) {
@@ -60,6 +60,7 @@ public class Boom extends SubsystemBase {
     //m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, .05);
     m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
   }
+  
   public void up() {
     m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_UP);
   }
@@ -81,7 +82,7 @@ public class Boom extends SubsystemBase {
   }
 
   public boolean getSwitch() {
-    return s_boomSwitch.get();
+    return !s_boomSwitch.get();
   }
 
   @Override

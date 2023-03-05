@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import frc.robot.Constants.controllerConst;
+import frc.robot.Constants.driveConst;
 import frc.robot.Constants.posConst;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.Autos;
@@ -15,7 +17,7 @@ import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Column;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
-//import frc.robot.subsystems.Cameras;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -23,8 +25,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -48,17 +50,11 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
 
   // Controller creation
-  private final Joystick s_Jdriver = new Joystick(0);
-  //private final Joystick s_Jop = new Joystick(1);
-  private final XboxController s_Jop = new XboxController(1);
-
-  //Limit Switches
-  //private final DigitalInput s_columnSwitch = new DigitalInput(columnConst.kswitch_column);
-  //private final DigitalInput s_boomSwitch = new DigitalInput(boomConst.kswitch_boom);
+  public static final Joystick s_Jdriver = new Joystick(0);
+  public static final XboxController s_Jop = new XboxController(1);
 
   // The sendable chooser will show up on the shuffle board for the driver to select the automode they would like to perform for the match.
   SendableChooser<Command> m_chooser = new SendableChooser<>();
-
 
 
   /**
@@ -67,34 +63,55 @@ public class RobotContainer {
   public RobotContainer() {
     // Smartdashboard subsystem data
     m_chooser.setDefaultOption("Simple Drive Straight", Autos.driveStraightAuto(m_drivetrain, m_boom));
+    //m_chooser.addOption("Charging Pad Auto", Autos.chargingPadAuto(m_drivetrain));
     
-    // Set the default command of the drivetrain to be the ArcadeDrive command so the dirvers can just drive automatically
+    /*
+     * New way to run default arcade drive that has not been tested out yet. Try this and if it doesnt work as
+     * expected then comment it out and uncomment the old one below it.
+     */
+    // Set the default command of the drivetrain to be driven by driver joystick
     m_drivetrain.setDefaultCommand(
-      new ArcadeDrive(s_Jdriver::getY, s_Jdriver::getZ, m_drivetrain)
+      new RunCommand(()->
+        // Command to run without suppliers
+        m_drivetrain.drive(
+          // double value for straight driving
+          getDriveStickY() * driveConst.SPEED_STRT,
+          // double value for turn driving
+          getDriveStickZ() * driveConst.SPEED_TURN
+        ),
+        // Requirements for command
+        m_drivetrain
+      )
     );
+    //m_drivetrain.setDefaultCommand(new ArcadeDrive(() -> getDriveStickY(), () -> getDriveStickZ(), m_drivetrain));
 
+    // m_column.setDefaultCommand(
+    //   new RunCommand(() ->
+    //     m_column.move(getOpRightStickY()),
+    //     m_column
+    //   )
+    // );
     m_column.setDefaultCommand(
       new MoveColumn(s_Jop::getRightY, m_column)
     );
 
+    // m_boom.setDefaultCommand(
+    //   new RunCommand(() ->
+    //     m_boom.move(getOpLeftStickY()),
+    //     m_boom
+    //   )
+    // );
     m_boom.setDefaultCommand(
       new MoveBoom(s_Jop::getLeftY, m_boom)
     );
-    
+
     // Configure button bindings for controllers and such
     configureBindings();
   }
 
 
-
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
     Trigger columnResetTrigger = new Trigger(m_column::getRevSwitch);
@@ -113,7 +130,12 @@ public class RobotContainer {
       
       // Enable slow mode for driving to provide finer driving movments
       //Jdriver_2.onTrue(new ArcadeDrive(() -> s_Jdriver.getY() * 0.8, () -> s_Jdriver.getZ() * 0.6, m_drivetrain));
-      new JoystickButton(s_Jdriver, 2).whileTrue(new ArcadeDrive(() -> s_Jdriver.getY() * 0.5, () -> s_Jdriver.getZ() * 0.6, m_drivetrain));
+      new JoystickButton(s_Jdriver, 2).whileTrue(
+        new ArcadeDrive(
+          () -> s_Jdriver.getY() * 0.5 * driveConst.SPEED_STRT,
+          () -> s_Jdriver.getZ() * 0.5 * driveConst.SPEED_TURN,
+          m_drivetrain
+        ));
     }
 
     /*
@@ -132,7 +154,7 @@ public class RobotContainer {
       //Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
 
       // Clamp motor clamp
-      new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
+      new JoystickButton(s_Jop, Button.kY.value).onTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
       //Jop_7.onTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp)); // onTrue does not perform the End portion of this command
 
       // Clamp motor unclamp
@@ -151,7 +173,57 @@ public class RobotContainer {
     }
   }
 
+  /*
+   * Gets the axis value from the driver joytick roation (z-axis). Applies
+   * a deadband to the input to prevent minor joystick drift sending commands
+   * to the motors.
+   */
+  public static double getDriveStickZ() {
+    double axisValue = s_Jdriver.getZ();
+    if (Math.abs(axisValue) < controllerConst.kDriveAxisZDeadband) {
+      axisValue = 0.0;
+    }
+    return axisValue;
+  }
 
+  /*
+   * Gets the axis value from the driver joytick forward (y-axis). Applies
+   * a deadband to the input to prevent minor joystick drift sending commands
+   * to the motors.
+   */
+  public static double getDriveStickY() {
+    double axisValue = s_Jdriver.getY();
+    if (Math.abs(axisValue) < controllerConst.kDriveAxisYDeadband) {
+      axisValue = 0.0;
+    }
+    return axisValue;
+  }
+
+  /*
+   * Gets the axis value from the operator left joystick (y-axis). Applies a
+   * deadband to the input to prevent minor joystick drift sending commands
+   * to the motors and causing jitteryness and unwanted movements.
+   */
+  public static double getOpLeftStickY() {
+    double axisValue = s_Jop.getLeftY();
+    if (Math.abs(axisValue) < controllerConst.kOpAxisLeftYDeadband) {
+      axisValue = 0.0;
+    }
+    return axisValue;
+  }
+
+  /*
+   * Gets the axis value from the operator right joystick (y-axis). Applies a
+   * deadband to the input to prevent minor joystick drift sending commands
+   * to the motors and causing jitteryness and unwanted movements.
+   */
+  public static double getOpRightStickY() {
+    double axisValue = s_Jop.getRightY();
+    if (Math.abs(axisValue) < controllerConst.kOpAxisRightYDeadband) {
+      axisValue = 0.0;
+    }
+    return axisValue;
+  }
 
   /**
    * This is the command that will run during autonomous mode:

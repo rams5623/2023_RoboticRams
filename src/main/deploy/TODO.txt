@@ -1,0 +1,10 @@
+- Column Encoder Functioning?
+- FWD Column Switch Functioning?
+- Boom Switch Zero Functioning?
+- Measure Column Counts from switch to switch
+- Measure Zero Position Angle of Boom
+- Record counts of 90 degrees of Boom movement (column back)
+- Convert count positions for boom to angles with conversion number
+- Create emergency stow command to run before robot collision
+- Tweak Auto parameters
+- Once auto charge pad is tweaked, make it a button for end game

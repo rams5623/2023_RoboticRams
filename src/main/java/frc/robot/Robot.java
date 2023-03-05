@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -19,12 +23,40 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  public UsbCamera cam1;
+  public VideoSink server;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    /*
+     * CAMERA SETTINGS
+     */
+    // Start Camera Stream for normal USB camera through USB 0 on Roborio
+    cam1 = CameraServer.startAutomaticCapture(0);
+    // Set camera 1 resolution size
+    cam1.setResolution(640, 480);
+    // Set camera 1 brightness
+    cam1.setBrightness(50);
+    // auto set the white balance
+    cam1.setWhiteBalanceAuto();
+    // auto set the exposure because competition lighting is bright and sometimes varies
+    cam1.setExposureAuto();
+    // Set frames per second
+    cam1.setFPS(24);
+    // Set pixel format for image streaming
+    cam1.setPixelFormat(PixelFormat.kMJPEG);
+
+    // Start camera server and add camera 1 to it
+    server = CameraServer.getServer();
+    server.setSource(cam1);
+
+    /*
+     * ROBOT CONTAINER INIT
+     */
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();

@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMU.CalibrationMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -44,7 +43,8 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX m_talonRL = new WPI_TalonSRX(driveConst.ktalon_RL);
 
   private final PigeonIMU s_pidgey = new PigeonIMU(m_talonRL); // ###Change to the motor controller that this is plugged into###
-  private double [] ypr_rot = new double [3];
+  private double [] ypr_rot = new double [3]; // Gyro container to hold values for three axis angles
+  private double [] xyz_rot = new double [3]; // Gyro container to hold values for three axis rotation rates
   private PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
 
   public Drivetrain() {
@@ -76,33 +76,44 @@ public class Drivetrain extends SubsystemBase {
     m_talonRR.configNeutralDeadband(driveConst.kDeadbandRight);
     m_talonRL.configNeutralDeadband(driveConst.kDeadbandRight);
 
-    // ENCODER SETUP
-    // Attach encoder to master motor controllers (front)
-    m_talonFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-    m_talonFR.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-
+    // Nominal output percentage for forward and reverse when nothing is applied
     m_talonFL.configNominalOutputForward(0);
     m_talonFR.configNominalOutputForward(0);
     m_talonFL.configNominalOutputReverse(0);
     m_talonFR.configNominalOutputReverse(0);
 
+    // Peak percentage output of controller for forward and reverse directions
     m_talonFL.configPeakOutputForward(0.9);
     m_talonFR.configPeakOutputForward(0.9);
     m_talonFL.configPeakOutputReverse(-0.9); // Peak Reverse NEED TO BE NEGATIVE!!!
-    m_talonFR.configPeakOutputReverse(-0.9);
+    m_talonFR.configPeakOutputReverse(-0.9); // Peak Reverse NEED TO BE NEGATIVE!!!
 
-    m_talonFL.selectProfileSlot(driveConst.kSlotidx, driveConst.kPIDidx);
-    m_talonFR.selectProfileSlot(driveConst.kSlotidx, driveConst.kPIDidx);
+    // Peak current limit trigger. When current goes above this for the defined time the current will be limited to the continous current limit.
+    m_talonFL.configPeakCurrentLimit(16);
+    m_talonFR.configPeakCurrentLimit(16);
+    m_talonRL.configPeakCurrentLimit(16);
+    m_talonRR.configPeakCurrentLimit(16);
 
-    m_talonFL.config_kF(driveConst.kSlotidx, 0.9);
-    m_talonFL.config_kP(driveConst.kSlotidx, 0.0);
-    m_talonFL.config_kI(driveConst.kSlotidx, 0.0);
-    m_talonFL.config_kD(driveConst.kSlotidx, 0.0);
+    m_talonFL.configPeakCurrentDuration(1000);
+    m_talonFR.configPeakCurrentDuration(1000);
+    m_talonRL.configPeakCurrentDuration(1000);
+    m_talonRR.configPeakCurrentDuration(1000);
 
-    m_talonFR.config_kF(driveConst.kSlotidx, 0.9);
-    m_talonFR.config_kP(driveConst.kSlotidx, 0.0);
-    m_talonFR.config_kI(driveConst.kSlotidx, 0.0);
-    m_talonFR.config_kD(driveConst.kSlotidx, 0.0);
+    m_talonFL.configContinuousCurrentLimit(14); // What current is limited to after peak has been met
+    m_talonFR.configContinuousCurrentLimit(14);
+    m_talonRL.configContinuousCurrentLimit(14);
+    m_talonRR.configContinuousCurrentLimit(14);
+
+    // Enable/Disable current limiting feature with the above parameters
+    m_talonFL.enableCurrentLimit(false);
+    m_talonFR.enableCurrentLimit(false);
+    m_talonRL.enableCurrentLimit(false);
+    m_talonRR.enableCurrentLimit(false);
+
+    // ENCODER SETUP
+    // Attach encoder to master motor controllers (front)
+    m_talonFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+    m_talonFR.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
 
     m_talonFL.setSelectedSensorPosition(0.0);
     m_talonFR.setSelectedSensorPosition(0.0);
@@ -114,17 +125,23 @@ public class Drivetrain extends SubsystemBase {
     //s_pidgey.enterCalibrationMode(CalibrationMode.Temperature);
   }
 
-
+  /*
+   * This will be the function used to drive the robot in both Percent and Position modes. No need to have the talon controllers
+   * have the PID functions because we are not going to use any fancy MotionMagic driving this year with normal tank drive setup.
+   * Encoder position will be used to determine the distance driven for things like auto mode.
+   */
   public void drive(double forward, double rotate) {
-    m_talonFL.set(ControlMode.PercentOutput, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, rotate * driveConst.SPEED_TURN);
-    m_talonFR.set(ControlMode.PercentOutput, (forward * driveConst.SPEED_STRT), DemandType.ArbitraryFeedForward, -rotate * driveConst.SPEED_TURN);
+    m_talonFL.set(ControlMode.PercentOutput, -forward, DemandType.ArbitraryFeedForward, rotate);
+    m_talonFR.set(ControlMode.PercentOutput, -forward, DemandType.ArbitraryFeedForward, -rotate);
   }
 
+  /* Completely stop the motors */
   public void stop() {
     m_talonFL.set(ControlMode.PercentOutput, 0.0);
     m_talonFR.set(ControlMode.PercentOutput, 0.0);
   }
 
+  /* Set the drive motors to Coast. This is normal drive operating condition */
   public void setDriveCoast() {
     m_talonFL.setNeutralMode(NeutralMode.Coast);
     m_talonFR.setNeutralMode(NeutralMode.Coast);
@@ -132,6 +149,7 @@ public class Drivetrain extends SubsystemBase {
     m_talonRR.setNeutralMode(NeutralMode.Coast);
   }
 
+  /* Set the drive motors to Brake. This is for Auto mode and driving onto the charging platform */
   public void setDriveBrake() {
     m_talonFL.setNeutralMode(NeutralMode.Brake);
     m_talonFR.setNeutralMode(NeutralMode.Brake);
@@ -163,25 +181,37 @@ public class Drivetrain extends SubsystemBase {
    * PIDGEON FUNCTIONS
    */
   public double getYaw() {
+    /* This value tends to drift A LOT! Try not to use it. */
     return ypr_rot[0];
   }
 
+  public double getYawRate() {
+    /* Rate of change in Yaw. using this with the D in PID control will give a smoother response */
+    return xyz_rot[0];
+  }
+
+  /* Pitch is the rotation around the X axis and will be used to determine if the charging platform is level */
   public double getPitch() {
     return ypr_rot[1];
   }
+
+  public double getPitchRate() {
+    /* Rate of change in pitch. Using this as a D in PID control will give a smoother response. */
+    return xyz_rot[1];
+  }
   
+  /* Use this to get the "Yaw" rather than the getYaw. The getYaw has a lot of drift */
   public double getHeading() {
     s_pidgey.getFusedHeading(fusionStatus);
     return fusionStatus.heading;
   }
 
 
-  
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    s_pidgey.getYawPitchRoll(ypr_rot);
+    s_pidgey.getYawPitchRoll(ypr_rot); // Gyro angle of rotation
+    s_pidgey.getRawGyro(xyz_rot); // Gyro rate of rotation
 
     //Smartdahsboard Stuff
     SmartDashboard.putNumber("Raw Left Drive Encoder", getLeftEncoder());
