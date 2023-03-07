@@ -35,12 +35,12 @@ public final class Constants {
      *                  | Z -> (+ Angle)
      */
     // Emergency Stow Position
-    public static final double kPickupBoom = 90; // [Degrees]
-    public static final double kPickupColm = 0; // [Inches]
+    public static final double kStowBoom = 90; // [Degrees]
+    public static final double kStowColm = 0; // [Inches]
     
     // Pickup Position (From SUBSTATION)
-    public static final double kPickupBoom = 80; // [Degrees]
-    public static final double kPickupColm = 3; // [Inches]
+    public static final double kSubstBoom = 80; // [Degrees]
+    public static final double kSubstColm = 3; // [Inches]
     
     // Pickup Position (From FLOOR)
     public static final double kPickupBoom = 40; // [Degrees]

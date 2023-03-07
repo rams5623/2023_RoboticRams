@@ -154,7 +154,7 @@ public class RobotContainer {
       //Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
 
       // Clamp motor clamp
-      new JoystickButton(s_Jop, Button.kY.value).onTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
+      new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
       //Jop_7.onTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp)); // onTrue does not perform the End portion of this command
 
       // Clamp motor unclamp

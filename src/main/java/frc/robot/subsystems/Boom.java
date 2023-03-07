@@ -45,18 +45,18 @@ public class Boom extends SubsystemBase {
     m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);
     m_talonBoom.config_kD(boomConst.kSlotidx, boomConst.kD);
 
-    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom * kBoomCountPerDegree); // [counts] = [degree] * [counts/degree]
+    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom * posConst.kBoomCountPerDegree); // [counts] = [degree] * [counts/degree]
     m_talonBoom.configForwardSoftLimitEnable(true);
   }
 
   
-  public void gotoPosition(double position) {
+  public void gotoPosition(double angle) {
     // if (getSwitch()) {
     //   stop()
     // } else {
-    //   m_talonBoom.set(ControlMode.Position, position);
+    //   m_talonBoom.set(ControlMode.Position, angle);
     // }
-    m_talonBoom.set(ControlMode.Position, position);
+    m_talonBoom.set(ControlMode.Position, angle*posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
   }
 
   public void move(Double speed) {
@@ -87,11 +87,11 @@ public class Boom extends SubsystemBase {
   }
 
   public void resetEncoder() {
-    m_talonBoom.setSelectedSensorPosition(kMinBoom * kBoomCountPerDegree); // [counts] = [degrees] * [counts/degree]
+    m_talonBoom.setSelectedSensorPosition(posConst.kMinBoom * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts/degree]
   }
 
   public double getPosition() {
-    return (m_talonBoom.getSelectedSensorPosition() / kBoomCountPerDegree); // [degrees] = [counts] / [counts/degree]
+    return (m_talonBoom.getSelectedSensorPosition() / posConst.kBoomCountPerDegree); // [degrees] = [counts] / [counts/degree]
   }
 
   public boolean getSwitch() {
