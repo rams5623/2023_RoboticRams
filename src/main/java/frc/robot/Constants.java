@@ -118,6 +118,7 @@ public final class Constants {
     public static final double kD = 0.0; // Derivative Constant (Smoothness of change in command)
     public static final int kEncoderCPR = 4096; // [Pulses/Revolution of Encoder] Constant with quadrature encoders
     public static final double kGearRatio = 1 / 200; // Gear Ratio from Encoder to positional movment of mechanism
+    public static final boolean kSensorPhase = true;
     
     public static final double kFloorAngle = 10; // COMMENT THIS OUT
     public static final double kMaxAngle = 150; //COMMENT THIS OUT
