@@ -1,9 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
-package frc.robot;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -12,107 +6,155 @@ package frc.robot;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
+
+package frc.robot;
+
 public final class Constants {
+  
+  /** CONSTANTS FOR USE IN ROBOT CONTAINER **/
   public static class controllerConst {
+    // Controller USB Constants
+    public static final int kDriveJoystickUSB = 0; // Driver Joystick is currently programmed to be flight stick in USB Slot 0 (In Driverstation Menu)
+    public static final int kOpJoystickUSB = 1; // Operator Joystick is currently programmed to be Xbox Controler in USB Slot 1 (In Driverstation Menu)
     // Deadband for controller axis inputs
-    public static final double kDriveAxisZDeadband = 0.08;
-    public static final double kDriveAxisYDeadband = 0.10;
-    public static final double kOpAxisLeftYDeadband = 0.10;
-    public static final double kOpAxisRightYDeadband = 0.10;
+    public static final double kDriveAxisZDeadband = 0.08; // Driver Stick Twist Deadband
+    public static final double kDriveAxisYDeadband = 0.10; // Driver Stick Forward/Backward Deadband
+    public static final double kOpAxisLeftYDeadband = 0.10; // Op Xbox Left Stick Forward/Backward Deadband
+    public static final double kOpAxisRightYDeadband = 0.10; // Op Xbox Right Stick Forward/Backward Deadband
   }
-
-  /*
-   * Constants used for various positions of the boom and column
-   */
+  
+  /** CONSTANTS FOR USE IN POSITIONING BOOM/COLUMN FOR GRID HEIGHTS **/
   public static class posConst {
-    // Pickup Position
-    public static final int kPickupBoom = 0;
-    public static final int kPickupColm = 1000; // Need actual value
+    /* Angles are derived from the negative Z-axis in a CCW sweep.
+     *                      ||----\
+     *    Robot \/          ||     \
+     *          ================    \
+                |    X  O      |     \
+     *    ----- ================      \==    <- Boom Arm
+     *    Y             |
+     *                  | Z -> (+ Angle)
+     */
+    // Emergency Stow Position
+    public static final double kPickupBoom = 90; // [Degrees]
+    public static final double kPickupColm = 0; // [Inches]
+    
+    // Pickup Position (From SUBSTATION)
+    public static final double kPickupBoom = 80; // [Degrees]
+    public static final double kPickupColm = 3; // [Inches]
+    
+    // Pickup Position (From FLOOR)
+    public static final double kPickupBoom = 40; // [Degrees]
+    public static final double kPickupColm = 2; // [Inches]
 
-    // Middle Poll Position
-    public static final int kMidBoom = 1500;
-    public static final int kMidColm = 400; // Need actual value
+    // Middle GRID Position
+    public static final double kMidBoom = 75; // [Degrees]
+    public static final double kMidColm = 6; // [Inches]
 
-    // Top Poll Position
-    public static final int kTopBoom = 3800;
-    public static final int kTopColm = 500; // Need actual value
+    // Top GRID Position
+    public static final double kTopBoom = 140; // [Degrees]
+    public static final double kTopColm = 11.5; // [Inches]
 
-    // Floor Position
-    public static final int kBotBoom = 100;
+    // Floor GRID Position
+    public static final double kBotBoom = 50; // [Degrees]
+    public static final double kBotColm = 0; // [Inches]
 
-    // MAX BOOM HEIGHT AT FULL COLUMN FORWARD
-    public static final int kMaxBoom = 4300;
+    // MAX BOOM AND COLUMN POSITIONS
+    public static final double kMaxBoom = 160; // [degrees] From floor to max robot height 4'8"
+    public static final double kMaxColm = 11.5; // [Inches] Max Forward Position
+    
+    // MIN BOOM AND COLUMN POSITION
+    public static final double kMinBoom = 30; // [degrees] At floor
+    public static final double kMinColm = 0; // [Inches] Max Reverse Position
+    
+    // Column Inch Position Conversion Constant
+    public static final double kMaxColmLength = 11.5625; // [Inches] Full travel from rev switch to fwd switch
+    public static final int kMaxColmEncCount = 9000; // [Pulses] Full travel from rev switch to fwd switch
+    public static final double kColmCountPerInch = kMaxColmEncCount / kMaxColmLength; // [Pulse/Inch] Conversion constant to go between encoder counts and inches
+    
+    // Boom Angle Position Conversion Constant
+    public static final double kBoomCalAngle = 90.0; // [Degrees] Arbitrary angle to calibrate the boom arm to
+    public static final int kBoomCalCount = 2400; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
+    public static final double kBoomCountPerDegree = kBoomCalCount / kBoomCalAngle; // [Pulse/Degree] Conversion constant to go between encoder counts and degrees
   }
 
-
+  /** CONSTANTS FOR USE IN THE COLUMN SUBSYSTEM **/
   public static class columnConst {
     // Talon CAN ID
     public static final int ktalon_column = 15;
-    // Talon SRX command deadband zone
-    public static final double kDeadbandColumn = 0.10;
+    // Talon SRX command deadband zone (Different then joystick deadband zone)
+    public static final double kDeadbandColumn = 0.05;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
-    // Position Math
-    public static final int kEncoderCPR = 4096;
-    public static final double kTravelDist = 11.5625; // Full travel from rev switch to fwd switch
-    public static final int kTravelCount = 100;
-    public static final double kEncDistancePerPulse = 0.0;
+    public static final double kF = 0.0; // Open Loop (???)
+    public static final double kP = 2.0; // Proportional Constant (oomph to apply to difference in setpoint and actual position)
+    public static final double kI = 0.0; // Integral Constant (Accumulation of error from setpoint)
+    public static final double kD = 0.0; // Derivative Constant (Smoothness of change in command)
+    public static final int kEncoderCPR = 4096; // [Pulses/Revolution of Encoder] Constant with quadrature encoders
 
     // motor speed limiters (MOSTLY USED IN AUTO TO UNFOLD)
-    public static final double SPEED_FORWARD = 0.5;
-    public static final double SPEED_BACKWARD = 0.5;
+    public static final double SPEED_FORWARD = 0.5; // [Percent]
+    public static final double SPEED_BACKWARD = 0.5; // [Percent]
 
     // Column rear limit switch for reseting encoder
     public static final int kswitchRev_column = 0;
     public static final int kswitchFwd_column = 1;
   }
 
+  /** CONSTANTS FOR USE IN THE BOOM SUBSYSTEM **/
   public static class boomConst {
     // Talon CAN ID
     public static final int ktalon_boom = 16;
-    // Talon SRX command deadband zone
-    public static final double kDeadbandBoom = 0.20;
-    // Talon SRX Arbitrarty Feedback for Gravity
-    public static final double karbitraryBoom = -0.08;
+    // Talon SRX command deadband zone (Different then joystick deadband zone)
+    public static final double kDeadbandBoom = 0.05;
+    // Talon SRX Arbitrarty Feedback for Gravity (NEED TO INCLUDE WEIGHT OF CONE)
+    public static final double karbitraryBoom = -0.085;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
-    // Position Math
-    public static final int kEncoderCPR = 4096; //counts per rev
-    public static final double kGearRatio = 1 / 200;
-    public static final double kFloorAngle = 10; //degrees
-    public static final double kMaxAngle = 150; //degrees
-    public static final double kAnglePerCount = 0.0; //counts per angle
+    public static final double kF = 0.0; // Open Loop (???)
+    public static final double kP = 2.0; // Proportional Constant (oomph to apply to difference in setpoint and actual position)
+    public static final double kI = 0.0; // Integral Constant (Accumulation of error from setpoint)
+    public static final double kD = 0.0; // Derivative Constant (Smoothness of change in command)
+    public static final int kEncoderCPR = 4096; // [Pulses/Revolution of Encoder] Constant with quadrature encoders
+    public static final double kGearRatio = 1 / 200; // Gear Ratio from Encoder to positional movment of mechanism
+    
+    public static final double kFloorAngle = 10; // COMMENT THIS OUT
+    public static final double kMaxAngle = 150; //COMMENT THIS OUT
     
     // Speed reducer commands (MOSTLY USED IN AUTO TO UNFOLD)
-    public static final double SPEED_UP = 0.5;
-    public static final double SPEED_DOWN = 0.5;
+    public static final double SPEED_UP = 0.5; // [Percent]
+    public static final double SPEED_DOWN = 0.5; // [Percent]
 
     // Boom rear limit switch for reseting encoder
     public static final int kswitch_boom = 2;
   }
 
+  /** CONSTANTS FOR USE IN THE INTAKE SUBSYSTEM **/
   public static class intakeConst {
     // Talon CAN ID
     public static final int ktalon_intake = 17;
     // Talon SRX command deadband zone
-    public static final double kDeadbandIntake = 0.08;
+    public static final double kDeadbandIntake = 0.05;
     // Speed reducer commands
-    public static final double SPEED_IN = 0.8;
-    public static final double SPEED_OUT = 0.5;
+    public static final double SPEED_IN = 0.75; // [Percent]
+    public static final double SPEED_OUT = 0.55; // [Percent]
   }
 
+  /** CONSTANTS FOR USE IN THE CLAMP SUBSYSTEM **/
   public static class clampConst {
     // Talon CAN ID
     public static final int ktalon_clamp = 18;
     // Talon SRX command deadband zone
-    public static final double kDeadbandClamp = 0.08;
+    public static final double kDeadbandClamp = 0.05;
+    // Clamp Current Setpoint
+    public static final double kCurrentWatch = 5.6; // [Amps]
     // Speed reducer commands
-    public static final double SPEED_CLAMP = 0.7;
-    public static final double SPEED_RELEASE = 0.7;
+    public static final double SPEED_CLAMP = 0.7; // [Percent]
+    public static final double SPEED_RELEASE = 0.7; // [Percent]
   }
 
+  /** CONSTANTS FOR USE IN THE DRIVETRAIN SUBSYSTEM **/
   public static class driveConst {
     // Talon CAN IDs
     public static final int ktalon_FR = 14;
@@ -121,7 +163,6 @@ public final class Constants {
     public static final int ktalon_RL = 11;
     // Pidgey 1.0 CAN ID
     public static final int kpidgey = ktalon_RL; // Not on CAN so this doesnt apply. Only assign an INT ID number when wired directly to CAN
-
     // Talon SRX command deadband zone
     public static final double kDeadbandLeft = 0.15;
     public static final double kDeadbandRight = 0.10;
@@ -144,35 +185,7 @@ public final class Constants {
         // Have Inches but Need Counts - Inches / kEncDistancePerPulse
 
     // Speed reducer commands
-    public static final double SPEED_TURN = 0.65; // Max straight speed percentage (positive constant)
-    public static final double SPEED_STRT = 0.85; // Max straight speed percentage (positive constant)
-  }
-
-
-  public static class a_UnfoldConst {
-    public static final int kAutoUnfoldColumnPos = -500; // Convert to inches with equation in constants
-    public static final double kAutoUnfoldColumnTime = 2.0; // seconds
-    public static final double kAutoUnfoldColumnDelay = 2.0; // seconds
-    public static final int kAutoUnfoldBoomPos = -7000; // Convert to inches with equation in constants
-    public static final double kAutoUnfoldBoomTime = 5; // seconds
-  }
-
-  public static class a_ChargeConst {
-    public static final double kAutoChargeDriveSpeed1 = 0.4; // percent
-    public static final double kAutoChargeDrivePos1 = 8.0; // inches (Move closer to charging pad)
-    public static final double kAutoChargeDriveTime1 = 2.0; // seconds (timeout to keep things moving)
-    public static final double kAutoChargeUnfoldTime = 5.0; // seconds
-    public static final double kAutoChargeUnfoldPos = -7500; // counts
-    public static final double kAutoChargeDrivePos2 = 8.0; // inches (Move onto lowered charging pad)
-    public static final double kAutoChargeDriveTime2 = 1.5; // seconds (timeout to keep things moving)
-    public static final double kAutoChargePitch = 0.0; // desired pitch
-    public static final double kAutoChargePitchPgain = 0.022;
-    public static final double kAutoChargePitchDgain = 0.0005; // Zero is unused. Start with 10X less then P
-    public static final double kAutoChargeYawPgain = 0.07;
-    public static final double kAutoChargeYawDgain = 0.001;
-  }
-
-  public static class a_StrtConst {
-
+    public static final double SPEED_TURN = 0.65; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_STRT = 0.85; // Max straight speed percentage (positive constant)  // [Percent]
   }
 }
