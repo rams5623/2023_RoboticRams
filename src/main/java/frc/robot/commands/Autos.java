@@ -1,6 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
 
@@ -18,19 +15,30 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public final class Autos {
-  /** Example static factory for an autonomous command. */
-
+  /** Example autonomous command.
+   * IF POSSIBLE REMOVE THIS. NEED TO SEE IF IT IS CALLED ANYWHERE ELSE FIRST THAT MAY CAUSE ISSUES
+   */
   public static CommandBase exampleAuto(Intake intake) {
     return Commands.sequence(new InstantCommand(intake::stop, intake));
   }
 
+  
+  /* 
+   * JUST UNFOLDING THE BOOM AND COLUMN
+   * NO DRIVING
+   */
   public static CommandBase unfoldAuto(Boom boom, Column column) {
-    final int kAutoUnfoldColumnPos = -500; // Convert to inches with equation in constants
-    final double kAutoUnfoldColumnTime = 2.0; // seconds
-    final double kAutoUnfoldColumnDelay = 2.0; // seconds
-    final int kAutoUnfoldBoomPos = -7000; // Convert to inches with equation in constants
-    final double kAutoUnfoldBoomTime = 5; // seconds
-
+    final int kAutoUnfoldColumnPos = -500; // [Inches]Convert to inches with equation in constants
+    final double kAutoUnfoldColumnTime = 2.0; // [seconds] Timeout for moving the column to unfold position
+    final double kAutoUnfoldColumnDelay = 2.0; // [seconds] Delay before moving column in order to prevent boom-column interaction
+    final int kAutoUnfoldBoomPos = -7000; // [Inches] Convert to inches with equation in constants
+    final double kAutoUnfoldBoomTime = 5; // [seconds] Timeout for moving the boom to unfold position
+    /* 
+     * 1) Start rotating the boom in the CW direction (down) to unfold from starting position
+     * 2) After a delay (to prevent damage to the boom), move the column to its home position (reverse).
+     * 3a) Stop the column when it reaches the unfold position or when it reaches the column switch (whatever comes first)
+     * 3b) Stop the boom when it reaches the unfold position or when it reaches the boom switch (whatever comes first)
+     */
     return Commands.sequence(
       new ParallelCommandGroup(
         /* Column Movement */
@@ -46,7 +54,6 @@ public final class Autos {
           // Requires the coumn subsystem to run this command
           column
         ).withTimeout(kAutoUnfoldColumnTime).beforeStarting(new WaitCommand(kAutoUnfoldColumnDelay)),
-
         /* Boom Movement */
         new FunctionalCommand(
           // Reset column encoder on command start
@@ -60,10 +67,11 @@ public final class Autos {
           // Requires the coumn subsystem to run this command
           boom
         ).withTimeout(kAutoUnfoldBoomTime)
-      )
-    );
-  }
-
+      ));}
+  
+  /* 
+   * 
+   */
   public static CommandBase driveChargingStation(Drivetrain drive, Boom boom, Column column) {
     final double kAutoChargeDriveSpeed1 = 0.4; // percent
     final double kAutoChargeDrivePos1 = 8.0; // inches (Move closer to charging pad)
