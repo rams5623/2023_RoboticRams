@@ -1,6 +1,12 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/* 
+ *
+ * !!! DO NOT USE THIS COMMAND ANYMORE !!!
+ * 
+ * THE ROBOTCONTAINER WAS UPDATED TO RESTRUCTURE THE ARCADE DRIVE CONTROLS
+ * AND REDUCE THE NUMBER OF FILES THAT ARE USED IN THE ROBOT CODE. THIS 
+ * WILL BE REMOVED IN THE WEEK 2 COMPETITION BRANCH.
+ * 
+ */
 
 package frc.robot.commands;
 
