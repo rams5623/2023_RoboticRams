@@ -1,6 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
 
@@ -30,7 +27,7 @@ public class Boom extends SubsystemBase {
     m_talonBoom.setNeutralMode(NeutralMode.Brake);
     m_talonBoom.configNeutralDeadband(boomConst.kDeadbandBoom);
     m_talonBoom.configOpenloopRamp(0.2);
-    m_talonBoom.configClosedloopRamp(0.2);
+    m_talonBoom.configClosedloopRamp(0.3);
     m_talonBoom.configNominalOutputForward(0.0);
     m_talonBoom.configNominalOutputReverse(0.0);
     m_talonBoom.configPeakOutputForward(0.75);
@@ -38,47 +35,63 @@ public class Boom extends SubsystemBase {
 
     // Encoder Stuff
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-    m_talonBoom.setSensorPhase(true);
+    m_talonBoom.setSensorPhase(boomConst.kSensorPhase);
     m_talonBoom.setSelectedSensorPosition(0.0);
     
     // PID for talon controller position
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
-    m_talonBoom.config_kF(boomConst.kSlotidx, 0.0);
-    m_talonBoom.config_kP(boomConst.kSlotidx, 2.0);
-    m_talonBoom.config_kI(boomConst.kSlotidx, 0.0);
-    m_talonBoom.config_kD(boomConst.kSlotidx, 0.0);
+    m_talonBoom.config_kF(boomConst.kSlotidx, boomConst.kF);
+    m_talonBoom.config_kP(boomConst.kSlotidx, boomConst.kP);
+    m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);
+    m_talonBoom.config_kD(boomConst.kSlotidx, boomConst.kD);
 
-    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom); // Should prevent it from going to high???
+    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom * kBoomCountPerDegree); // [counts] = [degree] * [counts/degree]
     m_talonBoom.configForwardSoftLimitEnable(true);
   }
 
+  
   public void gotoPosition(double position) {
+    // if (getSwitch()) {
+    //   stop()
+    // } else {
+    //   m_talonBoom.set(ControlMode.Position, position);
+    // }
     m_talonBoom.set(ControlMode.Position, position);
   }
 
   public void move(Double speed) {
-    //m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, .05);
+    // if (getSwitch() && (speed < 0.0)) {
+    //   stop()
+    // } else {
+    //   m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
+    // }
     m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
   }
   
   public void up() {
-    m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_UP);
+    m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_UP);  
   }
 
   public void down() {
+    // if (getSwitch()) {
+    //   stop()
+    // } else {
+    //   m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN);
+    // }
     m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN);
   }
 
   public void stop() {
+    // Stop the motor input
     m_talonBoom.set(ControlMode.PercentOutput, 0);
   }
 
   public void resetEncoder() {
-    m_talonBoom.setSelectedSensorPosition(0);
+    m_talonBoom.setSelectedSensorPosition(kMinBoom * kBoomCountPerDegree); // [counts] = [degrees] * [counts/degree]
   }
 
   public double getPosition() {
-    return m_talonBoom.getSelectedSensorPosition();
+    return (m_talonBoom.getSelectedSensorPosition() / kBoomCountPerDegree); // [degrees] = [counts] / [counts/degree]
   }
 
   public boolean getSwitch() {
