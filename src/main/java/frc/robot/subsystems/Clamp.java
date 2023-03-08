@@ -29,7 +29,7 @@ public class Clamp extends SubsystemBase {
     m_talonClamp.configPeakCurrentLimit(7);
     m_talonClamp.configPeakCurrentDuration(500);
     m_talonClamp.configContinuousCurrentLimit(6);
-    m_talonClamp.enableCurrentLimit(true);
+    m_talonClamp.enableCurrentLimit(false);
 
     // ADD CURRENT CLOSED LOOP CONTROL HERE
     // PID for talon controller position

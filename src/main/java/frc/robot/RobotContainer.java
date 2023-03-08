@@ -158,28 +158,28 @@ public class RobotContainer {
       //Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
 
       // Clamp motor clamp and hold part
-      new JoystickButton(s_Jop, Button.kY.value).onTrue(
-        new FunctionalCommand(
-          null, // On Init
-          () -> m_clamp.clamp(), // On Execute
-          interrupted -> m_clamp.hold(), // On End
-          () -> (m_clamp.getMotorCurrent() >= 6.0), // Is Finished?
-          m_clamp // Require
-        )
-      );
-      //new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp)); // Use this line if the one above doesnt work
+      // new JoystickButton(s_Jop, Button.kY.value).onTrue(
+      //   new FunctionalCommand(
+      //     null, // On Init
+      //     () -> m_clamp.clamp(), // On Execute
+      //     interrupted -> m_clamp.hold(), // On End
+      //     () -> (m_clamp.getMotorCurrent() >= 6.0), // Is Finished?
+      //     m_clamp // Require
+      //   )
+      // );
+      new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp)); // Use this line if the one above doesnt work
 
       // Clamp motor unclamp
-      new JoystickButton(s_Jop, Button.kX.value).onTrue(
-        new FunctionalCommand(
-          null,
-          () -> m_clamp.unclamp(),
-          interrupted -> m_clamp.stop(),
-          () -> (m_clamp.getMotorCurrent() >= 6.0),
-          m_clamp
-        )
-      );
-      //new JoystickButton(s_Jop, Button.kX.value).whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp)); // Use this line if the one above doesnt work
+      // new JoystickButton(s_Jop, Button.kX.value).onTrue(
+      //   new FunctionalCommand(
+      //     null,
+      //     () -> m_clamp.unclamp(),
+      //     interrupted -> m_clamp.stop(),
+      //     () -> (m_clamp.getMotorCurrent() >= 6.0),
+      //     m_clamp
+      //   )
+      // );
+      new JoystickButton(s_Jop, Button.kX.value).whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp)); // Use this line if the one above doesnt work
 
       // Reset encoders to zero on the boom and column
       new JoystickButton(s_Jop, Button.kBack.value).whileTrue(new ParallelCommandGroup(
@@ -187,9 +187,9 @@ public class RobotContainer {
         new InstantCommand(m_column::resetEncoder, m_column)
       ));
 
-      new POVButton(s_Jop, 90).onTrue(new BoomPosition((double) posConst.kMidBoom, m_boom));
-      new POVButton(s_Jop, 0).onTrue(new BoomPosition((double) posConst.kTopBoom, m_boom));
-      new POVButton(s_Jop, 180).onTrue(new BoomPosition((double) posConst.kBotBoom, m_boom));
+      //new POVButton(s_Jop, 90).onTrue(new BoomPosition((double) posConst.kMidBoom, m_boom));
+      //new POVButton(s_Jop, 0).onTrue(new BoomPosition((double) posConst.kTopBoom, m_boom));
+      //new POVButton(s_Jop, 180).onTrue(new BoomPosition((double) posConst.kBotBoom, m_boom));
     }
   }
 
