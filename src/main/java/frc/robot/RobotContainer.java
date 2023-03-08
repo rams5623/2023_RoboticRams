@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -126,7 +127,6 @@ public class RobotContainer {
     if (s_Jdriver.isConnected()) {
       /* Create all button objects */
       /* Use the button objects for driver controller */
-      // Enable charging station drive up with braking
       
       // Enable slow mode for driving to provide finer driving movments
       //Jdriver_2.onTrue(new ArcadeDrive(() -> s_Jdriver.getY() * 0.8, () -> s_Jdriver.getZ() * 0.6, m_drivetrain));
@@ -135,7 +135,11 @@ public class RobotContainer {
           () -> s_Jdriver.getY() * 0.5 * driveConst.SPEED_STRT,
           () -> s_Jdriver.getZ() * 0.5 * driveConst.SPEED_TURN,
           m_drivetrain
-        ));
+        )
+      );
+
+      // Manually toggle between braking and coasting the drive train
+      new JoystickButton(s_Jdriver, 7).toggleOnTrue(new StartEndCommand(m_drivetrain::setDriveBrake, m_drivetrain::setDriveCoast, m_drivetrain));
     }
 
     /*
@@ -153,13 +157,29 @@ public class RobotContainer {
       new JoystickButton(s_Jop, Button.kB.value).whileTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
       //Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
 
-      // Clamp motor clamp
-      new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
-      //Jop_7.onTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp)); // onTrue does not perform the End portion of this command
+      // Clamp motor clamp and hold part
+      new JoystickButton(s_Jop, Button.kY.value).onTrue(
+        new FunctionalCommand(
+          null, // On Init
+          () -> m_clamp.clamp(), // On Execute
+          interrupted -> m_clamp.hold(), // On End
+          () -> (m_clamp.getMotorCurrent() >= 6.0), // Is Finished?
+          m_clamp // Require
+        )
+      );
+      //new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp)); // Use this line if the one above doesnt work
 
       // Clamp motor unclamp
-      new JoystickButton(s_Jop, Button.kX.value).whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
-      //Jop_8.onTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp)); // onTrue does not perform the End portion of this command
+      new JoystickButton(s_Jop, Button.kX.value).onTrue(
+        new FunctionalCommand(
+          null,
+          () -> m_clamp.unclamp(),
+          interrupted -> m_clamp.stop(),
+          () -> (m_clamp.getMotorCurrent() >= 6.0),
+          m_clamp
+        )
+      );
+      //new JoystickButton(s_Jop, Button.kX.value).whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp)); // Use this line if the one above doesnt work
 
       // Reset encoders to zero on the boom and column
       new JoystickButton(s_Jop, Button.kBack.value).whileTrue(new ParallelCommandGroup(

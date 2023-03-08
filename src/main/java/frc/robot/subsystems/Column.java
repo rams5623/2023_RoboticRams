@@ -39,6 +39,7 @@ public class Column extends SubsystemBase {
     m_talonColumn.configPeakOutputForward(0.9);
     m_talonColumn.configPeakOutputReverse(-0.9);
     m_talonColumn.selectProfileSlot(columnConst.kSlotidx, columnConst.kPIDidx);
+    m_talonColumn.configAllowableClosedloopError(columnConst.kSlotidx, 0.0);
     m_talonColumn.config_kF(columnConst.kSlotidx, 0.0);
     m_talonColumn.config_kP(columnConst.kSlotidx, 0.0);
     m_talonColumn.config_kI(columnConst.kSlotidx, 0.0);

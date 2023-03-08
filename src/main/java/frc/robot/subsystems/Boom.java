@@ -40,6 +40,7 @@ public class Boom extends SubsystemBase {
     
     // PID for talon controller position
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
+    m_talonBoom.configAllowableClosedloopError(boomConst.kSlotidx, 0.0);
     m_talonBoom.config_kF(boomConst.kSlotidx, boomConst.kF);
     m_talonBoom.config_kP(boomConst.kSlotidx, boomConst.kP);
     m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);

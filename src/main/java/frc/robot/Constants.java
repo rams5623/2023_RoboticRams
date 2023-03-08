@@ -148,7 +148,15 @@ public final class Constants {
     public static final int ktalon_clamp = 18;
     // Talon SRX command deadband zone
     public static final double kDeadbandClamp = 0.05;
+    // Encoder PID Stuff
+    public static final int kSlotidx = 0;
+    public static final int kPIDidx = 0;
+    public static final double kF = 0.0; // Open Loop (???)
+    public static final double kP = 0.1; // Proportional Constant (oomph to apply to difference in setpoint and actual position)
+    public static final double kI = 0.001; // Integral Constant (Accumulation of error from setpoint)
+    public static final double kD = 0.0; // Derivative Constant (Smoothness of change in command)
     // Clamp Current Setpoint
+    public static final double kCurrentClamp = 3.0; // [Amps]
     public static final double kCurrentWatch = 5.6; // [Amps]
     // Speed reducer commands
     public static final double SPEED_CLAMP = 0.7; // [Percent]
