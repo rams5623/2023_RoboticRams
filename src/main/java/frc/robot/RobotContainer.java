@@ -109,17 +109,28 @@ public class RobotContainer {
     // Configure button bindings for controllers and such
     configureBindings();
   }
-
-
+  
+  
+  
   /**
    * Use this method to define your trigger->command mappings.
    */
   private void configureBindings() {
+    /* 
+     * onTrue vs. whileTrue
+     * 
+     * onTrue should be used when only a single press is needed to start a command that will continue on its own.
+     * 
+     * whileTrue should be used for commands that need to start when a button is pressed, continue while it is being held down, and stop when the button is released
+     */
+    
+    /* Creates a trigger in response to the limit switch activation for zeroing encoders */
     Trigger columnResetTrigger = new Trigger(m_column::getRevSwitch);
     columnResetTrigger.whileTrue(new InstantCommand(m_column::resetEncoder, m_column));
 
     Trigger boomResetTrigger = new Trigger(m_boom::getSwitch);
     boomResetTrigger.whileTrue(new InstantCommand(m_boom::resetEncoder, m_boom));
+    
     /*
      * If the driver joystick (USB 0) is connected then run this section, otherwise move on.
      * This prevents the buttons from being created on joystick that isnt present and causing a list of errors to appear on connection to the rio.
