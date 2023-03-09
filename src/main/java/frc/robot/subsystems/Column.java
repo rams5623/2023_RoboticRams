@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.columnConst;
+import frc.robot.Constants.posConst;
 
 public class Column extends SubsystemBase {
   /** Creates the objects that will reside only inthe Column Subsystem */
@@ -61,7 +62,7 @@ public class Column extends SubsystemBase {
     //   stop();
     // } else {
     //   m_talonColumn.set(ControlMode.Position, position);
-    // }
+    // };
     m_talonColumn.set(ControlMode.Position, position * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
   }
 
