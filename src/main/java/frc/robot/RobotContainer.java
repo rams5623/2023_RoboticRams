@@ -62,9 +62,23 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    **/
   public RobotContainer() {
-    // Smartdashboard subsystem data
-    m_chooser.setDefaultOption("Simple Drive Straight", Autos.driveStraightAuto(m_drivetrain, m_boom));
-    //m_chooser.addOption("Charging Pad Auto", Autos.chargingPadAuto(m_drivetrain));
+    // Create and place auto selector on the SmartDashboard
+    m_chooser.setDefaultOption("Drive Straight", Autos.driveStraightAuto(m_drivetrain, m_boom)); // 
+    m_chooser.addOption("Drive Onto Charging Station", Autos.driveChargingStation(m_drivetrain, m_boom, m_column)); // 
+    m_chooser.addOption("Just Unfold/No Drive", Autos.unfoldAuto(m_boom, m_column)); // Just unfolds the boom and column and doesnt drive at all. More of a concept auto to gather the correct parameters before incorporating driving
+    //m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
+    //m_chooser.addOption("Cube Middle", Autos.cubeMidAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
+    //m_chooser.addOption("Cube Top", Autos.cubeTopAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
+    //m_chooser.addOption("Cube Floor & Pad", Autos.cubeFloorPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
+    //m_chooser.addOption("Cube Middle & Pad", Autos.cubeMidPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
+    SmartDashboard.putData(m_chooser); // Place the Auto selector on the dashboard with all the options
+    
+    // Put all the subsystems on the dashboard
+    SmartDashboard.putData(m_drivetrain);
+    SmartDashboard.putData(m_boom);
+    SmartDashboard.putData(m_column);
+    SmartDashboard.putData(m_intake);
+    SmartDashboard.putData(m_clamp);
     
     /*
      * New way to run default arcade drive that has not been tested out yet. Try this and if it doesnt work as
@@ -197,7 +211,13 @@ public class RobotContainer {
         new InstantCommand(m_boom::resetEncoder,m_boom),
         new InstantCommand(m_column::resetEncoder, m_column)
       ));
-
+      
+      // Allow for Operator to Bypass Column and Boom Limit Switches
+      // new JoystickButton(s_Jop, Button.kStart.value).whileTrue(new ParallelCommandGroup(
+      //   new MoveColumn(() -> getOpRightStickY(), true, m_column),
+      //   new MoveBoom(() -> getOpLeftStickY(), true, m_boom)
+      // ));
+      
       //new POVButton(s_Jop, 90).onTrue(new BoomPosition((double) posConst.kMidBoom, m_boom));
       //new POVButton(s_Jop, 0).onTrue(new BoomPosition((double) posConst.kTopBoom, m_boom));
       //new POVButton(s_Jop, 180).onTrue(new BoomPosition((double) posConst.kBotBoom, m_boom));
@@ -262,24 +282,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     // Various auto modes will go into the Autos file similar to how constants all go in the constants file
-    return Autos.exampleAuto(m_intake);
+    // return Autos.exampleAuto(m_intake);
+    return m_chooser.getSelected();
   }
 }
-
-
-/***
- * EXAMPLE STUFF:
- * 
- *  // Schedule `ExampleCommand` when `exampleCondition` changes to `true` THIS WOULD BE GOOD FOR RESETING THE ENCODERS WITH THE LIMIT SWITCHES
- *  //new Trigger(m_exampleSubsystem::exampleCondition)
- *  //    .onTrue(new ExampleCommand(m_exampleSubsystem));
- *
- *  // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
- *  // cancelling on release.
- *  //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
- * 
- *  Replace with CommandPS4Controller or CommandJoystick if needed
- *   private final CommandXboxController m_driverController =
- *     new CommandXboxController(OperatorConstants.kDriverControllerPort);
- * 
- ***/
