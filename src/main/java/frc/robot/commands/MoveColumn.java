@@ -12,10 +12,12 @@ import frc.robot.subsystems.Column;
 public class MoveColumn extends CommandBase {
   private final Column m_column;
   private final DoubleSupplier m_speed;
+  private final Boolean m_bypass;
 
-  public MoveColumn(DoubleSupplier speed, Column column) {
+  public MoveColumn(DoubleSupplier speed, Boolean bypass, Column column) {
     m_column = column;
     m_speed = speed;
+    m_bypass = bypass;
     addRequirements(m_column);
   }
 
@@ -28,7 +30,7 @@ public class MoveColumn extends CommandBase {
     } else if (m_column.getFwdSwitch() && m_speed.getAsDouble() < -0.1) {
       m_column.stop();
     } else {
-      m_column.move(m_speed.getAsDouble());
+      m_column.move(-m_speed.getAsDouble(),m_bypass);
     }
   }
 

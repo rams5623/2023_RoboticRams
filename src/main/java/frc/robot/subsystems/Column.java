@@ -26,21 +26,21 @@ public class Column extends SubsystemBase {
     m_talonColumn.configFactoryDefault();
 
     // Motor controller settings
-    m_talonColumn.setInverted(true); // Positive command to the motor controller should be a positive direction (green lights blinking)
+    m_talonColumn.setInverted(false); // Positive command to the motor controller should be a positive direction (green lights blinking)
     m_talonColumn.setNeutralMode(NeutralMode.Brake); // Brake mode to prevent the column from coasting in either direction under load from the boom
     m_talonColumn.configNeutralDeadband(columnConst.kDeadbandColumn);
     m_talonColumn.configNominalOutputForward(0.0);
     m_talonColumn.configNominalOutputReverse(0.0);
-    m_talonColumn.configOpenloopRamp(0.2); // Smoothes out motor commands during normal operation
+    m_talonColumn.configOpenloopRamp(0.4); // Smoothes out motor commands during normal operation
     m_talonColumn.configClosedloopRamp(0.2); // Smoothes out motor commands in PID Control Modes
 
     // Limit Max Command given to motor to prevent mechanism damage from going to fast
-    m_talonColumn.configPeakOutputForward(0.70);
-    m_talonColumn.configPeakOutputReverse(-0.70);
+    m_talonColumn.configPeakOutputForward(0.60);
+    m_talonColumn.configPeakOutputReverse(-0.60);
     
     // Encoder Stuff
     m_talonColumn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-    m_talonColumn.setSensorPhase(false); // Add as constant (columnConst.kSensorPhase);
+    m_talonColumn.setSensorPhase(true); // Add as constant (columnConst.kSensorPhase);
     m_talonColumn.selectProfileSlot(columnConst.kSlotidx, columnConst.kPIDidx);
     m_talonColumn.configAllowableClosedloopError(columnConst.kSlotidx, 0.0);
     m_talonColumn.config_kF(columnConst.kSlotidx, columnConst.kF);
@@ -72,16 +72,16 @@ public class Column extends SubsystemBase {
    * but the column arm must be moved forward or reverse more. This is the function used for operator
    * control of the arm so the they shold have the option to bypass the limits if necessary.
    */
-  public void move(Double speed) {
-    m_talonColumn.set(ControlMode.PercentOutput, speed); 
-  }
-  // public void move(Double speed, Boolean bypassSwitch) {
-  //   if (((getFwdSwitch() && (speed > 0.0)) || (getRevSwitch() && (speed < 0.0))) && !bypassSwitch) {
-  //     stop();
-  //   } else {
-  //     m_talonColumn.set(ControlMode.PercentOutput, speed); 
-  //   }
+  // public void move(Double speed) {
+  //   m_talonColumn.set(ControlMode.PercentOutput, speed); 
   // }
+  public void move(Double speed, Boolean bypassSwitch) {
+    if (((getFwdSwitch() && (speed > 0.0)) || (getRevSwitch() && (speed < 0.0))) && !bypassSwitch) {
+      stop();
+    } else {
+      m_talonColumn.set(ControlMode.PercentOutput, speed); 
+    }
+  }
   
   /*
    * Move Column in a Forward Direction at a Constant Speed

@@ -35,7 +35,7 @@ public final class Constants {
      *                  | Z -> (+ Angle)
      */
     // Emergency Stow Position
-    public static final double kStowBoom = 90; // [Degrees]
+    public static final double kStowBoom = 80; // [Degrees]
     public static final double kStowColm = 0; // [Inches]
     
     // Pickup Position (From SUBSTATION)
@@ -43,19 +43,19 @@ public final class Constants {
     public static final double kSubstColm = 3; // [Inches]
     
     // Pickup Position (From FLOOR)
-    public static final double kPickupBoom = 40; // [Degrees]
-    public static final double kPickupColm = 2; // [Inches]
+    public static final double kPickupBoom = 30; // [Degrees]
+    public static final double kPickupColm = 0; // [Inches]
 
     // Middle GRID Position
-    public static final double kMidBoom = 75; // [Degrees]
-    public static final double kMidColm = 6; // [Inches]
+    public static final double kMidBoom = 87; // [Degrees]
+    public static final double kMidColm = 2.24; // [Inches]
 
     // Top GRID Position
-    public static final double kTopBoom = 140; // [Degrees]
-    public static final double kTopColm = 11.5; // [Inches]
+    public static final double kTopBoom = 145; // [Degrees]
+    public static final double kTopColm = 11.1; // [Inches]
 
     // Floor GRID Position
-    public static final double kBotBoom = 50; // [Degrees]
+    public static final double kBotBoom = 30; // [Degrees]
     public static final double kBotColm = 0; // [Inches]
 
     // MAX BOOM AND COLUMN POSITIONS
@@ -63,17 +63,17 @@ public final class Constants {
     public static final double kMaxColm = 11.5; // [Inches] Max Forward Position
     
     // MIN BOOM AND COLUMN POSITION
-    public static final double kMinBoom = 30; // [degrees] At floor
+    public static final double kMinBoom = 22.5; // [degrees] At floor
     public static final double kMinColm = 0; // [Inches] Max Reverse Position
     
     // Column Inch Position Conversion Constant
     public static final double kMaxColmLength = 11.5625; // [Inches] Full travel from rev switch to fwd switch
-    public static final int kMaxColmEncCount = 9000; // [Pulses] Full travel from rev switch to fwd switch
+    public static final int kMaxColmEncCount = 10640; // [Pulses] Full travel from rev switch to fwd switch
     public static final double kColmCountPerInch = kMaxColmEncCount / kMaxColmLength; // [Pulse/Inch] Conversion constant to go between encoder counts and inches
     
     // Boom Angle Position Conversion Constant
-    public static final double kBoomCalAngle = 90.0; // [Degrees] Arbitrary angle to calibrate the boom arm to
-    public static final int kBoomCalCount = 2400; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
+    public static final double kBoomCalAngle = 60.0; // [Degrees] Arbitrary angle to calibrate the boom arm to
+    public static final int kBoomCalCount = -1724; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
     public static final double kBoomCountPerDegree = kBoomCalCount / kBoomCalAngle; // [Pulse/Degree] Conversion constant to go between encoder counts and degrees
   }
 
@@ -147,7 +147,7 @@ public final class Constants {
     // Talon CAN ID
     public static final int ktalon_clamp = 18;
     // Talon SRX command deadband zone
-    public static final double kDeadbandClamp = 0.05;
+    public static final double kDeadbandClamp = 0.04;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
@@ -174,7 +174,7 @@ public final class Constants {
     public static final int kpidgey = ktalon_RL; // Not on CAN so this doesnt apply. Only assign an INT ID number when wired directly to CAN
     // Talon SRX command deadband zone
     public static final double kDeadbandLeft = 0.15;
-    public static final double kDeadbandRight = 0.10;
+    public static final double kDeadbandRight = 0.08;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
@@ -194,7 +194,7 @@ public final class Constants {
         // Have Inches but Need Counts - Inches / kEncDistancePerPulse
 
     // Speed reducer commands
-    public static final double SPEED_TURN = 0.65; // Max straight speed percentage (positive constant)  // [Percent]
-    public static final double SPEED_STRT = 0.85; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_TURN = 0.50; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_STRT = 0.60; // Max straight speed percentage (positive constant)  // [Percent]
   }
 }

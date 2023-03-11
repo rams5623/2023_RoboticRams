@@ -166,11 +166,11 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public double getLeftEncoder() {
-    return m_talonFL.getSelectedSensorPosition();
+    return m_talonFL.getSelectedSensorPosition() * driveConst.kEncDistancePerPulse;
   }
 
   public double getRightEncoder() {
-    return m_talonFR.getSelectedSensorPosition();
+    return m_talonFR.getSelectedSensorPosition() * driveConst.kEncDistancePerPulse;
   }
 
   public double getAvgEncoder() {

@@ -28,12 +28,12 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configNeutralDeadband(boomConst.kDeadbandBoom);
     m_talonBoom.configNominalOutputForward(0.0);
     m_talonBoom.configNominalOutputReverse(0.0);
-    m_talonBoom.configOpenloopRamp(0.2); // Smoothes out motor commands during normal operation
+    m_talonBoom.configOpenloopRamp(0.45); // Smoothes out motor commands during normal operation
     m_talonBoom.configClosedloopRamp(0.3); // Smoothes out motor commands in PID Control Modes
 
     // Limit Max Command given to motor to prevent mechanism damage from going to fast
-    m_talonBoom.configPeakOutputForward(0.75); // Max Forward Command Allowed
-    m_talonBoom.configPeakOutputReverse(-0.75); // Max Reverse Command Allowed
+    m_talonBoom.configPeakOutputForward(0.55); // Max Forward Command Allowed
+    m_talonBoom.configPeakOutputReverse(-0.55); // Max Reverse Command Allowed
 
     // Encoder Stuff
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
@@ -50,7 +50,7 @@ public class Boom extends SubsystemBase {
 
     // SoftLimit on Max Boom Height to prevent over extending
     m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom * posConst.kBoomCountPerDegree); // [counts] = [degree] * [counts/degree]
-    m_talonBoom.configForwardSoftLimitEnable(true);
+    m_talonBoom.configForwardSoftLimitEnable(false);
   }
 
   /*
@@ -80,16 +80,16 @@ public class Boom extends SubsystemBase {
    * the boom arm must be lowered more. This is the function used fro operator control of the
    * arm so the they shold have the option to bypass the limits if necessary.
    */
-  public void move(Double speed) {
-    m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom); // Remove this line after testing the above section
-  }
-  /*public void move(Double speed, Boolean bypassSwitch) {
-    if ((getSwitch() && (speed < 0.0)) && !bypassSwitch) {
-       stop()
+  // public void move(Double speed) {
+  //   m_talonBoom.set(ControlMode.PercentOutput, 0.5*speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom); // Remove this line after testing the above section
+  // }
+  public void move(Double speed, Boolean bypassSwitch) {
+    if ((getSwitch() && (speed > 0.0)) && !bypassSwitch) {
+       stop();
     } else {
        m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
     }
-  }*/
+  }
   
   /*
    * Move Boom Arm in an Upwards Direction at a Constant Speed
@@ -105,12 +105,12 @@ public class Boom extends SubsystemBase {
    * and pressing on the floor too much with the intake.
    */
   public void down() {
-    // if (getSwitch()) {
-    //   stop()
-    // } else {
-    //   m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN);
-    // }
-    m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN); // Remove this line after testing the above section
+    if (getSwitch()) {
+      stop();
+    } else {
+      m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN);
+    }
+    //m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN); // Remove this line after testing the above section
   }
   
   /*

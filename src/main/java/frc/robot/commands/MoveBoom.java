@@ -12,10 +12,12 @@ import frc.robot.subsystems.Boom;
 public class MoveBoom extends CommandBase {
   private final Boom m_boom;
   private final DoubleSupplier m_speed;
+  private final Boolean m_bypass;
   /** Creates a new MoveBoom. */
-  public MoveBoom(DoubleSupplier speed, Boom boom) {
+  public MoveBoom(DoubleSupplier speed, Boolean bypass, Boom boom) {
     m_boom = boom;
     m_speed = speed;
+    m_bypass = bypass;
     addRequirements(m_boom);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -24,9 +26,9 @@ public class MoveBoom extends CommandBase {
   @Override
   public void execute() {
     if (m_speed.getAsDouble() < 0.15 && m_speed.getAsDouble() > -0.15) {
-      m_boom.move(0.0);
+      m_boom.move(0.0, m_bypass);
     } else if (m_speed.getAsDouble() > 0.1 || m_speed.getAsDouble() < -0.05) {
-      m_boom.move(m_speed.getAsDouble());
+      m_boom.move(m_speed.getAsDouble(), m_bypass);
     }
 
     //m_boom.move(m_speed.getAsDouble());

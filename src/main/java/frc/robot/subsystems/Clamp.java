@@ -22,23 +22,23 @@ public class Clamp extends SubsystemBase {
     m_talonClamp.setInverted(false);
     m_talonClamp.setNeutralMode(NeutralMode.Brake);
     m_talonClamp.configNeutralDeadband(clampConst.kDeadbandClamp);
-    m_talonClamp.configOpenloopRamp(0.2);
-    m_talonClamp.configClosedloopRamp(0.2);
+    m_talonClamp.configOpenloopRamp(0.0);
+    m_talonClamp.configClosedloopRamp(0.0);
 
     // Current limiting on the clamp to avoid too much draw
-    m_talonClamp.configPeakCurrentLimit(7);
-    m_talonClamp.configPeakCurrentDuration(500);
-    m_talonClamp.configContinuousCurrentLimit(6);
-    m_talonClamp.enableCurrentLimit(false);
+    //m_talonClamp.configPeakCurrentLimit(7);
+    //m_talonClamp.configPeakCurrentDuration(500);
+    //m_talonClamp.configContinuousCurrentLimit(6);
+    //m_talonClamp.enableCurrentLimit(false);
 
     // ADD CURRENT CLOSED LOOP CONTROL HERE
     // PID for talon controller position
-    m_talonClamp.selectProfileSlot(clampConst.kSlotidx, clampConst.kPIDidx);
-    m_talonClamp.configAllowableClosedloopError(clampConst.kSlotidx, 0.5);
-    m_talonClamp.config_kF(clampConst.kSlotidx, clampConst.kF);
-    m_talonClamp.config_kP(clampConst.kSlotidx, clampConst.kP);
-    m_talonClamp.config_kI(clampConst.kSlotidx, clampConst.kI);
-    m_talonClamp.config_kD(clampConst.kSlotidx, clampConst.kD);
+    // m_talonClamp.selectProfileSlot(clampConst.kSlotidx, clampConst.kPIDidx);
+    // m_talonClamp.configAllowableClosedloopError(clampConst.kSlotidx, 0.5);
+    // m_talonClamp.config_kF(clampConst.kSlotidx, clampConst.kF);
+    // m_talonClamp.config_kP(clampConst.kSlotidx, clampConst.kP);
+    // m_talonClamp.config_kI(clampConst.kSlotidx, clampConst.kI);
+    // m_talonClamp.config_kD(clampConst.kSlotidx, clampConst.kD);
 
     m_talonClamp.configNominalOutputForward(0.0);
     m_talonClamp.configNominalOutputReverse(0.0);
@@ -51,7 +51,7 @@ public class Clamp extends SubsystemBase {
   }
 
   public void hold() {
-    m_talonClamp.set(ControlMode.Current, clampConst.kCurrentClamp);
+    m_talonClamp.set(ControlMode.PercentOutput, -.5);
   }
 
   public void unclamp() {
@@ -59,7 +59,7 @@ public class Clamp extends SubsystemBase {
   }
 
   public void stop() {
-    m_talonClamp.set(ControlMode.PercentOutput, 0);
+    m_talonClamp.set(ControlMode.PercentOutput, 0.0);
   }
 
   public double getMotorCurrent() {
@@ -69,6 +69,6 @@ public class Clamp extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Clamp Current", getMotorCurrent());
+    SmartDashboard.putNumber("Clamp Current", m_talonClamp.getStatorCurrent());
   }
 }
