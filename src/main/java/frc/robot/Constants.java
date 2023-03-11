@@ -63,7 +63,7 @@ public final class Constants {
     public static final double kMaxColm = 11.5; // [Inches] Max Forward Position
     
     // MIN BOOM AND COLUMN POSITION
-    public static final double kMinBoom = 22.5; // [degrees] At floor
+    public static final double kMinBoom = 30; // [degrees] At floor
     public static final double kMinColm = 0; // [Inches] Max Reverse Position
     
     // Column Inch Position Conversion Constant
@@ -194,7 +194,9 @@ public final class Constants {
         // Have Inches but Need Counts - Inches / kEncDistancePerPulse
 
     // Speed reducer commands
-    public static final double SPEED_TURN = 0.50; // Max straight speed percentage (positive constant)  // [Percent]
-    public static final double SPEED_STRT = 0.60; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_TURN = 0.650; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_STRT = 0.750; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_SLOWSTRT = 0.40;
+    public static final double SPEED_SLOWTURN = 0.30;
   }
 }

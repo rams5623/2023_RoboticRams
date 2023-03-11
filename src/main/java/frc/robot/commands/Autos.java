@@ -2,7 +2,6 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Column;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -131,24 +130,7 @@ public final class Autos {
           drive
         ).withTimeout(kAutoChargeDriveTime2),
         /* (4) Drive straight and level off the pad */
-        new FunctionalCommand(
-          // Reset drive encoders on command start
-          drive::resetEncoder,
-          // Move drive forward a little at start of command
-          () -> drive.drive(
-            // Straight speed based on pitch (P & D Control Loop)
-            (drive.getPitch() - kAutoChargePitch) * kAutoChargePitchPgain - (drive.getPitchRate()) * kAutoChargePitchDgain,
-            // Turn adjustment to account for robot drift and keep robot driving straight (P & D Control Loop)
-            (drive.getHeading() - 0.0) * kAutoChargeYawPgain// - (drive.getYawRate()) * kAutoChargeYawDgain
-          ),
-          // When command is interrupted on its end stop the drive motors
-          interrupted -> drive.stop(),
-          // Iterrupt this command when the drive reaches the desired position
-          () -> false,
-          //() -> ((drive.getPitch() > -1.8) && (drive.getPitch() < -1.4)),
-          // Requires the coumn subsystem to run this command
-          drive
-        )
+        new pitchDrive(kAutoChargePitch, drive)
       )
     );
   }

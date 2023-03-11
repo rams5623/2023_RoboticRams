@@ -22,15 +22,12 @@ import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -97,9 +94,9 @@ public class RobotContainer {
         // Command to run without suppliers
         m_drivetrain.drive(
           // double value for straight driving
-          getDriveStickY() * driveConst.SPEED_STRT,
+          getDriveStickY() * driveConst.SPEED_SLOWSTRT,
           // double value for turn driving
-          getDriveStickZ() * driveConst.SPEED_TURN
+          getDriveStickZ() * driveConst.SPEED_SLOWTURN
         ),
         // Requirements for command
         m_drivetrain
@@ -163,8 +160,8 @@ public class RobotContainer {
       //Jdriver_2.onTrue(new ArcadeDrive(() -> s_Jdriver.getY() * 0.8, () -> s_Jdriver.getZ() * 0.6, m_drivetrain));
       new JoystickButton(s_Jdriver, 2).whileTrue(
         new ArcadeDrive(
-          () -> s_Jdriver.getY() * 0.5 * driveConst.SPEED_STRT,
-          () -> s_Jdriver.getZ() * 0.5 * driveConst.SPEED_TURN,
+          () -> s_Jdriver.getY() * driveConst.SPEED_STRT,
+          () -> s_Jdriver.getZ() * driveConst.SPEED_TURN,
           m_drivetrain
         )
       );
@@ -180,13 +177,21 @@ public class RobotContainer {
 
       // Outtake motor intake
       Trigger xbox_A = new CommandXboxController(1).a();
-      xbox_A.whileTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
+      //xbox_A.whileTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
+      xbox_A.whileTrue(new ParallelCommandGroup(
+        new StartEndCommand(m_intake::intake, m_intake::stop, m_intake),
+        new StartEndCommand(m_clamp::clamp, m_clamp::hold, m_clamp).beforeStarting(new WaitCommand(1.0))
+      ));
       //new JoystickButton(s_Jop, Button.kA.value).whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
       //Jop_1.onTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
 
       // Intake motor outake
       Trigger xbox_B = new CommandXboxController(1).b();
-      xbox_B.whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
+      //xbox_B.whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
+      xbox_B.whileTrue(new ParallelCommandGroup(
+        new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp),
+        new StartEndCommand(m_intake::outake, m_intake::stop, m_intake).beforeStarting(new WaitCommand(1.0))
+      ));
       //new JoystickButton(s_Jop, Button.kB.value).whileTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
       //Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
 
@@ -202,7 +207,7 @@ public class RobotContainer {
       // );
       // new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(() -> m_clamp.clamp(), () -> m_clamp.stop(), m_clamp)); // Use this line if the one above doesnt work
       Trigger xbox_Y = new CommandXboxController(1).x();
-      xbox_Y.whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::hold, m_clamp));
+      xbox_Y.whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
 
       // Clamp motor unclamp
       // new JoystickButton(s_Jop, Button.kX.value).onTrue(
