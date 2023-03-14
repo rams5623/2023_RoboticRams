@@ -128,9 +128,9 @@ public final class Autos {
           () -> ((drive.getAvgEncoder()) <= kAutoChargeDrivePos2), // Inches
           // Requires the coumn subsystem to run this command
           drive
-        ).withTimeout(kAutoChargeDriveTime2),
+        ).withTimeout(kAutoChargeDriveTime2)//, COMMA IS A PART OF THE BELOW COMMENT \/
         /* (4) Drive straight and level off the pad */
-        new pitchDrive(kAutoChargePitch, drive)
+        //new pitchDrive(kAutoChargePitch, drive) // IN DEVELOPMENT
       )
     );
   }
