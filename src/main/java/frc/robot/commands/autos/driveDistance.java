@@ -32,27 +32,28 @@ public class driveDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    PIDError = drivetrain.getAvgEncoder(); //[Inches]
-    PIDOut = (dist - PIDError) * driveConst.kDriveP;
-    
-    if (PIDOut > driveConst.kDriveMaxSpeed) {
-      PIDOut = driveConst.kDriveMaxSpeed;
-    }
-
-    drivetrain.drive(
-      PIDOut,
-      0.0);
+    // PIDError = drivetrain.getAvgEncoder(); //[Inches]
+    // PIDOut = (dist - PIDError) * driveConst.kDriveP;
+    // 
+    // if (PIDOut > driveConst.kDriveMaxSpeed) {
+    //   PIDOut = driveConst.kDriveMaxSpeed;
+    // }
+    // 
+    // drivetrain.drive(
+    //   PIDOut,
+    //   0.0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    drivetra
+    // drivetra
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    // return false;
+    return true; //return false;
   }
 }
