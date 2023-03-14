@@ -63,10 +63,11 @@ public final class Constants {
     public static final double kMaxColm = 11.5; // [Inches] Max Forward Position
     
     // MIN BOOM AND COLUMN POSITION
-    public static final double kMinBoom = 22.5; // [degrees] At floor
+    public static final double kMinBoom = 30.0; // [degrees] At floor
     public static final double kMinColm = 0; // [Inches] Max Reverse Position
     
     // Column Inch Position Conversion Constant
+    // TODO: REMEASURE AND GET MAX COLUMN LENGTH WITH NEW BRACKET THAT HAS SMALLER TRAVEL DISTANCE
     public static final double kMaxColmLength = 11.5625; // [Inches] Full travel from rev switch to fwd switch
     public static final int kMaxColmEncCount = 10640; // [Pulses] Full travel from rev switch to fwd switch
     public static final double kColmCountPerInch = kMaxColmEncCount / kMaxColmLength; // [Pulse/Inch] Conversion constant to go between encoder counts and inches
@@ -194,7 +195,9 @@ public final class Constants {
         // Have Inches but Need Counts - Inches / kEncDistancePerPulse
 
     // Speed reducer commands
-    public static final double SPEED_TURN = 0.50; // Max straight speed percentage (positive constant)  // [Percent]
-    public static final double SPEED_STRT = 0.60; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_TURN = 0.650; // [Percentage] Max turn speed percentage during normal mode (positive constant)
+    public static final double SPEED_STRT = 0.750; // [Percentage] Max straight speed percentage during normal mode (positive constant)
+    public static final double SPEED_SLOWSTRT = 0.40; // [Percentage] Max straight speed during slow mode (positive constant)
+    public static final double SPEED_SLOWTURN = 0.30; // [Percentage] Max turn speed during slow mode (Positive constant)
   }
 }
