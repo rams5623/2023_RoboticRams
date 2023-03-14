@@ -25,21 +25,6 @@ public class Clamp extends SubsystemBase {
     m_talonClamp.configOpenloopRamp(0.0);
     m_talonClamp.configClosedloopRamp(0.0);
 
-    // Current limiting on the clamp to avoid too much draw
-    //m_talonClamp.configPeakCurrentLimit(7);
-    //m_talonClamp.configPeakCurrentDuration(500);
-    //m_talonClamp.configContinuousCurrentLimit(6);
-    //m_talonClamp.enableCurrentLimit(false);
-
-    // ADD CURRENT CLOSED LOOP CONTROL HERE
-    // PID for talon controller position
-    // m_talonClamp.selectProfileSlot(clampConst.kSlotidx, clampConst.kPIDidx);
-    // m_talonClamp.configAllowableClosedloopError(clampConst.kSlotidx, 0.5);
-    // m_talonClamp.config_kF(clampConst.kSlotidx, clampConst.kF);
-    // m_talonClamp.config_kP(clampConst.kSlotidx, clampConst.kP);
-    // m_talonClamp.config_kI(clampConst.kSlotidx, clampConst.kI);
-    // m_talonClamp.config_kD(clampConst.kSlotidx, clampConst.kD);
-
     m_talonClamp.configNominalOutputForward(0.0);
     m_talonClamp.configNominalOutputReverse(0.0);
     m_talonClamp.configPeakOutputForward(clampConst.SPEED_CLAMP);
