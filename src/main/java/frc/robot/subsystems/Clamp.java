@@ -46,12 +46,13 @@ public class Clamp extends SubsystemBase {
     m_talonClamp.configPeakOutputReverse(-clampConst.SPEED_CLAMP);
   }
 
+  // TODO: WHAT DIRECTION IS ACTUALLY CLAMP AND UNCLAMP!!!!!!
   public void clamp() {
     m_talonClamp.set(ControlMode.PercentOutput, clampConst.SPEED_CLAMP);
   }
 
   public void hold() {
-    m_talonClamp.set(ControlMode.PercentOutput, .5);
+    m_talonClamp.set(ControlMode.PercentOutput, -.5);
   }
 
   public void unclamp() {
