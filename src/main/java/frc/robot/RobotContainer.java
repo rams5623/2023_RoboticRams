@@ -68,7 +68,7 @@ public class RobotContainer {
     // Create and place auto selector on the SmartDashboard
     m_chooser.setDefaultOption("Drive Straight", Autos.driveStraightAuto(m_drivetrain, m_boom)); // 
     m_chooser.addOption("Drive Straight + Unfold", Autos.driveStraightUnfoldAuto(m_drivetrain,m_boom,m_column));
-    m_chooser.addOption("Drive Onto Charging Station", Autos.driveChargingStation(m_drivetrain, m_boom, m_column)); // 
+    //m_chooser.addOption("Drive Onto Charging Station", Autos.driveChargingStation(m_drivetrain, m_boom, m_column)); // [REWORK IN-DEVELOPMENT]
     m_chooser.addOption("Just Unfold/No Drive", Autos.unfoldAuto(m_boom, m_column)); // Just unfolds the boom and column and doesnt drive at all. More of a concept auto to gather the correct parameters before incorporating driving
     //m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Middle", Autos.cubeMidAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
