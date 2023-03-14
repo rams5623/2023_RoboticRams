@@ -1,6 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
 
@@ -43,10 +40,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
- * 
- * m = SUBSYSTEM
- * s = SENSOR/JOYSTICK
- * c = COMMAND
  **/
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
@@ -56,7 +49,7 @@ public class RobotContainer {
   private final Column m_column = new Column();
   private final Drivetrain m_drivetrain = new Drivetrain();
 
-  // Controller creation
+  // Controller definition
   public static final Joystick s_Jdriver = new Joystick(0);
   public static final XboxController s_Jop = new XboxController(1);
 
@@ -81,51 +74,41 @@ public class RobotContainer {
     SmartDashboard.putData(m_chooser); // Place the Auto selector on the dashboard with all the options
     
     // Put all the subsystems on the dashboard
+    /* TODO: INVESTIGATE & FIX WHY THESE DON'T SHOW UP ON DASHBOARD LIKE THEY SHOULD */
     SmartDashboard.putData("Clamp", m_clamp);
     SmartDashboard.putData("Intake", m_intake);
     SmartDashboard.putData("Boom", m_boom);
     SmartDashboard.putData("Column", m_column);
     SmartDashboard.putData("Drivetrain", m_drivetrain);
     
-    /*
-     * New way to run default arcade drive that has not been tested out yet. Try this and if it doesnt work as
-     * expected then comment it out and uncomment the old one below it.
-     */
+
     // Set the default command of the drivetrain to be driven by driver joystick
     m_drivetrain.setDefaultCommand(
       new RunCommand(()->
         // Command to run without suppliers
         m_drivetrain.drive(
           // double value for straight driving
-          getDriveStickY() * driveConst.SPEED_STRT,
+          getDriveStickY() * driveConst.SPEED_SLOWSTRT,
           // double value for turn driving
-          getDriveStickZ() * driveConst.SPEED_TURN
+          getDriveStickZ() * driveConst.SPEED_SLOWTURN
         ),
         // Requirements for command
         m_drivetrain
-      )
-    );
-    //m_drivetrain.setDefaultCommand(new ArcadeDrive(() -> getDriveStickY(), () -> getDriveStickZ(), m_drivetrain));
+    ));
 
+    // Set the default command of the column to be controlled by operator controller right stick
     m_column.setDefaultCommand(
       new RunCommand(() ->
         m_column.move(-getOpRightStickY(),false),
         m_column
-      )
-    );
-    // m_column.setDefaultCommand(
-    //   new MoveColumn(s_Jop::getRightY, m_column)
-    // );
+    ));
 
+    // Set the default command of the boom arm angle to be controlled by the operator controller left stick
     m_boom.setDefaultCommand(
       new RunCommand(() ->
         m_boom.move(getOpLeftStickY(), false),
         m_boom
-      )
-    );
-    // m_boom.setDefaultCommand(
-    //   new MoveBoom(s_Jop::getLeftY, m_boom)
-    // );
+    ));
 
     // Configure button bindings for controllers and such
     configureBindings();
@@ -138,11 +121,15 @@ public class RobotContainer {
    */
   private void configureBindings() {
     /* 
-     * onTrue vs. whileTrue
-     * 
-     * onTrue should be used when only a single press is needed to start a command that will continue on its own.
-     * 
-     * whileTrue should be used for commands that need to start when a button is pressed, continue while it is being held down, and stop when the button is released
+     * onTrue vs. whileTrue:
+     * - onTrue should be used when only a single press is needed to start a command that will continue on its own.
+     * - whileTrue should be used for commands that need to start when a button is pressed, continue while it is being held down, and stop when the button is released
+     *
+     * Trigger vs. JoystickButton
+     * - Triggers canb ecreated from joystick button objects. There seems to be some difference in using a Trigger of a JoystickButton versus just using
+     * a JoystickButton. This was ever present in the issue with the Intake and Clamp systems not responding to button presses during the Week 2 compeition,
+     * which for some reason only occured on the field. The firewall was disabled per FTA recommendation and the code was changed during troubleshooting.
+     * the results of these two changes resolved the button response issue (some how!?!?!?!?!?).
      */
     
     /* Creates a trigger in response to the limit switch activation for zeroing encoders */
@@ -153,116 +140,96 @@ public class RobotContainer {
     boomResetTrigger.onTrue(new InstantCommand(m_boom::resetEncoder, m_boom));
     
     /*
-     * If the driver joystick (USB 0) is connected then run this section, otherwise move on.
+     * (DISABLED DURING TROUBLESHOOTING) If the driver joystick (USB 0) is connected then run this section, otherwise move on.
      * This prevents the buttons from being created on joystick that isnt present and causing a list of errors to appear on connection to the rio.
      */
-      /* Create all button objects */
-      /* Use the button objects for driver controller */
+    /* Create the button objects/triggers for driver controller */
       
-      // Enable slow mode for driving to provide finer driving movments
-      //Jdriver_2.onTrue(new ArcadeDrive(() -> s_Jdriver.getY() * 0.8, () -> s_Jdriver.getZ() * 0.6, m_drivetrain));
-      new JoystickButton(s_Jdriver, 2).whileTrue(
-        new ArcadeDrive(
-          () -> s_Jdriver.getY() * 0.5 * driveConst.SPEED_STRT,
-          () -> s_Jdriver.getZ() * 0.5 * driveConst.SPEED_TURN,
-          m_drivetrain
-        )
-      );
+    // Enable slow mode for driving to provide finer driving movments
+    new JoystickButton(s_Jdriver, 2).whileTrue(
+      new ArcadeDrive(
+        () -> s_Jdriver.getY() * driveConst.SPEED_STRT,
+        () -> s_Jdriver.getZ() * driveConst.SPEED_TURN,
+        m_drivetrain
+      )
+    );
 
-      // Manually toggle between braking and coasting the drive train
-      new JoystickButton(s_Jdriver, 7).toggleOnTrue(new StartEndCommand(m_drivetrain::setDriveBrake, m_drivetrain::setDriveCoast, m_drivetrain));
+    // Manually toggle between braking and coasting the drive train
+    new JoystickButton(s_Jdriver, 7).toggleOnTrue(new StartEndCommand(m_drivetrain::setDriveBrake, m_drivetrain::setDriveCoast, m_drivetrain));
 
+    
     /*
-     * If the operator joystick (USB 1) is connected then run this section, otherwise move on.
+     * (DISABLED DURING TROUBLESHOOTING) If the operator joystick (USB 1) is connected then run this section, otherwise move on.
      * This prevents the buttons from being created on joystick that isnt present and causing a list of errors to appear on connection to the rio.
      */
-      /* Create all button objects */
+    /* Create the button objects/triggers for operator controller */
+    
+    // (A BUTTON) Outtake motor intake
+    Trigger xbox_A = new CommandXboxController(1).a();
+    xbox_A.whileTrue(new ParallelCommandGroup(
+      new StartEndCommand(m_intake::intake, m_intake::stop, m_intake), // Run intake as soon as button is pressed
+      new StartEndCommand(m_clamp::clamp, m_clamp::hold, m_clamp).beforeStarting(new WaitCommand(1.0)) // Wait 1 second after button is pressed to clamp and hold
+    ));
 
-      // Outtake motor intake
-      Trigger xbox_A = new CommandXboxController(1).a();
-      xbox_A.whileTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
-      //new JoystickButton(s_Jop, Button.kA.value).whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
-      //Jop_1.onTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
+    // (B BUTTON) Intake motor outake
+    Trigger xbox_B = new CommandXboxController(1).b();
+    xbox_B.whileTrue(new ParallelCommandGroup(
+      new StartEndCommand(m_clamp:unclamp, m_clamp::stop, m_clamp), // Unclamp as soon as the button is pressed
+      new StartEndCommand(m_intake::intake, m_intake::stop, m_intake).beforeStarting(new WaitCommand(0.6)) // Wait 6/10 of a second after the button is pressed to run the intake outwards
+    ));
 
-      // Intake motor outake
-      Trigger xbox_B = new CommandXboxController(1).b();
-      xbox_B.whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
-      //new JoystickButton(s_Jop, Button.kB.value).whileTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake));
-      //Jop_2.onTrue(new StartEndCommand(m_intake::outake, m_intake::stop, m_intake)); // onTrue does not perform the End portion of this command
+    // (Y BUTTON) Clamp motor clamp and hold part
+    Trigger xbox_Y = new CommandXboxController(1).x();
+    xbox_Y.whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
 
-      // Clamp motor clamp and hold part
-      // new JoystickButton(s_Jop, Button.kY.value).onTrue(
-      //   new FunctionalCommand(
-      //     null, // On Init
-      //     () -> m_clamp.clamp(), // On Execute
-      //     interrupted -> m_clamp.hold(), // On End
-      //     () -> (m_clamp.getMotorCurrent() >= 6.0), // Is Finished?
-      //     m_clamp // Require
-      //   )
-      // );
-      // new JoystickButton(s_Jop, Button.kY.value).whileTrue(new StartEndCommand(() -> m_clamp.clamp(), () -> m_clamp.stop(), m_clamp)); // Use this line if the one above doesnt work
-      Trigger xbox_Y = new CommandXboxController(1).x();
-      xbox_Y.whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::hold, m_clamp));
+    // (X BUTTON) Clamp motor unclamp
+    Trigger xbox_X = new CommandXboxController(1).y();
+    xbox_X.whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
 
-      // Clamp motor unclamp
-      // new JoystickButton(s_Jop, Button.kX.value).onTrue(
-      //   new FunctionalCommand(
-      //     null,
-      //     () -> m_clamp.unclamp(),
-      //     interrupted -> m_clamp.stop(),
-      //     () -> (m_clamp.getMotorCurrent() >= 6.0),
-      //     m_clamp
-      //   )
-      // );
-      // new JoystickButton(s_Jop, Button.kX.value).whileTrue(new StartEndCommand(() -> m_clamp.unclamp(), () -> m_clamp.stop(), m_clamp)); // Use this line if the one above doesnt work
-      Trigger xbox_X = new CommandXboxController(1).y();
-      xbox_X.whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
+    // (BACK BUTTON) Reset encoders to zero on the boom and column
+    new JoystickButton(s_Jop, Button.kBack.value).whileTrue(new ParallelCommandGroup(
+      new InstantCommand(m_boom::resetEncoder,m_boom), // Set boom encoder to home position value
+      new InstantCommand(m_column::resetEncoder, m_column) // Set column encoder to home position value
+    ));
 
-      // Reset encoders to zero on the boom and column
-      new JoystickButton(s_Jop, Button.kBack.value).whileTrue(new ParallelCommandGroup(
-        new InstantCommand(m_boom::resetEncoder,m_boom),
-        new InstantCommand(m_column::resetEncoder, m_column)
-      ));
-      
-      // Allow for Operator to Bypass Column and Boom Limit Switches
-      new JoystickButton(s_Jop, Button.kStart.value).whileTrue(new ParallelCommandGroup(
-        new MoveColumn(() -> getOpRightStickY(), true, m_column),
-        new MoveBoom(() -> getOpLeftStickY(), true, m_boom)
-      ));
+    // (START BUTTON) Allow for Operator to Bypass Column and Boom Limit Switches
+    new JoystickButton(s_Jop, Button.kStart.value).whileTrue(new ParallelCommandGroup(
+      new MoveColumn(() -> getOpRightStickY(), true, m_column), // Override fwd and rev limit swtiched on column path
+      new MoveBoom(() -> getOpLeftStickY(), true, m_boom) // override bottom limit switch on boom path
+    ));
+  
+    /* (POV BUTTONS) Set Column and Boom Positions to reach various positions on field */
+    // Top Grid Position
+    new POVButton(s_Jop, 0).onTrue(
+      new ParallelCommandGroup(
+        new BoomPosition((double) posConst.kTopBoom, m_boom),
+        new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.5))
+      ).withTimeout(5.0)
+    );
+    // Middle Grid Position
+    new POVButton(s_Jop, 90).onTrue(
+      new ParallelCommandGroup(
+        new BoomPosition((double) posConst.kMidBoom, m_boom),
+        new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.5))
+      ).withTimeout(4.0)
+    );
+    // Home Floor Position
+    new POVButton(s_Jop, 180).onTrue(
+      new ParallelCommandGroup(
+        new BoomPosition((double) posConst.kMinBoom, m_boom),
+        new ColumnPosition((double) posConst.kMinColm, m_column).beforeStarting(new WaitCommand(.5))
+      ).withTimeout(4.0)
+    );
+    // Game Piece Safe Carry Position
+    new POVButton(s_Jop, 270).onTrue(
+      new ParallelCommandGroup(
+        new BoomPosition((double) 47.0, m_boom),
+        new ColumnPosition((double) 0.0, m_column).beforeStarting(new WaitCommand(.5))
+      ).withTimeout(4.0)
+    );
+   } // END configureBindings()
 
-      // Cancel Intake and Clamp Commands from Scheduler
-      //new JoystickButton(s_Jop, Button.kLeftBumper.value).whileTrue();
-      
-      // Top Grid Position
-      new POVButton(s_Jop, 0).onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kTopBoom, m_boom),
-          new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.5))
-        ).withTimeout(5.0)
-      );
-      // Middle Grid Position
-      new POVButton(s_Jop, 90).onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kMidBoom, m_boom),
-          new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.5))
-        ).withTimeout(4.0)
-      );
-      // Home Floor Position
-      new POVButton(s_Jop, 180).onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kMinBoom, m_boom),
-          new ColumnPosition((double) posConst.kMinColm, m_column).beforeStarting(new WaitCommand(.5))
-        ).withTimeout(4.0)
-      );
-
-      new POVButton(s_Jop, 270).onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) 47.0, m_boom),
-          new ColumnPosition((double) 0.0, m_column).beforeStarting(new WaitCommand(.5))
-        ).withTimeout(4.0)
-      );
-    }
-
+  
   /*
    * Gets the axis value from the driver joytick roation (z-axis). Applies
    * a deadband to the input to prevent minor joystick drift sending commands
@@ -274,7 +241,7 @@ public class RobotContainer {
       axisValue = 0.0;
     }
     return axisValue;
-  }
+  } // END getDriveStickZ()
 
   /*
    * Gets the axis value from the driver joytick forward (y-axis). Applies
@@ -287,7 +254,7 @@ public class RobotContainer {
       axisValue = 0.0;
     }
     return axisValue;
-  }
+  } // END getDriveStickY()
 
   /*
    * Gets the axis value from the operator left joystick (y-axis). Applies a
@@ -300,7 +267,7 @@ public class RobotContainer {
       axisValue = 0.0;
     }
     return axisValue;
-  }
+  } // END getOpLeftStickY()
 
   /*
    * Gets the axis value from the operator right joystick (y-axis). Applies a
@@ -313,15 +280,14 @@ public class RobotContainer {
       axisValue = 0.0;
     }
     return axisValue;
-  }
+  } // END getOpRightStickY()
 
   /**
    * This is the command that will run during autonomous mode:
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
     // Various auto modes will go into the Autos file similar to how constants all go in the constants file
-    // return Autos.exampleAuto(m_intake);
+    // They are all selected from the auto chooser on the smart dashboard.
     return m_chooser.getSelected();
-  }
-}
+  } // END getAutonomousCommand()
+} // END RobotContainer Class
