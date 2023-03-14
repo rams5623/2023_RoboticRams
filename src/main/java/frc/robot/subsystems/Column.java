@@ -1,6 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
 
@@ -56,12 +53,14 @@ public class Column extends SubsystemBase {
    * there is no bypass exception allowed once the switch has activated. This is done
    * in case a situation would occur where the switch is triggered but the PID is still
    * commanding the column leg to move further into the gears.
+   * 
+   * TODO: ADD & TEST THE LIMIT SWITCH RESTRICTION FOR AUTO POSITIONING
    */
   public void gotoPosition(double position) {
-    // if (getRevSwitch() || getFwdSwitch()) {
+    // if ((getFwdSwitch() && (position > getPosition())) || (getRevSwitch() && (position < getPosition()))) {
     //   stop();
     // } else {
-    //   m_talonColumn.set(ControlMode.Position, position);
+    //   m_talonColumn.set(ControlMode.Position, position * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
     // };
     m_talonColumn.set(ControlMode.Position, position * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
   }
@@ -72,9 +71,6 @@ public class Column extends SubsystemBase {
    * but the column arm must be moved forward or reverse more. This is the function used for operator
    * control of the arm so the they shold have the option to bypass the limits if necessary.
    */
-  // public void move(Double speed) {
-  //   m_talonColumn.set(ControlMode.PercentOutput, speed); 
-  // }
   public void move(Double speed, Boolean bypassSwitch) {
     if (((getFwdSwitch() && (speed > 0.0)) || (getRevSwitch() && (speed < 0.0))) && !bypassSwitch) {
       stop();
