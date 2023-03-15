@@ -12,7 +12,7 @@ public final class AutoConstants {
         public static final double kDriveP = 0.1;
         public static final double kDriveMaxSpeed = -0.5; // Percentage
         public static final double kDrivePos = -52; // Inches
-        public static final double kDriveYawPgain = 0.0;
-        public static final double kDriveYawDgain = 0.0;
+        public static final double kDriveYawPgain = 0.1;
+        public static final double kDriveYawDgain = 0.0001;
     }
 }

@@ -10,15 +10,16 @@ import frc.robot.subsystems.Drivetrain;
 
 public class driveDistance extends CommandBase {
   private final Drivetrain drivetrain;
-  private final Boolean driveStraight;
+  private final Boolean driveGyro;
   private final Double dist;
   private Double PIDError;
   private Double PIDOut;
+  private double rotate;
 
-  public driveDistance(Double p_dist, Boolean p_driveStraight, Drivetrain p_drivetrain) {
+  public driveDistance(Double p_dist, Boolean p_driveGyro, Drivetrain p_drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
     drivetrain = p_drivetrain;
-    driveStraight = p_driveStraight;
+    driveGyro = p_driveGyro;
     dist = p_dist;
     addRequirements(drivetrain);
   }
@@ -32,16 +33,22 @@ public class driveDistance extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // PIDError = drivetrain.getAvgEncoder(); //[Inches]
-    // PIDOut = (dist - PIDError) * driveConst.kDriveP;
-    // 
-    // if (PIDOut > driveConst.kDriveMaxSpeed) {
-    //   PIDOut = driveConst.kDriveMaxSpeed;
-    // }
-    // 
-    // drivetrain.drive(
-    //   PIDOut,
-    //   0.0);
+    PIDError = drivetrain.getAvgEncoder(); //[Inches]
+    PIDOut = (dist - PIDError) * driveConst.kDriveP;
+    
+    if (PIDOut > driveConst.kDriveMaxSpeed) {
+      PIDOut = driveConst.kDriveMaxSpeed;
+    }
+    
+    if (driveGyro) {
+      rotate = ((drivetrain.getHeading() - 0.0) * driveConst.kDriveYawPgain) - (drivetrain.getYawRate() * driveConst.kDriveYawDgain);
+    } else {
+      rotate = 0.0;
+    }
+
+    drivetrain.drive(
+      PIDOut,
+      rotate);
   }
 
   // Called once the command ends or is interrupted.
