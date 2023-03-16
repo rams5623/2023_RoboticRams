@@ -1,6 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands.autos;
 
@@ -14,7 +11,7 @@ public class driveDistance extends CommandBase {
   private final Double dist;
   private Double PIDError;
   private Double PIDOut;
-  private double rotate;
+  private Double rotate;
 
   public driveDistance(Double p_dist, Boolean p_driveGyro, Drivetrain p_drivetrain) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -34,33 +31,34 @@ public class driveDistance extends CommandBase {
   @Override
   public void execute() {
     PIDError = drivetrain.getAvgEncoder(); //[Inches]
-    PIDOut = (dist - PIDError) * driveConst.kDriveP;
+    PIDOut = (dist - PIDError) * driveConst.kDrivePgain;
     
-    if (PIDOut > driveConst.kDriveMaxSpeed) {
-      PIDOut = driveConst.kDriveMaxSpeed;
+    if (PIDOut > driveConst.kMaxSpeed) {
+      PIDOut = driveConst.kMaxSpeed;
     }
     
     if (driveGyro) {
-      rotate = ((drivetrain.getHeading() - 0.0) * driveConst.kDriveYawPgain) - (drivetrain.getYawRate() * driveConst.kDriveYawDgain);
+      rotate = ((drivetrain.getHeading() - 0.0) * driveConst.kYawPgain) - (drivetrain.getYawRate() * driveConst.kYawDgain);
     } else {
       rotate = 0.0;
     }
 
-    drivetrain.drive(
-      PIDOut,
-      rotate);
+    drivetrain.drive(PIDOut, rotate);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // drivetra
+    drivetrain.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // return false;
-    return true; //return false;
+    if ((dist - PIDError) < driveConst.kDrivePosDiff) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

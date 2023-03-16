@@ -9,10 +9,22 @@ public final class AutoConstants {
     }
 
     public static class driveConst {
-        public static final double kDriveP = 0.1;
-        public static final double kDriveMaxSpeed = -0.5; // Percentage
-        public static final double kDrivePos = -52; // Inches
-        public static final double kDriveYawPgain = 0.1;
-        public static final double kDriveYawDgain = 0.0001;
+        public static final double kMaxSpeed = -0.5; // [Percentage]
+        public static final double kDrivePos = -52; // [Inches]
+        public static final double kDrivePosDiff = 1.0; // [Inches]
+        public static final double kDrivePgain = 0.1;
+        public static final double kDriveDgain = 0.0;
+        public static final double kYawPgain = 0.1;
+        public static final double kYawDgain = 0.0001;
+    }
+
+    public static class balanceConst {
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+        public static final double kminInput = -15.0;
+        public static final double kmaxInput = 15.0;
+        public static final double kpitchTol = 0.5;
+        public static final double krateTol = 0.01;
     }
 }

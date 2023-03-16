@@ -8,11 +8,11 @@ import frc.robot.Constants.controllerConst;
 import frc.robot.Constants.driveConst;
 import frc.robot.Constants.posConst;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.Autos;
 import frc.robot.commands.BoomPosition;
 import frc.robot.commands.ColumnPosition;
 import frc.robot.commands.MoveBoom;
 import frc.robot.commands.MoveColumn;
+import frc.robot.commands.autos.Autos;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Column;
@@ -66,12 +66,12 @@ public class RobotContainer {
    **/
   public RobotContainer() {
     // Create and place auto selector on the SmartDashboard
-    m_chooser.setDefaultOption("Drive Straight", Autos.driveStraightAuto(m_drivetrain, m_boom)); // 
-    m_chooser.addOption("Drive Straight + Unfold", Autos.driveStraightUnfoldAuto(m_drivetrain,m_boom,m_column));
-    //m_chooser.addOption("Drive Onto Charging Station", Autos.driveChargingStation(m_drivetrain, m_boom, m_column)); // [REWORK IN-DEVELOPMENT]
-    m_chooser.addOption("Just Unfold/No Drive", Autos.unfoldAuto(m_boom, m_column)); // Just unfolds the boom and column and doesnt drive at all. More of a concept auto to gather the correct parameters before incorporating driving
-    //m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
-    //m_chooser.addOption("Cube Middle", Autos.cubeMidAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
+    m_chooser.setDefaultOption("Just Unfold Arm", Autos.unfoldAuto(m_boom, m_column));
+    m_chooser.addOption("Drive Straight", Autos.driveStraightAuto(m_drivetrain));
+    m_chooser.addOption("Drive Straight + Unfold", Autos.driveUnfoldAuto(m_drivetrain, m_boom, m_column));
+    m_chooser.addOption("Drive Onto Charging Station", Autos.driveBalanceAuto(m_drivetrain, m_boom, m_column)); // [NEEDS TO BE TESTED]
+    m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
+    m_chooser.addOption("Cube Middle", Autos.cubeMidAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
     //m_chooser.addOption("Cube Top", Autos.cubeTopAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Floor & Pad", Autos.cubeFloorPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Middle & Pad", Autos.cubeMidPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]

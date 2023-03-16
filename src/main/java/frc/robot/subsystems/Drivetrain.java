@@ -11,7 +11,9 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+// import com.kauailabs.navx.frc.AHRS;
 
+// import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.driveConst;
@@ -42,13 +44,14 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX m_talonRR = new WPI_TalonSRX(driveConst.ktalon_RR);
   private final WPI_TalonSRX m_talonRL = new WPI_TalonSRX(driveConst.ktalon_RL);
 
-  private final PigeonIMU s_pidgey = new PigeonIMU(m_talonRL); // ###Change to the motor controller that this is plugged into###
+  private final PigeonIMU s_pidgey = new PigeonIMU(m_talonRL); // ###Change to the motor controller that this is plugged into
+  // private final AHRS m_gyro = new AHRS(SPI.Port.kMXP); // NavX Gyro and Accelerometer in MXP port in center of Rio
   private double [] ypr_rot = new double [3]; // Gyro container to hold values for three axis angles
   private double [] xyz_rot = new double [3]; // Gyro container to hold values for three axis rotation rates
   private PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
 
   public Drivetrain() {
-    //Reset the talons to factory default to remove any configurations that may cause issues this time around
+    // Reset the talons to factory default to remove any configurations that may cause issues this time around
     m_talonFR.configFactoryDefault();
     m_talonFL.configFactoryDefault();
     m_talonRR.configFactoryDefault();
@@ -118,11 +121,12 @@ public class Drivetrain extends SubsystemBase {
     m_talonFL.setSelectedSensorPosition(0.0);
     m_talonFR.setSelectedSensorPosition(0.0);
 
-    // Pigeon IMU Sensor Settings
+    // GYRO SETUP
     s_pidgey.configFactoryDefault();
     s_pidgey.setFusedHeading(0.0);
     s_pidgey.setTemperatureCompensationDisable(false);
-    //s_pidgey.enterCalibrationMode(CalibrationMode.Temperature);
+    
+    // 
   }
 
   /*
@@ -190,8 +194,8 @@ public class Drivetrain extends SubsystemBase {
     return xyz_rot[0];
   }
 
-  /* Pitch is the rotation around the X axis and will be used to determine if the charging platform is level */
   public double getPitch() {
+    /* Pitch is the rotation around the X axis and will be used to determine if the charging platform is level */
     return ypr_rot[1];
   }
 
@@ -200,8 +204,8 @@ public class Drivetrain extends SubsystemBase {
     return xyz_rot[1];
   }
   
-  /* Use this to get the "Yaw" rather than the getYaw. The getYaw has a lot of drift */
   public double getHeading() {
+    /* Use this to get the "Yaw" rather than the getYaw. The getYaw has a lot of drift */
     s_pidgey.getFusedHeading(fusionStatus);
     return fusionStatus.heading;
   }
@@ -218,5 +222,9 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Raw Right Drive Encoder", getRightEncoder());
     SmartDashboard.putNumber("Yaw", getHeading());
     SmartDashboard.putNumber("Pitch",getPitch());
+    // When a NavX is installed uncomment below
+    // SmartDashboard.putNumber("Gyro Yaw", m_gyro.getYaw());
+    // SmartDashboard.putNumber("Gyro Roll", m_gyro.getRoll());
+    // SmartDashboard.putNumber("Gyro Pitch", m_gyro.getPitch());
   }
 }
