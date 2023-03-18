@@ -159,8 +159,8 @@ public final class Constants {
     public static final double kCurrentClamp = 3.0; // [Amps]
     public static final double kCurrentWatch = 5.6; // [Amps]
     // Speed reducer commands
-    public static final double SPEED_CLAMP = 0.7; // [Percent]
-    public static final double SPEED_RELEASE = 0.7; // [Percent]
+    public static final double SPEED_CLAMP = 0.5; // [Percent]
+    public static final double SPEED_RELEASE = 0.5; // [Percent]
   }
 
   /** CONSTANTS FOR USE IN THE DRIVETRAIN SUBSYSTEM **/
