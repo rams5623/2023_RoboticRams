@@ -1,10 +1,7 @@
-- Column Encoder Functioning?
-- FWD Column Switch Functioning?
-- Boom Switch Zero Functioning?
-- Measure Column Counts from switch to switch
-- Measure Zero Position Angle of Boom
-- Record counts of 90 degrees of Boom movement (column back)
-- Convert count positions for boom to angles with conversion number
-- Create emergency stow command to run before robot collision
-- Tweak Auto parameters
-- Once auto charge pad is tweaked, make it a button for end game
+- Inverse the intake and clamp to the green lights blinking on positive command. (Clamp and Intake)
+- Reconfigure intake and clamp commands to be correctly clamp on clamp and intake on intake. (RobotContainer)
+- Change the drive inverse and encoder phase so that forward is positive distance and percent output. (Drivetrain)
+- Why dont the putData(Subsystems) work!??!?!?!? (RobotContainer)
+- Maybe add isConnected for the controllers?
+- Try the new CommandXboxController button calls (RobotContainer Pickup/Drop)
+- Controller negative signs 

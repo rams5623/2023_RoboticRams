@@ -158,8 +158,6 @@ public class RobotContainer {
      * This prevents the buttons from being created on joystick that isnt present and causing a list of errors to appear on connection to the rio.
      */
     
-    //if (s_Jdriver.connected()) {} // TODO: Add the driver and operator If statements for isConnected() again
-    
     /* 
      * ENABLES TEMPORARY FAST MODE WHILE THE THUMB BUTTON (2) ON THE JOYSTICK IS BEING PRESSED
      */
@@ -190,8 +188,6 @@ public class RobotContainer {
      * If the operator joystick (USB 1) is connected then run this section, otherwise move on.
      * This prevents the buttons from being created on joystick that isnt present and causing a list of errors to appear on connection to the rio.
      */
-    
-    //if (s_Jop.connected()) {} // TODO: Add the driver and operator If statements for isConnected() again
     
     /*
      * RUN GAME PIECE PICKUP COMMAND
@@ -251,6 +247,8 @@ public class RobotContainer {
     // ));
     // END INDEPENDENT CLAMP UPWARDS COMMAND
     
+    Trigger xbox_RB = new CommandXboxController(controllerConst.kOpJoystickUSB).rightBumper();
+    xbox_RB.whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
 
     /*
      * RESET ENCODERS TO HOME POSITION VALUES
@@ -260,6 +258,10 @@ public class RobotContainer {
       new InstantCommand(m_boom::resetEncoder,m_boom),
       new InstantCommand(m_column::resetEncoder, m_column)
     ));
+    // s_Jop.back().whileTrue(new ParallelCommandGroup( // Run new instance of parallel command group when back button is true
+    //     new InstantCommand(m_boom::resetEncoder, m_boom), // Reset Boom Encoder
+    //     new InstantCommand(m_column::resetEncoder, m_column) // Reset Column Encoder
+    // ));
     // END ENCODER RESET COMMAND
      
     /*
@@ -270,6 +272,10 @@ public class RobotContainer {
       new MoveColumn(() -> getOpRightStickY(), true, m_column),
       new MoveBoom(() -> getOpLeftStickY(), true, m_boom)
     ));
+    // s_Jop.start().whileTrue(new ParallelCommandGroup( // Run new instance of parallel command group when start button is true
+    //   new MoveColumn(() -> getOpRightStickY(), true, m_column), // run column like normal but bypass limit switch restrictions
+    //   new MoveBoom(() -> getOpLeftStickY(), true, m_boom) // run boom like normal but bypass limit switch restrictions
+    // ));
     // END SWITCH BYPASS COMMAND
     
     /*
@@ -280,29 +286,53 @@ public class RobotContainer {
       new ParallelCommandGroup(
         new BoomPosition((double) posConst.kTopBoom, m_boom),
         new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.5))
-      ).withTimeout(5.0)
-    );
+      ).withTimeout(5.0));
+
     // Middle Grid Position
     new POVButton(s_Jop, 90).onTrue(
       new ParallelCommandGroup(
         new BoomPosition((double) posConst.kMidBoom, m_boom),
         new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.5))
-      ).withTimeout(4.0)
-    );
+      ).withTimeout(4.0));
+
     // Home Floor Position
     new POVButton(s_Jop, 180).onTrue(
       new ParallelCommandGroup(
         new BoomPosition((double) posConst.kMinBoom, m_boom),
         new ColumnPosition((double) posConst.kMinColm, m_column).beforeStarting(new WaitCommand(.5))
-      ).withTimeout(4.0)
-    );
+      ).withTimeout(4.0));
 
+    // Store Position
     new POVButton(s_Jop, 270).onTrue(
       new ParallelCommandGroup(
         new BoomPosition((double) 47.0, m_boom),
         new ColumnPosition((double) 0.0, m_column).beforeStarting(new WaitCommand(.5))
-      ).withTimeout(4.0)
-    );
+      ).withTimeout(4.0));
+
+    // Top Grid Position
+    // s_Jop.povUp().onTrue(
+    //   new ParallelCommandGroup(
+    //     new BoomPosition((double) posConst.kTopBoom, m_boom),
+    //     new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.5))
+    //   ).withTimeout(5.0));
+    // Middle Grid Position
+    // s_Jop.povRight().onTrue(
+    //   new ParallelCommandGroup(
+    //     new BoomPosition((double) posConst.kMidBoom, m_boom),
+    //     new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.5))
+    //   ).withTimeout(5.0));
+    // Floor Grid Position
+    // s_Jop.povDown().onTrue(
+    //   new ParallelCommandGroup(
+    //     new BoomPosition((double) posConst.kBotBoom, m_boom),
+    //     new ColumnPosition((double) posConst.kBotColm, m_column).beforeStarting(new WaitCommand(.5))
+    //   ).withTimeout(5.0));
+    // Store Position
+    // s_Jop.povLeft().onTrue(
+    //   new ParallelCommandGroup(
+    //     new BoomPosition((double) 47.0, m_boom),
+    //     new ColumnPosition((double) 0.0, m_column).beforeStarting(new WaitCommand(.5))
+    //   ).withTimeout(5.0));
     // END POV POSITION COMMANDS
   }
   
