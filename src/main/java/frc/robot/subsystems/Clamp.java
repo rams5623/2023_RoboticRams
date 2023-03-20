@@ -1,6 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
 
@@ -12,10 +9,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.clampConst;
 
+/*
+ * CLAMP NOMENCLATURE
+ * 
+ * (-) Negative Command Given to the TalonSRX (Red Blinking Lights):
+ * DROP = RELEASED = OPEN = UPWARDS = UNCLAMPED
+ * 
+ * (+) Positive Command Given to the TalonSRX: (Green Blinking Lights):
+ * PICKUP = GRABBED = CLOSED = DOWNWARDS = CLAMPED
+ * 
+ */
 public class Clamp extends SubsystemBase {
    /** Creates the objects that will reside only in the Clamp Subsystem */
   private final WPI_TalonSRX m_talonClamp = new WPI_TalonSRX(clampConst.ktalon_clamp);
-
+   
   public Clamp() {
     m_talonClamp.configFactoryDefault();
 
@@ -67,11 +74,11 @@ public class Clamp extends SubsystemBase {
    */
   public void hold(boolean isClamped) {
     if (isClamped) {
-       // Hold in the clamped direction
+       // Hold in the clamped direction (Positive input)
        m_talonClamp.set(ControlMode.PercentOutput, clampConst.SPEED_HOLD_CLAMP);
     } else {
-       // Hold in the unclamped direction
-       m_talonClamp.set(ControlMode.PercentOutput, clampConst.SPEED_HOLD_OPEN);
+       // Hold in the unclamped direction (Negative input)
+       m_talonClamp.set(ControlMode.PercentOutput, -clampConst.SPEED_HOLD_OPEN);
     }
   }
 
