@@ -71,8 +71,8 @@ public class RobotContainer {
     m_chooser.addOption("Drive Straight", Autos.driveStraightAuto(m_drivetrain));
     m_chooser.addOption("Drive Straight + Unfold", Autos.driveUnfoldAuto(m_drivetrain, m_boom, m_column));
     m_chooser.addOption("Drive Onto Charging Station", Autos.driveBalanceAuto(m_drivetrain, m_boom, m_column)); // [NEEDS TO BE TESTED]
-    m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
-    m_chooser.addOption("Cube Middle", Autos.cubeMidAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
+    //m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
+    //m_chooser.addOption("Cube Middle", Autos.cubeMidAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
     //m_chooser.addOption("Cube Top", Autos.cubeTopAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Floor & Pad", Autos.cubeFloorPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Middle & Pad", Autos.cubeMidPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
@@ -196,12 +196,12 @@ public class RobotContainer {
     // Trigger xbox_A = s_Jop.a(); // [TEST THIS ALTERNATE] Create new trigger from Xbox Controller button A
     xbox_A.whileTrue(new ParallelCommandGroup( // While the Button A Trigger is True run some commands in parallel
       new StartEndCommand(m_intake::intake, m_intake::stop, m_intake), // StartEnd command to run intake inwards and stop on release
-      new StartEndCommand(m_clamp::clamp, m_clamp::hold, m_clamp).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run clamp down and hold on release after a brief delay
+      new StartEndCommand(m_clamp::clamp, () -> m_clamp.hold(true), m_clamp).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run clamp down and hold on release after a brief delay
     ));
     /* THIS /\ FOR SURE WORKS IF THE BELOW \/ DOESNT */
     // s_Jop.a().whileTrue(new ParallelCommandGroup( / While the Button A is True run some commands in parallel
     //   new StartEndCommand(m_intake::intake, m_intake::stop, m_intake), // StartEnd command to run intake inwards and stop on release
-    //   new StartEndCommand(m_clamp::clamp, m_clamp::hold, m_clamp).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run clamp down and hold on release after a brief delay
+    //   new StartEndCommand(m_clamp::clamp, () -> m_clamp.hold(true), m_clamp).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run clamp down and hold on release after a brief delay
     // ));
     // END PICKUP PIECE COMMAND
     
@@ -211,12 +211,12 @@ public class RobotContainer {
     Trigger xbox_B = new CommandXboxController(controllerConst.kOpJoystickUSB).b(); // Create new trigger from Xbox controller button B
     // Trigger xbox_B = s_Jop.b(); // [TEST THIS ALTERNATE] Create new trigger from Xbox Controller button B
     xbox_B.whileTrue(new ParallelCommandGroup( // While the Button B Trigger is True run some commands in parallel
-      new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp), // StartEnd command to run Clamp upwards and stop on release
+      new StartEndCommand(m_clamp::unclamp, () -> m_clamp.hold(false), m_clamp), // StartEnd command to run Clamp upwards and stop on release
       new StartEndCommand(m_intake::outake, m_intake::stop, m_intake).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run intake outwards and stop on release after brief delay
     ));
     /* THIS /\ FOR SURE WORKS IF THE BELOW \/ DOESNT */
     // s_Jop.b().whileTrue(new ParallelCommandGroup( // While the Button B is True run some commands in parallel
-    //   new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp), // StartEnd command to run Clamp upwards and stop on release
+    //   new StartEndCommand(m_clamp::unclamp, () -> m_clamp.hold(false), m_clamp), // StartEnd command to run Clamp upwards and stop on release
     //   new StartEndCommand(m_intake::outake, m_intake::stop, m_intake).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run intake outwards and stop on release after brief delay
     // ));
     // END DROP PIECE COMMAND
