@@ -48,7 +48,7 @@ public class Clamp extends SubsystemBase {
   }
 
   public double getMotorCurrent() {
-    return m_talonClamp.getSupplyCurrent();
+    return m_talonClamp.getStatorCurrent();
   }
 
   @Override
