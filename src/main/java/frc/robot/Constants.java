@@ -160,9 +160,9 @@ public final class Constants {
     public static final double kCurrentOpen = 1.0; // [Amps]
     public static final double kCurrentWatch = 5.6; // [Amps]
     // Speed reducer commands
-    public static final double SPEED_CLAMP = 0.5; // [Percent]
+    public static final double SPEED_CLAMP = 0.7; // [Percent]
     public static final double SPEED_RELEASE = 0.5; // [Percent]
-    public static final double SPEED_HOLD_CLAMP = 0.25; // [Percent]
+    public static final double SPEED_HOLD_CLAMP = 0.5; // [Percent]
     public static final double SPEED_HOLD_OPEN = 0.1; // [Percent]
   }
 
