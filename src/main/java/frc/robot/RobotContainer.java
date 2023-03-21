@@ -163,8 +163,8 @@ public class RobotContainer {
      */
     new JoystickButton(s_Jdriver, 2).whileTrue( // Button 2 on Driver Joystick
       new ArcadeDrive( // Run a new instance of this command
-        () -> s_Jdriver.getY() * driveConst.SPEED_STRT, // Straight Parameter
-        () -> s_Jdriver.getZ() * driveConst.SPEED_TURN, // Turn Parameter
+        () -> getDriveStickY() * driveConst.SPEED_STRT, // Straight Parameter
+        () -> getDriveStickZ() * driveConst.SPEED_TURN, // Turn Parameter
         m_drivetrain // Command Requirement
     ));
     // END FAST BUTTON COMMAND
@@ -199,10 +199,9 @@ public class RobotContainer {
     //   new StartEndCommand(m_clamp::clamp, () -> m_clamp.hold(true), m_clamp).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run clamp down and hold on release after a brief delay
     // ));
     /* THIS /\ FOR SURE WORKS IF THE BELOW \/ DOESNT */
-    s_Jop.a().whileTrue(new ParallelCommandGroup( // While the Button A is True run some commands in parallel
-      new StartEndCommand(m_intake::intake, m_intake::stop, m_intake), // StartEnd command to run intake inwards and stop on release
-      new StartEndCommand(m_clamp::clamp, () -> m_clamp.hold(true), m_clamp).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run clamp down and hold on release after a brief delay
-    ));
+    s_Jop.a().whileTrue( // While the Button A is True run some commands in parallel
+      new StartEndCommand(m_clamp::clamp, () -> m_clamp.hold(true), m_clamp) // StartEnd command to run clamp down and hold on release
+    );
     // END PICKUP PIECE COMMAND
     
     /*
@@ -215,10 +214,9 @@ public class RobotContainer {
     //   new StartEndCommand(m_intake::outake, m_intake::stop, m_intake).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run intake outwards and stop on release after brief delay
     // ));
     /* THIS /\ FOR SURE WORKS IF THE BELOW \/ DOESNT */
-    s_Jop.b().whileTrue(new ParallelCommandGroup( // While the Button B is True run some commands in parallel
-      new StartEndCommand(m_clamp::unclamp, () -> m_clamp.hold(false), m_clamp), // StartEnd command to run Clamp upwards and stop on release
-      new StartEndCommand(m_intake::outake, m_intake::stop, m_intake).beforeStarting(new WaitCommand(1.0)) // StartEnd command to run intake outwards and stop on release after brief delay
-    ));
+    s_Jop.b().whileTrue( // While the Button B is True run some commands in parallel
+      new StartEndCommand(m_clamp::unclamp, () -> m_clamp.hold(false), m_clamp) // StartEnd command to run Clamp upwards and stop on release
+    );
     // END DROP PIECE COMMAND
     
     /*
@@ -227,7 +225,7 @@ public class RobotContainer {
     // Trigger xbox_Y = new CommandXboxController(controllerConst.kOpJoystickUSB).y();
     // xbox_Y.whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
     /* THIS /\ FOR SURE WORKS IF THE BELOW \/ DOESNT */
-    s_Jop.y().whileTrue(new StartEndCommand( // Run new instance of StartEnd command while Button Y is true
+    s_Jop.x().whileTrue(new StartEndCommand( // Run new instance of StartEnd command while Button Y is true
       m_clamp::clamp, // Run this at Command Start
       m_clamp::stop, // Run this at Command End
       m_clamp // Command Requirement
@@ -240,7 +238,7 @@ public class RobotContainer {
     // Trigger xbox_X = new CommandXboxController(controllerConst.kOpJoystickUSB).x();
     // xbox_X.whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
     /* THIS /\ FOR SURE WORKS IF THE BELOW \/ DOESNT */
-    s_Jop.x().whileTrue(new StartEndCommand( // Run new instance of StartEnd command while Button X is true
+    s_Jop.y().whileTrue(new StartEndCommand( // Run new instance of StartEnd command while Button X is true
       m_clamp::unclamp, // Run this at Command Start
       m_clamp::stop, // Run this at Command End
       m_clamp // Command Requirement
@@ -249,13 +247,13 @@ public class RobotContainer {
     
     // Trigger xbox_RB = new CommandXboxController(controllerConst.kOpJoystickUSB).rightBumper();
     // xbox_RB.whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
-    s_Jop.rightBumper()..whileTrue(new StartEndCommand( // TEST POSITIVE INTAKE
+    s_Jop.rightBumper().whileTrue(new StartEndCommand( // TEST POSITIVE INTAKE
       m_intake::intake,
       m_intake::stop,
       m_intake
     ));
     
-    s_Jop.leftBumper()..whileTrue(new StartEndCommand( // TEST POSITIVE CLAMP
+    s_Jop.leftBumper().whileTrue(new StartEndCommand( // TEST POSITIVE CLAMP
       m_clamp::clamp,
       m_clamp::stop,
       m_clamp
@@ -324,25 +322,25 @@ public class RobotContainer {
     s_Jop.povUp().onTrue(
       new ParallelCommandGroup(
         new BoomPosition((double) posConst.kTopBoom, m_boom),
-        new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.5))
+        new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.3))
       ).withTimeout(5.0));
     // Middle Grid Position
     s_Jop.povRight().onTrue(
       new ParallelCommandGroup(
         new BoomPosition((double) posConst.kMidBoom, m_boom),
-        new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.5))
+        new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.2))
       ).withTimeout(5.0));
     // Floor Grid Position
     s_Jop.povDown().onTrue(
       new ParallelCommandGroup(
-        new BoomPosition((double) posConst.kBotBoom, m_boom),
-        new ColumnPosition((double) posConst.kBotColm, m_column).beforeStarting(new WaitCommand(.5))
+        new BoomPosition((double) posConst.kBotBoom, m_boom).beforeStarting(new WaitCommand(.5)),
+        new ColumnPosition((double) posConst.kBotColm, m_column)
       ).withTimeout(5.0));
     // Store Position
     s_Jop.povLeft().onTrue(
       new ParallelCommandGroup(
-        new BoomPosition((double) 47.0, m_boom),
-        new ColumnPosition((double) 0.0, m_column).beforeStarting(new WaitCommand(.5))
+        new BoomPosition((double) posConst.kStowBoom, m_boom),
+        new ColumnPosition((double) posConst.kStowColm, m_column)
       ).withTimeout(5.0));
     // END POV POSITION COMMANDS
   }
@@ -368,7 +366,7 @@ public class RobotContainer {
    * to the motors.
    */
   public static double getDriveStickY() {
-    double axisValue = s_Jdriver.getY();
+    double axisValue = -s_Jdriver.getY();
     if (Math.abs(axisValue) < controllerConst.kDriveAxisYDeadband) {
       axisValue = 0.0;
     }

@@ -115,8 +115,11 @@ public class Drivetrain extends SubsystemBase {
 
     // ENCODER SETUP
     // Attach encoder to master motor controllers (front)
-    m_talonFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
-    m_talonFR.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+    m_talonFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    m_talonFR.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+
+    m_talonFL.setSensorPhase(true);
+    m_talonFR.setSensorPhase(true);
 
     m_talonFL.setSelectedSensorPosition(0.0);
     m_talonFR.setSelectedSensorPosition(0.0);
@@ -135,8 +138,8 @@ public class Drivetrain extends SubsystemBase {
    * Encoder position will be used to determine the distance driven for things like auto mode.
    */
   public void drive(double forward, double rotate) {
-    m_talonFL.set(ControlMode.PercentOutput, -forward, DemandType.ArbitraryFeedForward, rotate);
-    m_talonFR.set(ControlMode.PercentOutput, -forward, DemandType.ArbitraryFeedForward, -rotate);
+    m_talonFL.set(ControlMode.PercentOutput, forward, DemandType.ArbitraryFeedForward, rotate);
+    m_talonFR.set(ControlMode.PercentOutput, forward, DemandType.ArbitraryFeedForward, -rotate);
   }
 
   /* Completely stop the motors */
@@ -196,22 +199,22 @@ public class Drivetrain extends SubsystemBase {
 
   public double getPitch() {
     /* Pitch is the rotation around the X axis and will be used to determine if the charging platform is level */
-    return ypr_rot[1];
+    return -ypr_rot[2];
   }
 
   public double getPitchRate() {
     /* Rate of change in pitch. Using this as a D in PID control will give a smoother response. */
-    return xyz_rot[1];
+    return -xyz_rot[2];
   }
   
   public double getRoll() {
     /* Roll is the rotation around the Y axis */
-    return ypr_rot[2];
+    return ypr_rot[1];
   }
 
   public double getRollRate() {
     /* Rate of change in roll. Using this as a D in PID control will give a smoother response. */
-    return xyz_rot[2];
+    return xyz_rot[1];
   }
   
   public double getHeading() {

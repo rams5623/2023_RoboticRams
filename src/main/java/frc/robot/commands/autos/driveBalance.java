@@ -8,14 +8,14 @@ import frc.robot.subsystems.Drivetrain;
 
 public class driveBalance extends PIDCommand {
 
-  public driveBalance(Double initYaw, Drivetrain drivetrain) {
+  public driveBalance(Double initPitch, Drivetrain drivetrain) {
     super(
         // The controller that the command will use
         new PIDController(balanceConst.kP, balanceConst.kI, balanceConst.kD),
         // This should return the measurement
         drivetrain::getPitch,
         // This should return the setpoint (can also be a constant)
-        initYaw,
+        initPitch,
         // This uses the output
         output -> drivetrain.drive(output, 0.0),
           // Requires the drivetrain
@@ -24,7 +24,8 @@ public class driveBalance extends PIDCommand {
 
     getController().enableContinuousInput(balanceConst.kminInput, balanceConst.kmaxInput);
     getController().setTolerance(balanceConst.kpitchTol, balanceConst.krateTol);
-    getController().setSetpoint(initYaw);
+    getController().setSetpoint(initPitch + 3);
+    getController().setIntegratorRange(0, 0);
   }
 
   // Returns true when the command should end.

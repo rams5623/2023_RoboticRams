@@ -10,6 +10,7 @@ import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Column;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 
@@ -30,7 +31,7 @@ public final class Autos {
    */
   public static CommandBase driveStraightAuto(Drivetrain drive) {
     return Commands.sequence(
-      new driveDistance(-52.0, true, drive)
+      new driveDistance(52.0, true, drive)
     );
   }
 
@@ -40,7 +41,7 @@ public final class Autos {
   public static CommandBase driveUnfoldAuto(Drivetrain drive, Boom boom, Column column) {
     return Commands.parallel(
       new unfold(column, boom),
-      new driveDistance(-52.0, true, drive)
+      new driveDistance(52.0, true, drive)
     );
   }
 
@@ -49,10 +50,11 @@ public final class Autos {
    */
   public static CommandBase driveBalanceAuto(Drivetrain drive, Boom boom, Column column) {
     return Commands.sequence(
-      new unfold(column, boom).withTimeout(5.0),
-      new BoomPosition(posConst.kMidBoom, boom).withTimeout(3.0),
-      new driveDistance(-36.0, false, drive).withTimeout(3.0),
-      new driveBalance(drive.getYaw(), drive)
+      new unfold(column, boom).withTimeout(3.2),
+      new InstantCommand(drive::resetEncoder, drive).withTimeout(1.0),
+      new driveDistance(75.0, false, drive).withTimeout(3.0),
+      new InstantCommand(drive::setDriveBrake, drive).withTimeout(1.0),
+      new driveBalance(drive.getPitch(), drive)
     );
   }
 
