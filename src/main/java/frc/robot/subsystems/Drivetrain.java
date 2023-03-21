@@ -204,6 +204,16 @@ public class Drivetrain extends SubsystemBase {
     return xyz_rot[1];
   }
   
+  public double getRoll() {
+    /* Roll is the rotation around the Y axis */
+    return ypr_rot[2];
+  }
+
+  public double getRollRate() {
+    /* Rate of change in roll. Using this as a D in PID control will give a smoother response. */
+    return xyz_rot[2];
+  }
+  
   public double getHeading() {
     /* Use this to get the "Yaw" rather than the getYaw. The getYaw has a lot of drift */
     s_pidgey.getFusedHeading(fusionStatus);
@@ -222,6 +232,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Raw Right Drive Encoder", getRightEncoder());
     SmartDashboard.putNumber("Yaw", getHeading());
     SmartDashboard.putNumber("Pitch",getPitch());
+    SmartDashboard.putNumber("Roll",getRoll());
     // When a NavX is installed uncomment below
     // SmartDashboard.putNumber("Gyro Yaw", m_gyro.getYaw());
     // SmartDashboard.putNumber("Gyro Roll", m_gyro.getRoll());
