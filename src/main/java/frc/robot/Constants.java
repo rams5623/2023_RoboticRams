@@ -108,7 +108,7 @@ public final class Constants {
     // Talon SRX command deadband zone (Different then joystick deadband zone)
     public static final double kDeadbandBoom = 0.05;
     // Talon SRX Arbitrarty Feedback for Gravity (NEED TO INCLUDE WEIGHT OF CONE)
-    public static final double karbitraryBoom = -0.085;
+    public static final double karbitraryBoom = 0.0;//-0.085;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
