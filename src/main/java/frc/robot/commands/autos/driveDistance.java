@@ -25,6 +25,7 @@ public class driveDistance extends CommandBase {
   @Override
   public void initialize() {
     drivetrain.resetEncoder();
+    drivetrain.setDriveBrake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -50,6 +51,7 @@ public class driveDistance extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drivetrain.stop();
+    drivetrain.setDriveCoast();
   }
 
   // Returns true when the command should end.
