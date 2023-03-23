@@ -197,9 +197,9 @@ public final class Constants {
         // Have Inches but Need Counts - Inches / kEncDistancePerPulse
 
     // Speed reducer commands
-    public static final double SPEED_TURN = 0.650; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_TURN = 0.630; // Max straight speed percentage (positive constant)  // [Percent]
     public static final double SPEED_STRT = 0.750; // Max straight speed percentage (positive constant)  // [Percent]
     public static final double SPEED_SLOWSTRT = 0.40;
-    public static final double SPEED_SLOWTURN = 0.45;
+    public static final double SPEED_SLOWTURN = 0.44;
   }
 }
