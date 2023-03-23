@@ -180,6 +180,13 @@ public class RobotContainer {
     ));
     // END BRAKE/COAST TOGGLE COMMAND
     
+    /*
+     * RESET DRIVE ENCODERS MANUALLY FOR SOME REASON
+     */
+    new JoystickButton(s_Jdriver, 12).toggleOnTrue( // Button 12 on Driver Joystick
+      new InstantCommand(m_drivetrain::resetEncoder, m_drivetrain)
+    );
+    
     /* END DRIVER JOYSTICK SECTION */
     
     
@@ -222,10 +229,10 @@ public class RobotContainer {
     /*
      * RUN CLAMP DOWNWARDS INDEPENDENTLY OF INTAKE
      */
-    // Trigger xbox_Y = new CommandXboxController(controllerConst.kOpJoystickUSB).y();
-    // xbox_Y.whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
+    // Trigger xbox_X = new CommandXboxController(controllerConst.kOpJoystickUSB).x();
+    // xbox_X.whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
     /* THIS /\ FOR SURE WORKS IF THE BELOW \/ DOESNT */
-    s_Jop.x().whileTrue(new StartEndCommand( // Run new instance of StartEnd command while Button Y is true
+    s_Jop.x().whileTrue(new StartEndCommand( // Run new instance of StartEnd command while Button X is true
       m_clamp::clamp, // Run this at Command Start
       m_clamp::stop, // Run this at Command End
       m_clamp // Command Requirement
@@ -235,10 +242,10 @@ public class RobotContainer {
     /*
      * RUN CLAMP UPWARDS INDEPENDENTLY OF INTAKE
      */
-    // Trigger xbox_X = new CommandXboxController(controllerConst.kOpJoystickUSB).x();
-    // xbox_X.whileTrue(new StartEndCommand(m_clamp::clamp, m_clamp::stop, m_clamp));
+    // Trigger xbox_Y = new CommandXboxController(controllerConst.kOpJoystickUSB).y();
+    // xbox_Y.whileTrue(new StartEndCommand(m_clamp::unclamp, m_clamp::stop, m_clamp));
     /* THIS /\ FOR SURE WORKS IF THE BELOW \/ DOESNT */
-    s_Jop.y().whileTrue(new StartEndCommand( // Run new instance of StartEnd command while Button X is true
+    s_Jop.y().whileTrue(new StartEndCommand( // Run new instance of StartEnd command while Button Y is true
       m_clamp::unclamp, // Run this at Command Start
       m_clamp::stop, // Run this at Command End
       m_clamp // Command Requirement
@@ -247,17 +254,17 @@ public class RobotContainer {
     
     // Trigger xbox_RB = new CommandXboxController(controllerConst.kOpJoystickUSB).rightBumper();
     // xbox_RB.whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
-    s_Jop.rightBumper().whileTrue(new StartEndCommand( // TEST POSITIVE INTAKE
-      m_intake::intake,
-      m_intake::stop,
-      m_intake
-    ));
+    // s_Jop.rightBumper().whileTrue(new StartEndCommand( // TEST POSITIVE INTAKE
+    //   m_intake::intake,
+    //   m_intake::stop,
+    //   m_intake
+    // ));
     
-    s_Jop.leftBumper().whileTrue(new StartEndCommand( // TEST POSITIVE CLAMP
-      m_clamp::clamp,
-      m_clamp::stop,
-      m_clamp
-    ));
+    // s_Jop.leftBumper().whileTrue(new StartEndCommand( // TEST POSITIVE CLAMP
+    //   m_clamp::clamp,
+    //   m_clamp::stop,
+    //   m_clamp
+    // ));
 
     /*
      * RESET ENCODERS TO HOME POSITION VALUES
