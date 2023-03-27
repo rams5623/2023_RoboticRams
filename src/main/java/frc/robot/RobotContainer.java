@@ -1,17 +1,13 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
 
 import frc.robot.Constants.controllerConst;
 import frc.robot.Constants.driveConst;
-import frc.robot.Constants.posConst;
+import frc.robot.Constants.boomConst.boomPosition;
+import frc.robot.Constants.columnConst.columnPosition;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.BoomPosition;
-import frc.robot.commands.ColumnPosition;
-import frc.robot.commands.MoveBoom;
-import frc.robot.commands.MoveColumn;
+import frc.robot.commands.BoomControl;
+import frc.robot.commands.ColumnControl;
 import frc.robot.commands.autos.Autos;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Clamp;
@@ -20,19 +16,16 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -52,6 +45,7 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Column m_column = new Column();
   private final Drivetrain m_drivetrain = new Drivetrain();
+  private final GlobalVariables m_variables = new GlobalVariables();
 
   // Controller creation
   public static final Joystick s_Jdriver = new Joystick(controllerConst.kDriveJoystickUSB);
@@ -107,20 +101,14 @@ public class RobotContainer {
     //m_drivetrain.setDefaultCommand(new ArcadeDrive(() -> getDriveStickY(), () -> getDriveStickZ(), m_drivetrain));
 
     m_column.setDefaultCommand(
-      new RunCommand(() ->
-        m_column.move(-getOpRightStickY(),false),
-        m_column
-      )
+      new ColumnControl(m_column, this, m_variables)
     );
     // m_column.setDefaultCommand(
     //   new MoveColumn(s_Jop::getRightY, m_column)
     // );
 
     m_boom.setDefaultCommand(
-      new RunCommand(() ->
-        m_boom.move(getOpLeftStickY(), false),
-        m_boom
-      )
+      new BoomControl(m_boom, this, m_variables)
     );
     // m_boom.setDefaultCommand(
     //   new MoveBoom(s_Jop::getLeftY, m_boom)
@@ -146,10 +134,10 @@ public class RobotContainer {
     
     /* Creates a trigger in response to the limit switch activation for zeroing encoders */
     Trigger columnResetTrigger = new Trigger(m_column::getRevSwitch);
-    columnResetTrigger.onTrue(new InstantCommand(m_column::resetEncoder, m_column));
+    columnResetTrigger.whileTrue(new InstantCommand(m_column::resetEncoder, m_column));
 
     Trigger boomResetTrigger = new Trigger(m_boom::getSwitch);
-    boomResetTrigger.onTrue(new InstantCommand(m_boom::resetEncoder, m_boom));
+    boomResetTrigger.whileTrue(new InstantCommand(m_boom::resetEncoder, m_boom));
     
     
     
@@ -251,25 +239,10 @@ public class RobotContainer {
       m_clamp // Command Requirement
     ));
     // END INDEPENDENT CLAMP UPWARDS COMMAND
-    
-    // Trigger xbox_RB = new CommandXboxController(controllerConst.kOpJoystickUSB).rightBumper();
-    // xbox_RB.whileTrue(new StartEndCommand(m_intake::intake, m_intake::stop, m_intake));
-    // s_Jop.rightBumper().whileTrue(new StartEndCommand( // TEST POSITIVE INTAKE
-    //   m_intake::intake,
-    //   m_intake::stop,
-    //   m_intake
-    // ));
-    
-    // s_Jop.leftBumper().whileTrue(new StartEndCommand( // TEST POSITIVE CLAMP
-    //   m_clamp::clamp,
-    //   m_clamp::stop,
-    //   m_clamp
-    // ));
 
     /*
      * RESET ENCODERS TO HOME POSITION VALUES
      */
-    // TODO: CHANGE THESE OVER TO XBOXCONTROLLERCOMMAND INSTANCE
     // new JoystickButton(s_Jop, Button.kBack.value).whileTrue(new ParallelCommandGroup(
     //   new InstantCommand(m_boom::resetEncoder,m_boom),
     //   new InstantCommand(m_column::resetEncoder, m_column)
@@ -283,72 +256,71 @@ public class RobotContainer {
     /*
      * BYPASS LIMIT SWITCHES ON BOOM AND COLUMN
      */
-    // TODO: CHANGE THESE OVER TO XBOXCONTROLLERCOMMAND INSTANCE
-    // new JoystickButton(s_Jop, Button.kStart.value).whileTrue(new ParallelCommandGroup(
-    //   new MoveColumn(() -> getOpRightStickY(), true, m_column),
-    //   new MoveBoom(() -> getOpLeftStickY(), true, m_boom)
+    // s_Jop.start().whileTrue(new SequentialCommandGroup( // Run new instance of parallel command group when start button is true
+    //   new MoveColumn(() -> getOpRightStickY(), true, m_column), // run column like normal but bypass limit switch restrictions
+    //   new MoveBoom(() -> getOpLeftStickY(), true, m_boom) // run boom like normal but bypass limit switch restrictions
     // ));
-    s_Jop.start().whileTrue(new ParallelCommandGroup( // Run new instance of parallel command group when start button is true
-      new MoveColumn(() -> getOpRightStickY(), true, m_column), // run column like normal but bypass limit switch restrictions
-      new MoveBoom(() -> getOpLeftStickY(), true, m_boom) // run boom like normal but bypass limit switch restrictions
-    ));
+    s_Jop.start().onTrue(
+      // Set the switch bypass global variable to true when start is pressed
+      new InstantCommand(() -> m_variables.setSwitchBypass(true), m_variables)
+    ).onFalse(
+      // Set the switch bypass global variable to false when start is released
+      new InstantCommand(() -> m_variables.setSwitchBypass(false), m_variables)
+    );
     // END SWITCH BYPASS COMMAND
     
     /*
      * POV BUTTON POSITIONAL COMMANDS
      */
-    // Top Grid Position
-    // new POVButton(s_Jop, 0).onTrue(
+    // // Top Grid Position
+    // s_Jop.povUp().onTrue(
     //   new ParallelCommandGroup(
     //     new BoomPosition((double) posConst.kTopBoom, m_boom),
-    //     new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.5))
+    //     new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.3))
     //   ).withTimeout(5.0));
-
-    // Middle Grid Position
-    // new POVButton(s_Jop, 90).onTrue(
+    // // Middle Grid Position
+    // s_Jop.povRight().onTrue(
     //   new ParallelCommandGroup(
     //     new BoomPosition((double) posConst.kMidBoom, m_boom),
-    //     new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.5))
-    //   ).withTimeout(4.0));
-
-    // Home Floor Position
-    // new POVButton(s_Jop, 180).onTrue(
+    //     new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.2))
+    //   ).withTimeout(5.0));
+    // // Floor Grid Position
+    // s_Jop.povDown().onTrue(
     //   new ParallelCommandGroup(
-    //     new BoomPosition((double) posConst.kMinBoom, m_boom),
-    //     new ColumnPosition((double) posConst.kMinColm, m_column).beforeStarting(new WaitCommand(.5))
-    //   ).withTimeout(4.0));
-
-    // Store Position
-    // new POVButton(s_Jop, 270).onTrue(
+    //     new BoomPosition((double) posConst.kBotBoom, m_boom).beforeStarting(new WaitCommand(.5)),
+    //     new ColumnPosition((double) posConst.kBotColm, m_column)
+    //   ).withTimeout(5.0));
+    // // Store Position
+    // s_Jop.povLeft().onTrue(
     //   new ParallelCommandGroup(
-    //     new BoomPosition((double) 47.0, m_boom),
-    //     new ColumnPosition((double) 0.0, m_column).beforeStarting(new WaitCommand(.5))
-    //   ).withTimeout(4.0));
+    //     new BoomPosition((double) posConst.kStowBoom, m_boom),
+    //     new ColumnPosition((double) posConst.kStowColm, m_column)
+    //   ).withTimeout(5.0));
 
     // Top Grid Position
     s_Jop.povUp().onTrue(
-      new ParallelCommandGroup(
-        new BoomPosition((double) posConst.kTopBoom, m_boom),
-        new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.3))
-      ).withTimeout(5.0));
+      new SequentialCommandGroup(
+        new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.TOP), m_variables).withTimeout(0.2),
+        new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.TOP), m_variables).withTimeout(0.2)
+    ));
     // Middle Grid Position
     s_Jop.povRight().onTrue(
-      new ParallelCommandGroup(
-        new BoomPosition((double) posConst.kMidBoom, m_boom),
-        new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.2))
-      ).withTimeout(5.0));
+      new SequentialCommandGroup(
+        new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.MIDDLE), m_variables).withTimeout(0.2),
+        new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.MIDDLE), m_variables).withTimeout(0.2)
+    ));
     // Floor Grid Position
     s_Jop.povDown().onTrue(
-      new ParallelCommandGroup(
-        new BoomPosition((double) posConst.kBotBoom, m_boom).beforeStarting(new WaitCommand(.5)),
-        new ColumnPosition((double) posConst.kBotColm, m_column)
-      ).withTimeout(5.0));
-    // Store Position
+      new SequentialCommandGroup(
+        new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.FLOOR), m_variables).withTimeout(0.2),
+        new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.FLOOR), m_variables).withTimeout(0.2)
+    ));
+    // Stow Travel Position
     s_Jop.povLeft().onTrue(
-      new ParallelCommandGroup(
-        new BoomPosition((double) posConst.kStowBoom, m_boom),
-        new ColumnPosition((double) posConst.kStowColm, m_column)
-      ).withTimeout(5.0));
+      new SequentialCommandGroup(
+        new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.STOW), m_variables).withTimeout(0.2),
+        new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.STOW), m_variables).withTimeout(0.2)
+    ));
     // END POV POSITION COMMANDS
   }
   
@@ -359,7 +331,7 @@ public class RobotContainer {
    * a deadband to the input to prevent minor joystick drift sending commands
    * to the motors.
    */
-  public static double getDriveStickZ() {
+  public double getDriveStickZ() {
     double axisValue = s_Jdriver.getZ();
     if (Math.abs(axisValue) < controllerConst.kDriveAxisZDeadband) {
       axisValue = 0.0;
@@ -372,7 +344,7 @@ public class RobotContainer {
    * a deadband to the input to prevent minor joystick drift sending commands
    * to the motors.
    */
-  public static double getDriveStickY() {
+  public double getDriveStickY() {
     double axisValue = -s_Jdriver.getY();
     if (Math.abs(axisValue) < controllerConst.kDriveAxisYDeadband) {
       axisValue = 0.0;
@@ -385,7 +357,7 @@ public class RobotContainer {
    * deadband to the input to prevent minor joystick drift sending commands
    * to the motors and causing jitteryness and unwanted movements.
    */
-  public static double getOpLeftStickY() {
+  public double getOpLeftStickY() {
     double axisValue = s_Jop.getLeftY();
     if (Math.abs(axisValue) < controllerConst.kOpAxisLeftYDeadband) {
       axisValue = 0.0;
@@ -398,7 +370,7 @@ public class RobotContainer {
    * deadband to the input to prevent minor joystick drift sending commands
    * to the motors and causing jitteryness and unwanted movements.
    */
-  public static double getOpRightStickY() {
+  public double getOpRightStickY() {
     double axisValue = s_Jop.getRightY();
     if (Math.abs(axisValue) < controllerConst.kOpAxisRightYDeadband) {
       axisValue = 0.0;

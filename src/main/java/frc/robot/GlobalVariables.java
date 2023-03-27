@@ -5,8 +5,9 @@ import frc.robot.Constants.boomConst.boomPosition;
 import frc.robot.Constants.columnConst.columnPosition;
 
 public class GlobalVariables extends SubsystemBase {
-  private boomPosition BoomPosition;
-  private columnPosition ColumnPosition;
+  private boomPosition BoomPosition = boomPosition.MANUAL;
+  private columnPosition ColumnPosition = columnPosition.MANUAL;
+  private Boolean SwitchBypass = false;
   
   public GlobalVariables() {}
   
@@ -15,8 +16,8 @@ public class GlobalVariables extends SubsystemBase {
     return BoomPosition;
   }
   
-  // set the boom posiiton setpoint
-  public setBoomPosition(boomPosition p_BoomPosition) {
+  // set the current boom posiiton setpoint
+  public void setBoomPosition(boomPosition p_BoomPosition) {
     BoomPosition = p_BoomPosition;
   }
   
@@ -26,7 +27,17 @@ public class GlobalVariables extends SubsystemBase {
   }
   
   // set the current column position setpoint
-  public setColumnPosition(p_ColumnPosition) {
+  public void setColumnPosition(columnPosition p_ColumnPosition) {
     ColumnPosition = p_ColumnPosition;
+  }
+
+  // pull the current limit switch bypass state
+  public Boolean getSwitchBypass() {
+    return SwitchBypass;
+  }
+
+  // set the current limit switch bypass state
+  public void setSwitchBypass(Boolean p_bypassSwitch) {
+    SwitchBypass = p_bypassSwitch;
   }
 }
