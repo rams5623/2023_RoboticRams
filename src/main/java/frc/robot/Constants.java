@@ -109,7 +109,7 @@ public final class Constants {
       MIDDLE,
       TOP,
       FOLD
-    }
+    };
   }
 
   /** CONSTANTS FOR USE IN THE BOOM SUBSYSTEM **/
@@ -150,7 +150,7 @@ public final class Constants {
       MIDDLE,
       TOP,
       FOLD
-    }
+    };
   }
 
   /** CONSTANTS FOR USE IN THE INTAKE SUBSYSTEM **/
