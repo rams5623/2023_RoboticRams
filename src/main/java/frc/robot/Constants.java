@@ -99,6 +99,17 @@ public final class Constants {
     // Column rear limit switch for reseting encoder
     public static final int kswitchRev_column = 0;
     public static final int kswitchFwd_column = 1;
+    
+    // Column Positions Constant
+    public static enum columnPosition {
+      MANUAL,
+      HOME,
+      STOW,
+      FLOOR,
+      MIDDLE,
+      TOP,
+      FOLD
+    }
   }
 
   /** CONSTANTS FOR USE IN THE BOOM SUBSYSTEM **/
@@ -129,6 +140,17 @@ public final class Constants {
 
     // Boom rear limit switch for reseting encoder
     public static final int kswitch_boom = 2;
+    
+    // Column Positions Constant
+    public static enum boomPosition {
+      MANUAL,
+      HOME,
+      STOW,
+      FLOOR,
+      MIDDLE,
+      TOP,
+      FOLD
+    }
   }
 
   /** CONSTANTS FOR USE IN THE INTAKE SUBSYSTEM **/
