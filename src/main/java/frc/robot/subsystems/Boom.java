@@ -39,6 +39,7 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
     m_talonBoom.setSensorPhase(boomConst.kSensorPhase);
     m_talonBoom.setSelectedSensorPosition(0.0); // On Robot start in starting config we want the sensor to read zero and not the home angle
+    // TODO: Change the 0.0 above to: posConst.kFoldBoom /\
     
     // PID for talon controller position
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
