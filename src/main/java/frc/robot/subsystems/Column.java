@@ -48,6 +48,7 @@ public class Column extends SubsystemBase {
     m_talonColumn.config_kI(columnConst.kSlotidx, columnConst.kI);
     m_talonColumn.config_kD(columnConst.kSlotidx, columnConst.kD);
     m_talonColumn.setSelectedSensorPosition(0.0);
+    // TODO: Change the 0.0 above to: posConst.kFoldColm /\
   }
 
   /*
