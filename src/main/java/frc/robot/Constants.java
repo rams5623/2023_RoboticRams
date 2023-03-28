@@ -67,8 +67,8 @@ public final class Constants {
     public static final double kMinColm = 0; // [Inches] Max Reverse Position
 
     // FOLD BOOM AND COLUMN POSITION
-    public static final double kFoldBoom = 210.0; // [degrees] At floor
-    public static final double kFoldColm = 4.5; // [Inches] Max Reverse Position
+    public static final double kFoldBoom = 210.0; // [degrees] At starting folded positon
+    public static final double kFoldColm = 4.5; // [Inches] Vertical but slightly forward
     
     // Column Inch Position Conversion Constant
     public static final double kMaxColmLength = 11.5625; // [Inches] Full travel from rev switch to fwd switch
