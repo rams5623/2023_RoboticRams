@@ -72,6 +72,23 @@ public class Boom extends SubsystemBase {
   }
 
   /*
+   * Adjust Position or Set Speed on The fly to Control the Arm
+   * Combines the functions of gotoPosition and move into one function that may provide
+   * less janky movements from the ControlBoom command. This function is to only be
+   * used with the ControlBoom command.
+   */
+  public void motorControl(ControlMode mode, double output, boolean bypassSwitch) {
+    if ((mode == ControlMode.PercentOutput && getSwitch() && (output < 0.0) && !bypassSwitch) // If move() conditions are true
+     || (mode == ConrolMode.Position && getSwitch())) { // OR gotoPosition() conditions are true
+      // Don't move below the limit switch
+      stop();
+    } else {
+      // Otherwise move desired speed or to position
+      m_talonBoom.set(mode, output, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
+    }
+  }
+                                               
+  /*
    * Use PID Control of Motor Controller to Move the Arm to the Given Angle
    * Since the operator has no control over this except to specify what angle to go to,
    * there is no bypass exception allowed once the switch has activated. This is done
@@ -79,7 +96,7 @@ public class Boom extends SubsystemBase {
    * commanding the boom arm to lower further into the ground.
    */
   public void gotoPosition(double angle) {
-    if (getSwitch() && (angle > 0.0)) {
+    if (getSwitch()) {
       stop();
     } else {
       m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
@@ -101,8 +118,8 @@ public class Boom extends SubsystemBase {
   // public void move(Double speed) {
   //   m_talonBoom.set(ControlMode.PercentOutput, 0.5*speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom); // Remove this line after testing the above section
   // }
-  public void move(Double speed, Boolean bypassSwitch) {
-    if ((getSwitch() && (speed > 0.0)) && !bypassSwitch) {
+  public void move(double speed, boolean bypassSwitch) {
+    if ((getSwitch() && (speed < 0.0)) && !bypassSwitch) {
        stop();
     } else {
        m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
