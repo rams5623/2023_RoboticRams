@@ -36,18 +36,35 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configPeakOutputReverse(-0.55); // Max Reverse Command Allowed
 
     // Encoder Stuff
-    m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+    m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); // _Relative maybe???
+    m_talonBoom.configReverseLimitSwitchSource(m_talonBoom,
     m_talonBoom.setSensorPhase(boomConst.kSensorPhase);
     m_talonBoom.setSelectedSensorPosition(0.0); // On Robot start in starting config we want the sensor to read zero and not the home angle
     // TODO: Change the 0.0 above to: posConst.kFoldBoom /\
     
     // PID for talon controller position
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
-    m_talonBoom.configAllowableClosedloopError(boomConst.kSlotidx, 0.0);
+    m_talonBoom.configAllowableClosedloopError(boomConst.kSlotidx, 1.0);
     m_talonBoom.config_kF(boomConst.kSlotidx, boomConst.kF);
     m_talonBoom.config_kP(boomConst.kSlotidx, boomConst.kP);
     m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);
     m_talonBoom.config_kD(boomConst.kSlotidx, boomConst.kD);
+    m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, 0.75);
+    
+    // PID Live Editing
+    double m_P = boomConst.kP;
+    double m_I = boomConst.kI;
+    double m_D = boomConst.kD;
+    double m_F = boomConst.kF;
+    double m_error = 1.0;
+    double m_peakOut = 0.75;
+    SmartDashboard.putNumber("Boom kP", m_P);
+    SmartDashboard.putNumber("Boom kI", m_I);
+    SmartDashboard.putNumber("Boom kD", m_D);
+    SmartDashboard.putNumber("Boom kF", m_F);
+    SmartDashboard.putNumber("Boom kerror", m_error);
+    SmartDashboard.putNumber("Boom kPeakOut", m_peakOut);
+    
 
     // SoftLimit on Max Boom Height to prevent over extending
     m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom * posConst.kBoomCountPerDegree); // [counts] = [degree] * [counts/degree]
@@ -62,12 +79,12 @@ public class Boom extends SubsystemBase {
    * commanding the boom arm to lower further into the ground.
    */
   public void gotoPosition(double angle) {
-    // if (getSwitch()) {
-    //   stop()
-    // } else {
-    //   m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree);
-    // }
-    m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
+    if (getSwitch() && (angle > 0.0)) {
+      stop();
+    } else {
+      m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
+    }
+    // m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
   }
   
   /* 
@@ -122,7 +139,8 @@ public class Boom extends SubsystemBase {
    * feedforward providing additional output.
    */
   public void stop() {
-    m_talonBoom.set(ControlMode.PercentOutput, 0);
+    // m_talonBoom.set(ControlMode.PercentOutput, 0);
+    m_talonBoom.stopMotor();
   }
   
   /*
@@ -167,5 +185,28 @@ public class Boom extends SubsystemBase {
     SmartDashboard.putNumber("Boom Angle", getPosition()); // [Degrees]
     SmartDashboard.putNumber("Boom Raw Encoder", getPosition() * posConst.kBoomCountPerDegree); // [Counts] = [Degrees] * [Counts/Degree]
     SmartDashboard.putNumber("Boom Current", m_talonBoom.getSupplyCurrent());// [Amps]
+    
+    // LIVE PID EDITING
+    // Get Dashobard Values
+    m_P = SmartDashboard.getNumber("Boom kP", m_P);
+    m_I = SmartDashboard.getNumber("Boom kI", m_I);
+    m_D = SmartDashboard.getNumber("Boom kD", m_D);
+    m_F = SmartDashboard.getNumber("Boom kF", m_F);
+    m_error = SmartDashboard.getNumber("Boom kerror", m_error);
+    m_peakOut = SmartDashboard.getNumber("Boom kPeakOut", m_peakOut);
+    // Push Gotten Dashboard Values
+    SmartDashboard.putNumber("Boom kP", m_P);
+    SmartDashboard.putNumber("Boom kI", m_I);
+    SmartDashboard.putNumber("Boom kD", m_D);
+    SmartDashboard.putNumber("Boom kF", m_F);
+    SmartDashboard.putNumber("Boom kerror", m_error);
+    SmartDashboard.putNumber("Boom kPeakOut", m_peakOut);
+    // Set Dashboard Values
+    m_talonBoom.configAllowableClosedloopError(boomConst.kSlotidx, m_error);
+    m_talonBoom.config_kF(boomConst.kSlotidx, boomConst.kF);
+    m_talonBoom.config_kP(boomConst.kSlotidx, boomConst.kP);
+    m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);
+    m_talonBoom.config_kD(boomConst.kSlotidx, boomConst.kD);
+    m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, m_peakOut);
   }
 }
