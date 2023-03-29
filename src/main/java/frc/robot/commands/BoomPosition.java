@@ -34,7 +34,7 @@ public class BoomPosition extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_boom.stop();
+    // m_boom.stop(); // Maybe this is doing it???
   }
 
   // Returns true when the command should end.
