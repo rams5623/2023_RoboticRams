@@ -298,29 +298,29 @@ public class RobotContainer {
       //   ).withTimeout(5.0));
 
       // Top Grid Position
-      s_Jop.povUp().onTrue(
-        new SequentialCommandGroup(
-          new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.TOP), m_variables).withTimeout(0.2),
-          new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.TOP), m_variables).withTimeout(0.2)
-      ));
-      // Middle Grid Position
-      s_Jop.povRight().onTrue(
-        new SequentialCommandGroup(
-          new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.MIDDLE), m_variables).withTimeout(0.2),
-          new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.MIDDLE), m_variables).withTimeout(0.2)
-      ));
-      // Floor Grid Position
-      s_Jop.povDown().onTrue(
-        new SequentialCommandGroup(
-          new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.FLOOR), m_variables).withTimeout(0.2),
-          new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.FLOOR), m_variables).withTimeout(0.2)
-      ));
-      // Stow Travel Position
-      s_Jop.povLeft().onTrue(
-        new SequentialCommandGroup(
-          new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.STOW), m_variables).withTimeout(0.2),
-          new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.STOW), m_variables).withTimeout(0.2)
-      ));
+      // s_Jop.povUp().onTrue(
+      //   new SequentialCommandGroup(
+      //     new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.TOP), m_variables).withTimeout(0.1),
+      //     new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.TOP), m_variables).withTimeout(0.1)
+      // ));
+      // // Middle Grid Position
+      // s_Jop.povRight().onTrue(
+      //   new SequentialCommandGroup(
+      //     new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.MIDDLE), m_variables).withTimeout(0.1),
+      //     new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.MIDDLE), m_variables).withTimeout(0.1)
+      // ));
+      // // Floor Grid Position
+      // s_Jop.povDown().onTrue(
+      //   new SequentialCommandGroup(
+      //     new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.FLOOR), m_variables).withTimeout(0.1),
+      //     new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.FLOOR), m_variables).withTimeout(0.1)
+      // ));
+      // // Stow Travel Position
+      // s_Jop.povLeft().onTrue(
+      //   new SequentialCommandGroup(
+      //     new InstantCommand(() -> m_variables.setBoomPosition(boomPosition.STOW), m_variables).withTimeout(0.1),
+      //     new InstantCommand(() -> m_variables.setColumnPosition(columnPosition.STOW), m_variables).withTimeout(0.1)
+      // ));
       // END POV POSITION COMMANDS
     // } /* END OPERATOR CONTROLLER SECTION */
   }
@@ -358,7 +358,7 @@ public class RobotContainer {
    * to the motors and causing jitteryness and unwanted movements.
    */
   public double getOpLeftStickY() {
-    double axisValue = s_Jop.getLeftY();
+    double axisValue = -s_Jop.getLeftY();
     if (Math.abs(axisValue) < controllerConst.kOpAxisLeftYDeadband) {
       axisValue = 0.0;
     }
@@ -371,7 +371,7 @@ public class RobotContainer {
    * to the motors and causing jitteryness and unwanted movements.
    */
   public double getOpRightStickY() {
-    double axisValue = s_Jop.getRightY();
+    double axisValue = -s_Jop.getRightY();
     if (Math.abs(axisValue) < controllerConst.kOpAxisRightYDeadband) {
       axisValue = 0.0;
     }

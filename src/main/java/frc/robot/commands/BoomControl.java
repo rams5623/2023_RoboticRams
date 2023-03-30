@@ -14,6 +14,7 @@ public class BoomControl extends CommandBase {
   private final Boom m_boom;
   private final RobotContainer m_controls;
   private final GlobalVariables m_variables;
+  
   private ControlMode talonMode;
   private double motorOut;
   private boolean isManual;
@@ -41,7 +42,7 @@ public class BoomControl extends CommandBase {
     //Double axisValue = m_controls.getOpLeftStickY();
 
     // If there is any value from the left stick y axis then set override mode
-    if (Math.abs(m_controls.getOpLeftStickY()) > 0) { m_boomPosition = boomPosition.MANUAL; }    
+    if (Math.abs(m_controls.getOpLeftStickY()) > 0.0) { m_boomPosition = boomPosition.MANUAL; }    
     
     /* NEW FUNCTION FOR CONTROLLING BOOM ARM */
     // switch (boomPosition.values()[m_boomPosition]) {
@@ -83,50 +84,58 @@ public class BoomControl extends CommandBase {
     // }
     // motorControl(talonMode, motorOut, m_variables.getSwitchBypass());
     
-    
-    /* SWITCH STRUCTURE METHOD */
-    switch (boomPosition.values()[m_boomPosition]) {
-      // If manual overide is true or mode is manual then left op stick
-      case boomPosition.MANUAL:
-        m_boom.move(axisValue, m_variables.getSwitchBypass());
-        SmartDashboard.putString("Boom Position Setpoint", "MANUAL");
-        break;
-      // Home position is the limit switch positions
-      case boomPosition.HOME:
-        m_boom.gotoPosition(posConst.kMinBoom);
-        SmartDashboard.putString("Boom Position Setpoint", "HOME");
-        break;
-      // Stow position is a safe spot for the arm to be in during travel
-      case boomPosition.STOW:
-        m_boom.gotoPosition(posConst.kStowBoom);
-        SmartDashboard.putString("Boom Position Setpoint", "STOW");
-        break;
-      // Drop the piece off on the floor
-      case boomPosition.FLOOR:
-        m_boom.gotoPosition(posConst.kBotBoom);
-        SmartDashboard.putString("Boom Position Setpoint", "FLOOR");
-        break;
-      // Drop the piece off on the middle pole or shelf
-      case boomPosition.MIDDLE:
-        m_boom.gotoPosition(posConst.kMidBoom);
-        SmartDashboard.putString("Boom Position Setpoint", "MIDDLE");
-        break;
-      // Drop the piece off on the Top pole or shelf
-      case boomPosition.TOP:
-        m_boom.gotoPosition(posConst.kTopBoom);
-        SmartDashboard.putString("Boom Position Setpoint", "TOP");
-        break;
-      // Maybe will never use this but the position is a valid point
-      case boomPosition.FOLD:
-        m_boom.gotoPosition(posConst.kFoldBoom);
-        SmartDashboard.putString("Boom Position Setpoint", "FOLD");
-        break;
+    // If manual overide is true or mode is manual then left op stick
+    if (m_boomPosition == boomPosition.MANUAL) { 
+      talonMode = ControlMode.PercentOutput;
+      motorOut = m_controls.getOpLeftStickY();
+      SmartDashboard.putString("Boom Position Setpoint", "MANUAL");
+      m_variables.setBoomPosition(boomPosition.MANUAL); 
     }
-    
-    
+    // Home position is the limit switch positions
+    else if (m_boomPosition == boomPosition.HOME) {
+      talonMode = ControlMode.Position;
+      motorOut = posConst.kMinBoom;
+      SmartDashboard.putString("Boom Position Setpoint", "HOME");
+    }
+    // Stow position is a safe spot for the arm to be in during travel
+    else if (m_boomPosition == boomPosition.STOW) {
+      talonMode = ControlMode.Position;
+      motorOut = posConst.kStowBoom;
+      SmartDashboard.putString("Boom Position Setpoint", "STOW");
+    }
+    // Drop the piece off on the floor
+    else if (m_boomPosition == boomPosition.FLOOR) {
+      talonMode = ControlMode.Position;
+      motorOut = posConst.kBotBoom;
+      SmartDashboard.putString("Boom Position Setpoint", "FLOOR");
+    }
+    // Drop the piece off on the middle pole or shelf
+    else if (m_boomPosition == boomPosition.MIDDLE) {
+      talonMode = ControlMode.Position;
+      motorOut = posConst.kMidBoom;
+      SmartDashboard.putString("Boom Position Setpoint", "MIDDLE");
+    }
+    // Drop the piece off on the Top pole or shelf
+    else if (m_boomPosition == boomPosition.TOP) {
+      talonMode = ControlMode.Position;
+      motorOut = posConst.kTopBoom;
+      SmartDashboard.putString("Boom Position Setpoint", "TOP");
+    }
+    // Maybe will never use this but the position is a valid point
+    else if (m_boomPosition == boomPosition.FOLD) {
+      talonMode = ControlMode.Position;
+      motorOut = posConst.kFoldBoom;
+      SmartDashboard.putString("Boom Position Setpoint", "FOLD");
+    }
+    // Not a valid mode for the boom arm to be in
+    else {
+      m_boom.stop();
+    }
+    m_boom.motorControl(talonMode, motorOut, m_variables.getSwitchBypass());
+
     /* IF STATEMENT POSITION CHECK METHOD */
-    // // If manual overide is true or mode is manual then left op stick
-    // if (m_boomPosition == boomPosition.MANUAL)) { 
+    // If manual overide is true or mode is manual then left op stick
+    // if (m_boomPosition == boomPosition.MANUAL) { 
     //   m_boom.move(axisValue, m_variables.getSwitchBypass());
     // }
     // // Home position is the limit switch positions

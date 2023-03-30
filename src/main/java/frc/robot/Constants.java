@@ -77,7 +77,7 @@ public final class Constants {
     
     // Boom Angle Position Conversion Constant
     public static final double kBoomCalAngle = 60.0; // [Degrees] Arbitrary angle to calibrate the boom arm to
-    public static final int kBoomCalCount = -1724; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
+    public static final int kBoomCalCount = 1724; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
     public static final double kBoomCountPerDegree = kBoomCalCount / kBoomCalAngle; // [Pulse/Degree] Conversion constant to go between encoder counts and degrees
   }
 
@@ -123,7 +123,7 @@ public final class Constants {
     // Talon SRX command deadband zone (Different then joystick deadband zone)
     public static final double kDeadbandBoom = 0.04;
     // Talon SRX Arbitrarty Feedback for Gravity (NEED TO INCLUDE WEIGHT OF CONE)
-    public static final double karbitraryBoom = -0.045;//-0.085;
+    public static final double karbitraryBoom = 0.0;//-0.085;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;

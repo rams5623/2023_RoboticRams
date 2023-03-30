@@ -18,12 +18,19 @@ public class Boom extends SubsystemBase {
   private final WPI_TalonSRX m_talonBoom = new WPI_TalonSRX(boomConst.ktalon_boom);
   private final DigitalInput s_boomSwitch = new DigitalInput(boomConst.kswitch_boom);
 
+  double m_P = boomConst.kP;
+  double m_I = boomConst.kI;
+  double m_D = boomConst.kD;
+  double m_F = boomConst.kF;
+  double m_error = 1.0;
+  double m_peakOut = 0.75;
+
   public Boom() {
     // Reset the talon settings
     m_talonBoom.configFactoryDefault();
 
     // Motor controller settings
-    m_talonBoom.setInverted(false); // Positive command to the motor controller should be a positive direction (Green blinking lights)
+    m_talonBoom.setInverted(true); // Positive command to the motor controller should be a positive direction (Green blinking lights)
     m_talonBoom.setNeutralMode(NeutralMode.Brake); // Brake mode to prevent the boom from coasting downwards too much under its own weight
     m_talonBoom.configNeutralDeadband(boomConst.kDeadbandBoom);
     m_talonBoom.configNominalOutputForward(0.0);
@@ -37,7 +44,7 @@ public class Boom extends SubsystemBase {
 
     // Encoder Stuff
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); // _Relative maybe???
-    m_talonBoom.configReverseLimitSwitchSource(m_talonBoom,
+    //m_talonBoom.configReverseLimitSwitchSource(m_talonBoom,
     m_talonBoom.setSensorPhase(boomConst.kSensorPhase);
     m_talonBoom.setSelectedSensorPosition(0.0); // On Robot start in starting config we want the sensor to read zero and not the home angle
     // TODO: Change the 0.0 above to: posConst.kFoldBoom /\
@@ -52,12 +59,7 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, 0.75);
     
     // PID Live Editing
-    double m_P = boomConst.kP;
-    double m_I = boomConst.kI;
-    double m_D = boomConst.kD;
-    double m_F = boomConst.kF;
-    double m_error = 1.0;
-    double m_peakOut = 0.75;
+
     SmartDashboard.putNumber("Boom kP", m_P);
     SmartDashboard.putNumber("Boom kI", m_I);
     SmartDashboard.putNumber("Boom kD", m_D);
@@ -79,12 +81,14 @@ public class Boom extends SubsystemBase {
    */
   public void motorControl(ControlMode mode, double output, boolean bypassSwitch) {
     if ((mode == ControlMode.PercentOutput && getSwitch() && (output < 0.0) && !bypassSwitch) // If move() conditions are true
-     || (mode == ConrolMode.Position && getSwitch())) { // OR gotoPosition() conditions are true
+     || (mode == ControlMode.Position && getSwitch())) { // OR gotoPosition() conditions are true
       // Don't move below the limit switch
       stop();
-    } else {
+    } else if (mode == ControlMode.PercentOutput) {
       // Otherwise move desired speed or to position
       m_talonBoom.set(mode, output, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
+    } else if (mode == ControlMode.Position) {
+      m_talonBoom.set(mode, output * posConst.kBoomCountPerDegree);
     }
   }
                                                
