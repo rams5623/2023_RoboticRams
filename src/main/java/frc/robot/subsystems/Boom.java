@@ -18,13 +18,6 @@ public class Boom extends SubsystemBase {
   private final WPI_TalonSRX m_talonBoom = new WPI_TalonSRX(boomConst.ktalon_boom);
   private final DigitalInput s_boomSwitch = new DigitalInput(boomConst.kswitch_boom);
 
-  double m_P = boomConst.kP;
-  double m_I = boomConst.kI;
-  double m_D = boomConst.kD;
-  double m_F = boomConst.kF;
-  double m_error = 1.0;
-  double m_peakOut = 0.75;
-
   public Boom() {
     // Reset the talon settings
     m_talonBoom.configFactoryDefault();
@@ -46,9 +39,8 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); // _Relative maybe???
     //m_talonBoom.configReverseLimitSwitchSource(m_talonBoom,
     m_talonBoom.setSensorPhase(boomConst.kSensorPhase);
-    m_talonBoom.setSelectedSensorPosition(0.0); // On Robot start in starting config we want the sensor to read zero and not the home angle
-    // TODO: Change the 0.0 above to: posConst.kFoldBoom /\
-    
+    m_talonBoom.setSelectedSensorPosition(posConst.kFoldBoom); // On Robot start in starting config we want the sensor to read zero and not the home angle
+        
     // PID for talon controller position
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
     m_talonBoom.configAllowableClosedloopError(boomConst.kSlotidx, 1.0);
@@ -56,21 +48,7 @@ public class Boom extends SubsystemBase {
     m_talonBoom.config_kP(boomConst.kSlotidx, boomConst.kP);
     m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);
     m_talonBoom.config_kD(boomConst.kSlotidx, boomConst.kD);
-    m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, 0.75);
-    
-    // PID Live Editing
-
-    SmartDashboard.putNumber("Boom kP", m_P);
-    SmartDashboard.putNumber("Boom kI", m_I);
-    SmartDashboard.putNumber("Boom kD", m_D);
-    SmartDashboard.putNumber("Boom kF", m_F);
-    SmartDashboard.putNumber("Boom kerror", m_error);
-    SmartDashboard.putNumber("Boom kPeakOut", m_peakOut);
-    
-
-    // SoftLimit on Max Boom Height to prevent over extending
-    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom * posConst.kBoomCountPerDegree); // [counts] = [degree] * [counts/degree]
-    m_talonBoom.configForwardSoftLimitEnable(false);
+    m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, 0.65);
   }
 
   /*
@@ -90,8 +68,7 @@ public class Boom extends SubsystemBase {
     } else if (mode == ControlMode.Position) {
       m_talonBoom.set(mode, output * posConst.kBoomCountPerDegree);
     }
-
-SmartDashboard.putNumber("Boom Control Output", output);
+    SmartDashboard.putNumber("Boom Control Output", output);
   }
                                                
   /*
@@ -107,8 +84,7 @@ SmartDashboard.putNumber("Boom Control Output", output);
     } else {
       m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
     }
-    // m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
-SmartDashboard.putNumber("Boom Auto Angle", angle);
+    SmartDashboard.putNumber("Boom Auto Angle", angle);
   }
   
   /* 
@@ -122,15 +98,12 @@ SmartDashboard.putNumber("Boom Auto Angle", angle);
    * the boom arm must be lowered more. This is the function used fro operator control of the
    * arm so the they shold have the option to bypass the limits if necessary.
    */
-  // public void move(Double speed) {
-  //   m_talonBoom.set(ControlMode.PercentOutput, 0.5*speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom); // Remove this line after testing the above section
-  // }
   public void move(double speed, boolean bypassSwitch) {
     if ((getSwitch() && (speed < 0.0)) && !bypassSwitch) {
        stop();
     } else {
        m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
-SmartDashboard.putNumber("Boom Manual Speed", speed);
+    SmartDashboard.putNumber("Boom Manual Speed", speed);
     }
   }
   
@@ -153,7 +126,6 @@ SmartDashboard.putNumber("Boom Manual Speed", speed);
     } else {
       m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN);
     }
-    //m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN); // Remove this line after testing the above section
   }
   
   /*
@@ -164,7 +136,6 @@ SmartDashboard.putNumber("Boom Manual Speed", speed);
    * feedforward providing additional output.
    */
   public void stop() {
-    // m_talonBoom.set(ControlMode.PercentOutput, 0);
     m_talonBoom.stopMotor();
   }
   
@@ -210,28 +181,5 @@ SmartDashboard.putNumber("Boom Manual Speed", speed);
     SmartDashboard.putNumber("Boom Angle", getPosition()); // [Degrees]
     SmartDashboard.putNumber("Boom Raw Encoder", getPosition() * posConst.kBoomCountPerDegree); // [Counts] = [Degrees] * [Counts/Degree]
     SmartDashboard.putNumber("Boom Current", m_talonBoom.getSupplyCurrent());// [Amps]
-    
-    // LIVE PID EDITING
-    // Get Dashobard Values
-    m_P = SmartDashboard.getNumber("Boom kP", m_P);
-    m_I = SmartDashboard.getNumber("Boom kI", m_I);
-    m_D = SmartDashboard.getNumber("Boom kD", m_D);
-    m_F = SmartDashboard.getNumber("Boom kF", m_F);
-    m_error = SmartDashboard.getNumber("Boom kerror", m_error);
-    m_peakOut = SmartDashboard.getNumber("Boom kPeakOut", m_peakOut);
-    // Push Gotten Dashboard Values
-    SmartDashboard.putNumber("Boom kP", m_P);
-    SmartDashboard.putNumber("Boom kI", m_I);
-    SmartDashboard.putNumber("Boom kD", m_D);
-    SmartDashboard.putNumber("Boom kF", m_F);
-    SmartDashboard.putNumber("Boom kerror", m_error);
-    SmartDashboard.putNumber("Boom kPeakOut", m_peakOut);
-    // Set Dashboard Values
-    m_talonBoom.configAllowableClosedloopError(boomConst.kSlotidx, m_error);
-    m_talonBoom.config_kF(boomConst.kSlotidx, boomConst.kF);
-    m_talonBoom.config_kP(boomConst.kSlotidx, boomConst.kP);
-    m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);
-    m_talonBoom.config_kD(boomConst.kSlotidx, boomConst.kD);
-    m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, m_peakOut);
   }
 }

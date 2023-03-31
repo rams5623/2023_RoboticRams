@@ -42,14 +42,35 @@ public class Column extends SubsystemBase {
     m_talonColumn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
     m_talonColumn.setSensorPhase(true); // Add as constant (columnConst.kSensorPhase);
     m_talonColumn.selectProfileSlot(columnConst.kSlotidx, columnConst.kPIDidx);
-    m_talonColumn.configAllowableClosedloopError(columnConst.kSlotidx, 0.0);
+    m_talonColumn.configAllowableClosedloopError(columnConst.kSlotidx, 0.5);
     m_talonColumn.config_kF(columnConst.kSlotidx, columnConst.kF);
     m_talonColumn.config_kP(columnConst.kSlotidx, columnConst.kP);
     m_talonColumn.config_kI(columnConst.kSlotidx, columnConst.kI);
     m_talonColumn.config_kD(columnConst.kSlotidx, columnConst.kD);
-    m_talonColumn.setSelectedSensorPosition(0.0);
-    // TODO: Change the 0.0 above to: posConst.kFoldColm /\
+    m_talonColumn.configClosedLoopPeakOutput(columnConst.kPIDidx, 0.65);
+    m_talonColumn.setSelectedSensorPosition(posConst.kFoldColm);
   }
+
+  /*
+   * Adjust Position or Set Speed on The fly to Control the Arm
+   * Combines the functions of gotoPosition and move into one function that may provide
+   * less janky movements from the ControlBoom command. This function is to only be
+   * used with the ControlBoom command.
+   */
+  public void motorControl(ControlMode mode, double output, boolean bypassSwitch) {
+    if ((mode == ControlMode.PercentOutput && (((getFwdSwitch() && (output > 0.0)) || (getRevSwitch() && (output < 0.0))) && !bypassSwitch))
+      || (mode == ControlMode.Position && (getRevSwitch() || getFwdSwitch()))) { // OR gotoPosition() conditions are true
+      // Don't move below the limit switch
+      stop();
+    } else if (mode == ControlMode.PercentOutput) {
+      // Otherwise move desired speed or to position
+      m_talonColumn.set(mode, output);
+    } else if (mode == ControlMode.Position) {
+      m_talonColumn.set(mode, output * posConst.kColmCountPerInch); // [counts] = [inches] * [Count / inch]
+    }
+    SmartDashboard.putNumber("Column Control Output", output);
+  }
+
 
   /*
    * Use PID Control of Motor Controller to Move the column to the Given Position
@@ -59,12 +80,12 @@ public class Column extends SubsystemBase {
    * commanding the column leg to move further into the gears.
    */
   public void gotoPosition(double position) {
-    // if (getRevSwitch() || getFwdSwitch()) {
-    //   stop();
-    // } else {
-    //   m_talonColumn.set(ControlMode.Position, position);
-    // };
-    m_talonColumn.set(ControlMode.Position, position * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
+    if (getRevSwitch() || getFwdSwitch()) {
+      stop();
+    } else {
+      m_talonColumn.set(ControlMode.Position, position);
+    };
+    //m_talonColumn.set(ControlMode.Position, position * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
   }
 
   /* 
