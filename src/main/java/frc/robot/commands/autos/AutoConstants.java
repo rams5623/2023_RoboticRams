@@ -19,6 +19,7 @@ public final class AutoConstants {
     }
 
     public static class balanceConst {
+<<<<<<< HEAD
         public static final double kdriveP = 0.0157; // Proportional Gain Constant for drive speed (Derived based on 20% speed @ an error of 3.0 deg)
         public static final double kdriveI = 0.000;
         public static final double kdriveD = 0.0; // Derivative Gain Constant for drive speed
@@ -30,5 +31,14 @@ public final class AutoConstants {
         public static final double kbalanceTolerance = 2.5; // [Degrees] ± angular tolerance for balancing
         public static final double kMAX_SPEED = 0.38; // [Percent] Max allowable drive speed
         public static final double kMAX_SPEED_TURN = 0.3; // [Percent] Max allowable turn speed
+=======
+        public static final double kP = 0.1;
+        public static final double kI = 0.000;
+        public static final double kD = 0.0000;
+        public static final double kminInput = -10;
+        public static final double kmaxInput = 12;
+        public static final double kpitchTol = 2.0;
+        public static final double krateTol = 0.01;
+>>>>>>> parent of 7e0b667 (Merge pull request #11 from Robotic-Rams-5623/mid-season-dev-boom)
     }
 }

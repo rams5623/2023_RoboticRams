@@ -23,7 +23,7 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configFactoryDefault();
 
     // Motor controller settings
-    m_talonBoom.setInverted(true); // Positive command to the motor controller should be a positive direction (Green blinking lights)
+    m_talonBoom.setInverted(false); // Positive command to the motor controller should be a positive direction (Green blinking lights)
     m_talonBoom.setNeutralMode(NeutralMode.Brake); // Brake mode to prevent the boom from coasting downwards too much under its own weight
     m_talonBoom.configNeutralDeadband(boomConst.kDeadbandBoom);
     m_talonBoom.configNominalOutputForward(0.0);
@@ -36,17 +36,22 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configPeakOutputReverse(-0.55); // Max Reverse Command Allowed
 
     // Encoder Stuff
-    m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); // _Relative maybe???
-    //m_talonBoom.configReverseLimitSwitchSource(m_talonBoom,
+    m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
     m_talonBoom.setSensorPhase(boomConst.kSensorPhase);
+<<<<<<< HEAD
         
+=======
+    m_talonBoom.setSelectedSensorPosition(0.0); // On Robot start in starting config we want the sensor to read zero and not the home angle
+    
+>>>>>>> parent of 7e0b667 (Merge pull request #11 from Robotic-Rams-5623/mid-season-dev-boom)
     // PID for talon controller position
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
-    m_talonBoom.configAllowableClosedloopError(boomConst.kSlotidx, 1.0);
+    m_talonBoom.configAllowableClosedloopError(boomConst.kSlotidx, 0.0);
     m_talonBoom.config_kF(boomConst.kSlotidx, boomConst.kF);
     m_talonBoom.config_kP(boomConst.kSlotidx, boomConst.kP);
     m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);
     m_talonBoom.config_kD(boomConst.kSlotidx, boomConst.kD);
+<<<<<<< HEAD
     m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, 0.60);
     m_talonBoom.configReverseSoftLimitEnable(false);
     m_talonBoom.configForwardSoftLimitEnable(false);
@@ -79,6 +84,15 @@ public class Boom extends SubsystemBase {
   }
                                                
   /*
+=======
+
+    // SoftLimit on Max Boom Height to prevent over extending
+    m_talonBoom.configForwardSoftLimitThreshold(posConst.kMaxBoom * posConst.kBoomCountPerDegree); // [counts] = [degree] * [counts/degree]
+    m_talonBoom.configForwardSoftLimitEnable(false);
+  }
+
+  /*
+>>>>>>> parent of 7e0b667 (Merge pull request #11 from Robotic-Rams-5623/mid-season-dev-boom)
    * Use PID Control of Motor Controller to Move the Arm to the Given Angle
    * Since the operator has no control over this except to specify what angle to go to,
    * there is no bypass exception allowed once the switch has activated. This is done
@@ -88,11 +102,20 @@ public class Boom extends SubsystemBase {
    * TODO: IMPLEMENT/TEST THE LIMIT SWITCH RESTRICTION FOR AUTO GO TO POSITION FUNCTION
    */
   public void gotoPosition(double angle) {
+<<<<<<< HEAD
     if (getSwitch()) {
       stop();
     } else {
       m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
     }
+=======
+    // if (getSwitch()) {
+    //   stop()
+    // } else {
+    //   m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree);
+    // }
+    m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
+>>>>>>> parent of 7e0b667 (Merge pull request #11 from Robotic-Rams-5623/mid-season-dev-boom)
   }
   
   /* 
@@ -106,8 +129,11 @@ public class Boom extends SubsystemBase {
    * the boom arm must be lowered more. This is the function used fro operator control of the
    * arm so the they shold have the option to bypass the limits if necessary.
    */
-  public void move(double speed, boolean bypassSwitch) {
-    if ((getSwitch() && (speed < 0.0)) && !bypassSwitch) {
+  // public void move(Double speed) {
+  //   m_talonBoom.set(ControlMode.PercentOutput, 0.5*speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom); // Remove this line after testing the above section
+  // }
+  public void move(Double speed, Boolean bypassSwitch) {
+    if ((getSwitch() && (speed > 0.0)) && !bypassSwitch) {
        stop();
     } else {
        m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
@@ -133,6 +159,7 @@ public class Boom extends SubsystemBase {
     } else {
       m_talonBoom.set(ControlMode.PercentOutput, -boomConst.SPEED_DOWN);
     }
+    //m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN); // Remove this line after testing the above section
   }
   
   /*
@@ -143,7 +170,11 @@ public class Boom extends SubsystemBase {
    * feedforward providing additional output.
    */
   public void stop() {
+<<<<<<< HEAD
     m_talonBoom.set(ControlMode.PercentOutput, 0.0);
+=======
+    m_talonBoom.set(ControlMode.PercentOutput, 0);
+>>>>>>> parent of 7e0b667 (Merge pull request #11 from Robotic-Rams-5623/mid-season-dev-boom)
   }
   
   /*

@@ -39,11 +39,12 @@ public class Column extends SubsystemBase {
     m_talonColumn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
     m_talonColumn.setSensorPhase(true); // Add as constant (columnConst.kSensorPhase);
     m_talonColumn.selectProfileSlot(columnConst.kSlotidx, columnConst.kPIDidx);
-    m_talonColumn.configAllowableClosedloopError(columnConst.kSlotidx, 0.5);
+    m_talonColumn.configAllowableClosedloopError(columnConst.kSlotidx, 0.0);
     m_talonColumn.config_kF(columnConst.kSlotidx, columnConst.kF);
     m_talonColumn.config_kP(columnConst.kSlotidx, columnConst.kP);
     m_talonColumn.config_kI(columnConst.kSlotidx, columnConst.kI);
     m_talonColumn.config_kD(columnConst.kSlotidx, columnConst.kD);
+<<<<<<< HEAD
     m_talonColumn.configClosedLoopPeakOutput(columnConst.kPIDidx, 0.65);
     m_talonColumn.setSelectedSensorPosition(-posConst.kFoldColm * posConst.kColmCountPerInch);
   }
@@ -71,6 +72,12 @@ public class Column extends SubsystemBase {
 
 
   /*
+=======
+    m_talonColumn.setSelectedSensorPosition(0.0);
+  }
+
+  /*
+>>>>>>> parent of 7e0b667 (Merge pull request #11 from Robotic-Rams-5623/mid-season-dev-boom)
    * Use PID Control of Motor Controller to Move the column to the Given Position
    * Since the operator has no control over this except to specify what position to go to,
    * there is no bypass exception allowed once the switch has activated. This is done
@@ -80,12 +87,12 @@ public class Column extends SubsystemBase {
    * TODO: ADD & TEST THE LIMIT SWITCH RESTRICTION FOR AUTO POSITIONING
    */
   public void gotoPosition(double position) {
-    if (getRevSwitch() || getFwdSwitch()) {
-      stop();
-    } else {
-      m_talonColumn.set(ControlMode.Position, position);
-    };
-    //m_talonColumn.set(ControlMode.Position, position * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
+    // if (getRevSwitch() || getFwdSwitch()) {
+    //   stop();
+    // } else {
+    //   m_talonColumn.set(ControlMode.Position, position);
+    // };
+    m_talonColumn.set(ControlMode.Position, position * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
   }
 
   /* 
