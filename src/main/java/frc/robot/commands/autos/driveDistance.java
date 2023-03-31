@@ -51,7 +51,6 @@ public class driveDistance extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     drivetrain.stop();
-    drivetrain.setDriveCoast();
   }
 
   // Returns true when the command should end.

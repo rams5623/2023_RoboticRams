@@ -5,6 +5,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.Constants.posConst;
 import frc.robot.commands.BoomPosition;
+import frc.robot.commands.resetDriveEncoder;
+import frc.robot.commands.autos.AutoConstants.driveConst;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Column;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 
 public final class Autos {
@@ -31,7 +34,7 @@ public final class Autos {
    */
   public static CommandBase driveStraightAuto(Drivetrain drive) {
     return Commands.sequence(
-      new driveDistance(52.0, true, drive)
+      new driveDistance(driveConst.kDrivePos, false, drive)
     );
   }
 
@@ -39,9 +42,10 @@ public final class Autos {
    * DRIVE STRAIGHT 52 INCHES AND UNFOLD THE BOOM AND COLUMN
    */
   public static CommandBase driveUnfoldAuto(Drivetrain drive, Boom boom, Column column) {
-    return Commands.parallel(
-      new unfold(column, boom),
-      new driveDistance(52.0, true, drive)
+    return Commands.sequence(
+      new resetDriveEncoder(drive),
+      new driveDistance(driveConst.kDrivePos, false, drive).withTimeout(8.0),
+      new unfold(column, boom)
     );
   }
 
@@ -50,11 +54,10 @@ public final class Autos {
    */
   public static CommandBase driveBalanceAuto(Drivetrain drive, Boom boom, Column column) {
     return Commands.sequence(
-      new unfold(column, boom).withTimeout(3.2),
-      new InstantCommand(drive::resetEncoder, drive).withTimeout(1.0),
+      new unfold(column, boom).withTimeout(2.7),
+      new resetDriveEncoder(drive),
       new driveDistance(75.0, false, drive).withTimeout(3.0),
-      new InstantCommand(drive::setDriveBrake, drive).withTimeout(1.0),
-      new driveBalance(drive.getPitch(), drive)
+      new driveBalance(-3.0, drive).beforeStarting(new WaitCommand(1.0))
     );
   }
 

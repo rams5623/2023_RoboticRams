@@ -35,7 +35,7 @@ public final class Constants {
      *                  | Z -> (+ Angle)
      */
     // Emergency Stow Position
-    public static final double kStowBoom = 120; // [Degrees]
+    public static final double kStowBoom = 75; // [Degrees]
     public static final double kStowColm = 0; // [Inches]
     
     // Pickup Position (From SUBSTATION)
@@ -43,31 +43,31 @@ public final class Constants {
     public static final double kSubstColm = 3; // [Inches]
     
     // Pickup Position (From FLOOR)
-    public static final double kPickupBoom = 30; // [Degrees]
+    public static final double kPickupBoom = 35; // [Degrees]
     public static final double kPickupColm = 0; // [Inches]
 
     // Middle GRID Position
-    public static final double kMidBoom = 125; // [Degrees]
+    public static final double kMidBoom = 88; // [Degrees]
     public static final double kMidColm = 0.0; // [Inches]
 
     // Top GRID Position
-    public static final double kTopBoom = 175; // [Degrees]
-    public static final double kTopColm = 8.1; // [Inches]
+    public static final double kTopBoom = 148; // [Degrees]
+    public static final double kTopColm = 7.3; // [Inches]
 
     // Floor GRID Position
-    public static final double kBotBoom = 70; // [Degrees]
+    public static final double kBotBoom = 35; // [Degrees]
     public static final double kBotColm = 0; // [Inches]
 
     // MAX BOOM AND COLUMN POSITIONS
-    public static final double kMaxBoom = 175; // [degrees] From floor to max robot height 4'8"
-    public static final double kMaxColm = 8.2; // [Inches] Max Forward Position
+    public static final double kMaxBoom = 160; // [degrees] From floor to max robot height 4'8"
+    public static final double kMaxColm = 7.4; // [Inches] Max Forward Position
     
     // MIN BOOM AND COLUMN POSITION
     public static final double kMinBoom = 27.5; // [degrees] At floor
     public static final double kMinColm = 0; // [Inches] Max Reverse Position
 
     // FOLD BOOM AND COLUMN POSITION
-    public static final double kFoldBoom = 210.0; // [degrees] At starting folded positon
+    public static final double kFoldBoom = 150.0; // [degrees] At starting folded positon
     public static final double kFoldColm = 4.5; // [Inches] Vertical but slightly forward
     
     // Column Inch Position Conversion Constant
@@ -123,7 +123,7 @@ public final class Constants {
     // Talon SRX command deadband zone (Different then joystick deadband zone)
     public static final double kDeadbandBoom = 0.04;
     // Talon SRX Arbitrarty Feedback for Gravity (NEED TO INCLUDE WEIGHT OF CONE)
-    public static final double karbitraryBoom = 0.0;//-0.085;
+    public static final double karbitraryBoom = 0.045;//-0.085;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
@@ -140,7 +140,7 @@ public final class Constants {
     
     // Speed reducer commands (MOSTLY USED IN AUTO TO UNFOLD)
     public static final double SPEED_UP = 0.5; // [Percent]
-    public static final double SPEED_DOWN = 0.5; // [Percent]
+    public static final double SPEED_DOWN = 0.65; // [Percent]
 
     // Boom rear limit switch for reseting encoder
     public static final int kswitch_boom = 2;

@@ -7,10 +7,10 @@ import frc.robot.Constants.posConst;
 import frc.robot.Constants.boomConst.boomPosition;
 import frc.robot.Constants.columnConst.columnPosition;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.BoomControl;
 import frc.robot.commands.BoomPosition;
-import frc.robot.commands.ColumnControl;
 import frc.robot.commands.ColumnPosition;
+import frc.robot.commands.MoveBoom;
+import frc.robot.commands.MoveColumn;
 import frc.robot.commands.autos.Autos;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Clamp;
@@ -104,19 +104,19 @@ public class RobotContainer {
     );
     //m_drivetrain.setDefaultCommand(new ArcadeDrive(() -> getDriveStickY(), () -> getDriveStickZ(), m_drivetrain));
 
-    m_column.setDefaultCommand(
-      new ColumnControl(m_column, this, m_variables)
-    );
     // m_column.setDefaultCommand(
-    //   new MoveColumn(s_Jop::getRightY, m_column)
+    //   new ColumnControl(m_column, this, m_variables)
     // );
-
-    m_boom.setDefaultCommand(
-      new BoomControl(m_boom, this, m_variables)
+    m_column.setDefaultCommand(
+      new MoveColumn(this::getOpRightStickY, false, m_column)
     );
+
     // m_boom.setDefaultCommand(
-    //   new MoveBoom(s_Jop::getLeftY, m_boom)
+    //   new BoomControl(m_boom, this, m_variables)
     // );
+    m_boom.setDefaultCommand(
+      new MoveBoom(this::getOpLeftStickY, false, m_boom)
+    );
 
     // Configure button bindings for controllers and such
     configureBindings();
@@ -277,29 +277,29 @@ public class RobotContainer {
        * POV BUTTON POSITIONAL COMMANDS
        */
       // Top Grid Position
-      s_Jop.povUp().onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kTopBoom, m_boom),
-          new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.3))
-        ).withTimeout(5.0));
-      // Middle Grid Position
-      s_Jop.povRight().onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kMidBoom, m_boom),
-          new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.2))
-        ).withTimeout(5.0));
-      // Floor Grid Position
-      s_Jop.povDown().onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kBotBoom, m_boom).beforeStarting(new WaitCommand(.5)),
-          new ColumnPosition((double) posConst.kBotColm, m_column)
-        ).withTimeout(5.0));
-      // Store Position
-      s_Jop.povLeft().onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kStowBoom, m_boom),
-          new ColumnPosition((double) posConst.kStowColm, m_column)
-        ).withTimeout(5.0));
+      // s_Jop.povUp().onTrue(
+      //   new ParallelCommandGroup(
+      //     new BoomPosition((double) posConst.kTopBoom, m_boom),
+      //     new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.3))
+      //   ).withTimeout(5.0));
+      // // Middle Grid Position
+      // s_Jop.povRight().onTrue(
+      //   new ParallelCommandGroup(
+      //     new BoomPosition((double) posConst.kMidBoom, m_boom),
+      //     new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.2))
+      //   ).withTimeout(5.0));
+      // // Floor Grid Position
+      // s_Jop.povDown().onTrue(
+      //   new ParallelCommandGroup(
+      //     new BoomPosition((double) posConst.kBotBoom, m_boom).beforeStarting(new WaitCommand(.5)),
+      //     new ColumnPosition((double) posConst.kBotColm, m_column)
+      //   ).withTimeout(5.0));
+      // // Store Position
+      // s_Jop.povLeft().onTrue(
+      //   new ParallelCommandGroup(
+      //     new BoomPosition((double) posConst.kStowBoom, m_boom),
+      //     new ColumnPosition((double) posConst.kStowColm, m_column)
+      //   ).withTimeout(5.0));
 
       // Top Grid Position
       // s_Jop.povUp().onTrue(
@@ -375,7 +375,7 @@ public class RobotContainer {
    * to the motors and causing jitteryness and unwanted movements.
    */
   public double getOpRightStickY() {
-    double axisValue = -s_Jop.getRightY();
+    double axisValue = s_Jop.getRightY();
     if (Math.abs(axisValue) < controllerConst.kOpAxisRightYDeadband) {
       axisValue = 0.0;
     }

@@ -13,20 +13,8 @@ public class driveBalance extends CommandBase {
   private double driveSpeed;
   private double turnSpeed;
   
-  // ADD THESE TO AUTO CONSTANTS (Then add "balanceConst." in front of all the uses in this file)
-  // private static final double balanceTimeLimit = 5.0; // [Seconds] Time limit to stop command while within tolerance
-  // private static final double balanceTolerance = 2.5; // [Degrees] ± angular tolerance for balancing
-  // private static final double MAX_SPEED = 0.7; // [Percent] Max allowable drive speed
-  // private static final double MAX_SPEED_TURN = 0.3; // [Percent] Max allowable turn speed
-  // // \/ Lower this value if it is too fast when near balanced \/
-  // private static final double kdriveP = 0.0667; // Proportional Gain Constant for drive speed (Derived based on 20% speed @ an error of 3.0 deg)
-  // private static final double kdriveD = 0.0; // Derivative Gain Constant for drive speed
-  // private static final double kyawP = 0.0667; // Proportional Gain Constant for driving straight
-  // private static final double kyawD = 0.0; // Derivative Gain Constant for driving straight
-  
   Double pitchTolerance;
   
-
   public driveBalance(Double initPitch, Drivetrain p_drivetrain) {
     drivetrain = p_drivetrain;
     leveledPitch = initPitch;
@@ -81,7 +69,7 @@ public class driveBalance extends CommandBase {
   
   // When the timer has surpassed the balance time allowed, end the command.
   @Override
-  public boolean isFinished() { return (m_timer.get() > balanceConst.kbalanceTimeLimit); }
+  public boolean isFinished() { return false; }
   
   // End the command and stop applying power to the drive motors
   @Override

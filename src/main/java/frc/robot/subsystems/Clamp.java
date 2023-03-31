@@ -52,6 +52,8 @@ public class Clamp extends SubsystemBase {
     m_talonClamp.configNominalOutputReverse(0.0);
     m_talonClamp.configPeakOutputForward(clampConst.SPEED_CLAMP);
     m_talonClamp.configPeakOutputReverse(-clampConst.SPEED_CLAMP);
+
+    hold(true);
   }
 
   // TODO: WHAT DIRECTION IS ACTUALLY CLAMP AND UNCLAMP!!!!!!

@@ -124,7 +124,7 @@ public class Boom extends SubsystemBase {
     if (getSwitch()) {
       stop();
     } else {
-      m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN);
+      m_talonBoom.set(ControlMode.PercentOutput, -boomConst.SPEED_DOWN);
     }
   }
   

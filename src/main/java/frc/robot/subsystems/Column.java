@@ -51,26 +51,6 @@ public class Column extends SubsystemBase {
     m_talonColumn.setSelectedSensorPosition(posConst.kFoldColm);
   }
 
-  /*
-   * Adjust Position or Set Speed on The fly to Control the Arm
-   * Combines the functions of gotoPosition and move into one function that may provide
-   * less janky movements from the ControlBoom command. This function is to only be
-   * used with the ControlBoom command.
-   */
-  public void motorControl(ControlMode mode, double output, boolean bypassSwitch) {
-    if ((mode == ControlMode.PercentOutput && (((getFwdSwitch() && (output > 0.0)) || (getRevSwitch() && (output < 0.0))) && !bypassSwitch))
-      || (mode == ControlMode.Position && (getRevSwitch() || getFwdSwitch()))) { // OR gotoPosition() conditions are true
-      // Don't move below the limit switch
-      stop();
-    } else if (mode == ControlMode.PercentOutput) {
-      // Otherwise move desired speed or to position
-      m_talonColumn.set(mode, output);
-    } else if (mode == ControlMode.Position) {
-      m_talonColumn.set(mode, output * posConst.kColmCountPerInch); // [counts] = [inches] * [Count / inch]
-    }
-    SmartDashboard.putNumber("Column Control Output", output);
-  }
-
 
   /*
    * Use PID Control of Motor Controller to Move the column to the Given Position
