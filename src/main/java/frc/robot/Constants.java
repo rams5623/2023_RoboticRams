@@ -71,6 +71,7 @@ public final class Constants {
     public static final double kFoldColm = 4.5; // [Inches] Vertical but slightly forward
     
     // Column Inch Position Conversion Constant
+    // TODO: REMEASURE AND GET MAX COLUMN LENGTH WITH NEW BRACKET THAT HAS SMALLER TRAVEL DISTANCE
     public static final double kMaxColmLength = 11.5625; // [Inches] Full travel from rev switch to fwd switch
     public static final int kMaxColmEncCount = 10640; // [Pulses] Full travel from rev switch to fwd switch
     public static final double kColmCountPerInch = kMaxColmEncCount / kMaxColmLength; // [Pulse/Inch] Conversion constant to go between encoder counts and inches
@@ -186,6 +187,7 @@ public final class Constants {
     public static final double kCurrentOpen = 1.0; // [Amps]
     public static final double kCurrentWatch = 5.6; // [Amps]
     // Speed reducer commands
+
     public static final double SPEED_CLAMP = 0.7; // [Percent]
     public static final double SPEED_RELEASE = 0.5; // [Percent]
     public static final double SPEED_HOLD_CLAMP = 0.4; // [Percent]
@@ -227,5 +229,6 @@ public final class Constants {
     public static final double SPEED_STRT = 0.750; // Max straight speed percentage (positive constant)  // [Percent]
     public static final double SPEED_SLOWSTRT = 0.40;
     public static final double SPEED_SLOWTURN = 0.44;
+
   }
 }

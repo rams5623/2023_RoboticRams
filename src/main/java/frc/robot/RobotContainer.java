@@ -37,10 +37,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
- * 
- * m = SUBSYSTEM
- * s = SENSOR/JOYSTICK
- * c = COMMAND
  **/
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
@@ -84,10 +80,7 @@ public class RobotContainer {
     SmartDashboard.putData("Column", m_column);
     SmartDashboard.putData("Drivetrain", m_drivetrain);
     
-    /*
-     * New way to run default arcade drive that has not been tested out yet. Try this and if it doesnt work as
-     * expected then comment it out and uncomment the old one below it.
-     */
+
     // Set the default command of the drivetrain to be driven by driver joystick
     m_drivetrain.setDefaultCommand(
       new RunCommand(()->
@@ -100,10 +93,9 @@ public class RobotContainer {
         ),
         // Requirements for command
         m_drivetrain
-      )
-    );
-    //m_drivetrain.setDefaultCommand(new ArcadeDrive(() -> getDriveStickY(), () -> getDriveStickZ(), m_drivetrain));
+    ));
 
+    // Set the default command of the column to be controlled by operator controller right stick
     m_column.setDefaultCommand(
       new ColumnControl(m_column, this, m_variables)
     );
@@ -111,6 +103,7 @@ public class RobotContainer {
     //   new MoveColumn(s_Jop::getRightY, m_column)
     // );
 
+    // Set the default command of the boom arm angle to be controlled by the operator controller left stick
     m_boom.setDefaultCommand(
       new BoomControl(m_boom, this, m_variables)
     );
@@ -129,11 +122,15 @@ public class RobotContainer {
    */
   private void configureBindings() {
     /* 
-     * onTrue vs. whileTrue
-     * 
-     * onTrue should be used when only a single press is needed to start a command that will continue on its own.
-     * 
-     * whileTrue should be used for commands that need to start when a button is pressed, continue while it is being held down, and stop when the button is released
+     * onTrue vs. whileTrue:
+     * - onTrue should be used when only a single press is needed to start a command that will continue on its own.
+     * - whileTrue should be used for commands that need to start when a button is pressed, continue while it is being held down, and stop when the button is released
+     *
+     * Trigger vs. JoystickButton
+     * - Triggers canb ecreated from joystick button objects. There seems to be some difference in using a Trigger of a JoystickButton versus just using
+     * a JoystickButton. This was ever present in the issue with the Intake and Clamp systems not responding to button presses during the Week 2 compeition,
+     * which for some reason only occured on the field. The firewall was disabled per FTA recommendation and the code was changed during troubleshooting.
+     * the results of these two changes resolved the button response issue (some how!?!?!?!?!?).
      */
     
     /* Creates a trigger in response to the limit switch activation for zeroing encoders */
@@ -142,7 +139,6 @@ public class RobotContainer {
 
     Trigger boomResetTrigger = new Trigger(m_boom::getSwitch);
     boomResetTrigger.whileTrue(new InstantCommand(m_boom::resetEncoder, m_boom));
-    
     
     
     /* DRIVER JOYSICK SECTION
@@ -328,7 +324,7 @@ public class RobotContainer {
       // END POV POSITION COMMANDS
     // } /* END OPERATOR CONTROLLER SECTION */
   }
-  
+
   
   /*
    * Gets the axis value from the driver joytick roation (z-axis). Applies
@@ -341,7 +337,7 @@ public class RobotContainer {
       axisValue = 0.0;
     }
     return axisValue;
-  }
+  } // END getDriveStickZ()
 
   /*
    * Gets the axis value from the driver joytick forward (y-axis). Applies
@@ -354,7 +350,7 @@ public class RobotContainer {
       axisValue = 0.0;
     }
     return axisValue;
-  }
+  } // END getDriveStickY()
 
   /*
    * Gets the axis value from the operator left joystick (y-axis). Applies a
@@ -367,7 +363,7 @@ public class RobotContainer {
       axisValue = 0.0;
     }
     return axisValue;
-  }
+  } // END getOpLeftStickY()
 
   /*
    * Gets the axis value from the operator right joystick (y-axis). Applies a
@@ -380,15 +376,14 @@ public class RobotContainer {
       axisValue = 0.0;
     }
     return axisValue;
-  }
+  } // END getOpRightStickY()
 
   /**
    * This is the command that will run during autonomous mode:
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
     // Various auto modes will go into the Autos file similar to how constants all go in the constants file
-    // return Autos.exampleAuto(m_intake);
+    // They are all selected from the auto chooser on the smart dashboard.
     return m_chooser.getSelected();
-  }
-}
+  } // END getAutonomousCommand()
+} // END RobotContainer Class

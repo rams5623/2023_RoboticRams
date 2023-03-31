@@ -77,6 +77,8 @@ public class Boom extends SubsystemBase {
    * there is no bypass exception allowed once the switch has activated. This is done
    * in case a situation would occur where the switch is triggered but the PID is still
    * commanding the boom arm to lower further into the ground.
+   * 
+   * TODO: IMPLEMENT/TEST THE LIMIT SWITCH RESTRICTION FOR AUTO GO TO POSITION FUNCTION
    */
   public void gotoPosition(double angle) {
     if (getSwitch()) {
@@ -154,6 +156,8 @@ public class Boom extends SubsystemBase {
    * The sensor positon of the boom arm encoder is converted to an angle based on the derived
    * constant conversion. The function will output the angle with respect to the negative Z-axis
    * and not the total number of encoder counts.
+   * 
+   * TODO: CHANGE getPosition TO getAngle TO MATCH WHAT IT ACTUALLY GIVES WHEN CALLED
    */
   public double getPosition() { // Change to getAngle() to better describe what the function does
     return (m_talonBoom.getSelectedSensorPosition() / posConst.kBoomCountPerDegree); // [degrees] = [counts] / [counts/degree]
