@@ -49,7 +49,6 @@ public class RobotContainer {
 
   // Controller creation
   public static final Joystick s_Jdriver = new Joystick(controllerConst.kDriveJoystickUSB);
-  // public static final XboxController s_Jop = new XboxController(controllerConst.kOpJoystickUSB);
   public static final CommandXboxController s_Jop = new CommandXboxController(controllerConst.kOpJoystickUSB);
 
   // The sendable chooser will show up on the shuffle board for the driver to select the automode they would like to perform for the match.
@@ -73,7 +72,6 @@ public class RobotContainer {
     SmartDashboard.putData(m_chooser); // Place the Auto selector on the dashboard with all the options
     
     // Put all the subsystems on the dashboard
-    // TODO: WHY DONT THESE WORK????
     SmartDashboard.putData("Clamp", m_clamp); 
     SmartDashboard.putData("Intake", m_intake);
     SmartDashboard.putData("Boom", m_boom);
@@ -145,36 +143,35 @@ public class RobotContainer {
      * If the driver joystick (USB 0) is connected then run this section, otherwise move on.
      * This prevents the buttons from being created on joystick that isnt present and causing a list of errors to appear on connection to the rio.
      */
-    // if (s_Jdriver.isConnected()) {
-      /* 
-       * ENABLES TEMPORARY FAST MODE WHILE THE THUMB BUTTON (2) ON THE JOYSTICK IS BEING PRESSED
-       */
-      new JoystickButton(s_Jdriver, 2).whileTrue( // Button 2 on Driver Joystick
-        new ArcadeDrive( // Run a new instance of this command
-          () -> getDriveStickY() * driveConst.SPEED_STRT, // Straight Parameter
-          () -> getDriveStickZ() * driveConst.SPEED_TURN, // Turn Parameter
-          m_drivetrain // Command Requirement
-      ));
-      // END FAST BUTTON COMMAND
+    /* 
+      * ENABLES TEMPORARY FAST MODE WHILE THE THUMB BUTTON (2) ON THE JOYSTICK IS BEING PRESSED
+      */
+    new JoystickButton(s_Jdriver, 2).whileTrue( // Button 2 on Driver Joystick
+      new ArcadeDrive( // Run a new instance of this command
+        () -> getDriveStickY() * driveConst.SPEED_STRT, // Straight Parameter
+        () -> getDriveStickZ() * driveConst.SPEED_TURN, // Turn Parameter
+        m_drivetrain // Command Requirement
+    ));
+    // END FAST BUTTON COMMAND
 
-      /*
-       * TOGGLE BRAKE AND COAST MODES OF MOTOR CONTROL ON THE DRIVETRAIN CONTROLLERS WHEN BUTTON 7 IS PRESSED
-       */
-      new JoystickButton(s_Jdriver, 7).toggleOnTrue( // Button 7 on Driver Joystick
-        new StartEndCommand( // Run new instance of StartEnd command
-          m_drivetrain::setDriveBrake, // Run this at Command Start
-          m_drivetrain::setDriveCoast, // Run this at Command End
-          m_drivetrain // Command Requirement
-      ));
-      // END BRAKE/COAST TOGGLE COMMAND
+    /*
+      * TOGGLE BRAKE AND COAST MODES OF MOTOR CONTROL ON THE DRIVETRAIN CONTROLLERS WHEN BUTTON 7 IS PRESSED
+      */
+    new JoystickButton(s_Jdriver, 7).toggleOnTrue( // Button 7 on Driver Joystick
+      new StartEndCommand( // Run new instance of StartEnd command
+        m_drivetrain::setDriveBrake, // Run this at Command Start
+        m_drivetrain::setDriveCoast, // Run this at Command End
+        m_drivetrain // Command Requirement
+    ));
+    // END BRAKE/COAST TOGGLE COMMAND
 
-      /*
-       * RESET DRIVE ENCODERS MANUALLY FOR SOME REASON
-       */
-      
-      new JoystickButton(s_Jdriver, 12).toggleOnTrue( // Button 12 on Driver Joystick
-        new InstantCommand(m_drivetrain::resetEncoder, m_drivetrain)
-      );
+    /*
+      * RESET DRIVE ENCODERS MANUALLY FOR SOME REASON
+      */
+    
+    new JoystickButton(s_Jdriver, 12).toggleOnTrue( // Button 12 on Driver Joystick
+      new InstantCommand(m_drivetrain::resetEncoder, m_drivetrain)
+    );
     // } /* END DRIVER JOYSTICK SECTION */
     
     
@@ -183,10 +180,9 @@ public class RobotContainer {
      * If the operator joystick (USB 1) is connected then run this section, otherwise move on.
      * This prevents the buttons from being created on joystick that isnt present and causing a list of errors to appear on connection to the rio.
      */
-    // if (s_Jop.isConnected()) {
-      /*
-       * RUN GAME PIECE PICKUP COMMAND
-       */
+    /*
+     * RUN GAME PIECE PICKUP COMMAND
+     */
       // Trigger xbox_A = new CommandXboxController(controllerConst.kOpJoystickUSB).a(); // Create new trigger from Xbox controller button A
       // Trigger xbox_A = s_Jop.a(); // [TEST THIS ALTERNATE] Create new trigger from Xbox Controller button A
       // xbox_A.whileTrue(new ParallelCommandGroup( // While the Button A Trigger is True run some commands in parallel
@@ -243,10 +239,6 @@ public class RobotContainer {
       /*
        * RESET ENCODERS TO HOME POSITION VALUES
        */
-      // new JoystickButton(s_Jop, Button.kBack.value).whileTrue(new ParallelCommandGroup(
-      //   new InstantCommand(m_boom::resetEncoder,m_boom),
-      //   new InstantCommand(m_column::resetEncoder, m_column)
-      // ));
       s_Jop.back().whileTrue(new ParallelCommandGroup( // Run new instance of parallel command group when back button is true
         new InstantCommand(m_boom::resetEncoder, m_boom), // Reset Boom Encoder
         new InstantCommand(m_column::resetEncoder, m_column) // Reset Column Encoder
@@ -256,10 +248,6 @@ public class RobotContainer {
       /*
        * BYPASS LIMIT SWITCHES ON BOOM AND COLUMN
        */
-      // s_Jop.start().whileTrue(new SequentialCommandGroup( // Run new instance of parallel command group when start button is true
-      //   new MoveColumn(() -> getOpRightStickY(), true, m_column), // run column like normal but bypass limit switch restrictions
-      //   new MoveBoom(() -> getOpLeftStickY(), true, m_boom) // run boom like normal but bypass limit switch restrictions
-      // ));
       s_Jop.start().onTrue(
         // Set the switch bypass global variable to true when start is pressed
         new InstantCommand(() -> m_variables.setSwitchBypass(true), m_variables)
