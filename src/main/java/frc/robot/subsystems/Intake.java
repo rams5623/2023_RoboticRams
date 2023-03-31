@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.intakeConst;
 
@@ -49,7 +49,7 @@ public class Intake extends SubsystemBase {
    */
   public void intake() {
     m_talonIntake.set(ControlMode.PercentOutput, intakeConst.SPEED_IN);
-    SmartDashboard.putString("Intake Direction", "Intake");
+    // SmartDashboard.putString("Intake Direction", "Intake");
   }
   
   /* 
@@ -61,7 +61,7 @@ public class Intake extends SubsystemBase {
    */
   public void outake() {
     m_talonIntake.set(ControlMode.PercentOutput, -intakeConst.SPEED_OUT);
-    SmartDashboard.putString("Intake Direction", "Outake");
+    // SmartDashboard.putString("Intake Direction", "Outake");
   }
   
   /* 
@@ -72,7 +72,7 @@ public class Intake extends SubsystemBase {
    */
   public void stop() {
     m_talonIntake.set(ControlMode.PercentOutput, 0);
-    SmartDashboard.putString("Intake Direction", "Stopped");
+    // SmartDashboard.putString("Intake Direction", "Stopped");
   }
   
   /* 

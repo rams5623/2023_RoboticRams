@@ -32,8 +32,8 @@ public class Column extends SubsystemBase {
     m_talonColumn.configClosedloopRamp(0.2); // Smoothes out motor commands in PID Control Modes
 
     // Limit Max Command given to motor to prevent mechanism damage from going to fast
-    m_talonColumn.configPeakOutputForward(0.60);
-    m_talonColumn.configPeakOutputReverse(-0.60);
+    m_talonColumn.configPeakOutputForward(0.50);
+    m_talonColumn.configPeakOutputReverse(-0.50);
     
     // Encoder Stuff
     m_talonColumn.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
@@ -45,7 +45,7 @@ public class Column extends SubsystemBase {
     m_talonColumn.config_kI(columnConst.kSlotidx, columnConst.kI);
     m_talonColumn.config_kD(columnConst.kSlotidx, columnConst.kD);
     m_talonColumn.configClosedLoopPeakOutput(columnConst.kPIDidx, 0.65);
-    m_talonColumn.setSelectedSensorPosition(posConst.kFoldColm);
+    m_talonColumn.setSelectedSensorPosition(-posConst.kFoldColm * posConst.kColmCountPerInch);
   }
 
   /*
@@ -56,7 +56,8 @@ public class Column extends SubsystemBase {
    */
   public void motorControl(ControlMode mode, double output, boolean bypassSwitch) {
     if ((mode == ControlMode.PercentOutput && (((getFwdSwitch() && (output > 0.0)) || (getRevSwitch() && (output < 0.0))) && !bypassSwitch))
-      || (mode == ControlMode.Position && (getRevSwitch() || getFwdSwitch()))) { // OR gotoPosition() conditions are true
+      || (mode == ControlMode.Position && (getFwdSwitch() && (output > 7.5)))
+    ) { // OR gotoPosition() conditions are true
       // Don't move below the limit switch
       stop();
     } else if (mode == ControlMode.PercentOutput) {
@@ -65,7 +66,7 @@ public class Column extends SubsystemBase {
     } else if (mode == ControlMode.Position) {
       m_talonColumn.set(mode, output * posConst.kColmCountPerInch); // [counts] = [inches] * [Count / inch]
     }
-    SmartDashboard.putNumber("Column Control Output", output);
+    // SmartDashboard.putNumber("Column Control Output", output);
   }
 
 
@@ -178,7 +179,7 @@ public class Column extends SubsystemBase {
     SmartDashboard.putBoolean("Column Reverse Switch?", getRevSwitch()); // [True/False]
     SmartDashboard.putBoolean("Column Forward Switch?", getFwdSwitch()); // [True/False]
     SmartDashboard.putNumber("Column Position", getPosition()); // [Inches]
-    SmartDashboard.putNumber("Column Raw Encoder", getPosition() * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
-    SmartDashboard.putNumber("Column Current", m_talonColumn.getSupplyCurrent()); // [Amps]
+    // SmartDashboard.putNumber("Column Raw Encoder", getPosition() * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
+    // SmartDashboard.putNumber("Column Current", m_talonColumn.getSupplyCurrent()); // [Amps]
   }
 }

@@ -6,17 +6,14 @@ import frc.robot.Constants.driveConst;
 import frc.robot.Constants.posConst;
 import frc.robot.Constants.boomConst.boomPosition;
 import frc.robot.Constants.columnConst.columnPosition;
-import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.BoomControl;
 import frc.robot.commands.BoomPosition;
-import frc.robot.commands.ColumnControl;
 import frc.robot.commands.ColumnPosition;
 import frc.robot.commands.autos.Autos;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Column;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
+// import frc.robot.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,7 +24,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+// import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -42,7 +39,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Boom m_boom = new Boom();
   private final Clamp m_clamp = new Clamp();
-  private final Intake m_intake = new Intake();
+  // private final Intake m_intake = new Intake();
   private final Column m_column = new Column();
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final GlobalVariables m_variables = new GlobalVariables();
@@ -65,20 +62,12 @@ public class RobotContainer {
     m_chooser.addOption("Drive Straight", Autos.driveStraightAuto(m_drivetrain));
     m_chooser.addOption("Drive Straight + Unfold", Autos.driveUnfoldAuto(m_drivetrain, m_boom, m_column));
     m_chooser.addOption("Drive Onto Charging Station", Autos.driveBalanceAuto(m_drivetrain, m_boom, m_column)); // [NEEDS TO BE TESTED]
-    //m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
+    m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column, m_clamp)); // [NEEDS TO BE TESTED]
     //m_chooser.addOption("Cube Middle", Autos.cubeMidAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
     //m_chooser.addOption("Cube Top", Autos.cubeTopAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Floor & Pad", Autos.cubeFloorPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Middle & Pad", Autos.cubeMidPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     SmartDashboard.putData(m_chooser); // Place the Auto selector on the dashboard with all the options
-    
-    // Put all the subsystems on the dashboard
-    // TODO: WHY DONT THESE WORK????
-    SmartDashboard.putData("Clamp", m_clamp); 
-    SmartDashboard.putData("Intake", m_intake);
-    SmartDashboard.putData("Boom", m_boom);
-    SmartDashboard.putData("Column", m_column);
-    SmartDashboard.putData("Drivetrain", m_drivetrain);
     
 
     // Set the default command of the drivetrain to be driven by driver joystick
@@ -97,7 +86,10 @@ public class RobotContainer {
 
     // Set the default command of the column to be controlled by operator controller right stick
     m_column.setDefaultCommand(
-      new ColumnControl(m_column, this, m_variables)
+      new RunCommand(() ->
+        m_column.move(getOpRightStickY(), false),
+        m_column
+      )
     );
     // m_column.setDefaultCommand(
     //   new MoveColumn(s_Jop::getRightY, m_column)
@@ -105,7 +97,10 @@ public class RobotContainer {
 
     // Set the default command of the boom arm angle to be controlled by the operator controller left stick
     m_boom.setDefaultCommand(
-      new BoomControl(m_boom, this, m_variables)
+      new RunCommand(() ->
+      m_boom.move(getDriveStickY(), false),
+      m_boom
+      )
     );
     // m_boom.setDefaultCommand(
     //   new MoveBoom(s_Jop::getLeftY, m_boom)
@@ -150,11 +145,17 @@ public class RobotContainer {
        * ENABLES TEMPORARY FAST MODE WHILE THE THUMB BUTTON (2) ON THE JOYSTICK IS BEING PRESSED
        */
       new JoystickButton(s_Jdriver, 2).whileTrue( // Button 2 on Driver Joystick
-        new ArcadeDrive( // Run a new instance of this command
-          () -> getDriveStickY() * driveConst.SPEED_STRT, // Straight Parameter
-          () -> getDriveStickZ() * driveConst.SPEED_TURN, // Turn Parameter
-          m_drivetrain // Command Requirement
-      ));
+      new RunCommand(()->
+      // Command to run without suppliers
+      m_drivetrain.drive(
+        // double value for straight driving
+        getDriveStickY() * driveConst.SPEED_STRT,
+        // double value for turn driving
+        getDriveStickZ() * driveConst.SPEED_TURN
+      ),
+      // Requirements for command
+      m_drivetrain
+  ));
       // END FAST BUTTON COMMAND
 
       /*
@@ -272,30 +273,30 @@ public class RobotContainer {
       /*
        * POV BUTTON POSITIONAL COMMANDS
        */
-      // Top Grid Position
-      s_Jop.povUp().onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kTopBoom, m_boom),
-          new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.3))
-        ).withTimeout(5.0));
-      // Middle Grid Position
-      s_Jop.povRight().onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kMidBoom, m_boom),
-          new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.2))
-        ).withTimeout(5.0));
-      // Floor Grid Position
-      s_Jop.povDown().onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kBotBoom, m_boom).beforeStarting(new WaitCommand(.5)),
-          new ColumnPosition((double) posConst.kBotColm, m_column)
-        ).withTimeout(5.0));
-      // Store Position
-      s_Jop.povLeft().onTrue(
-        new ParallelCommandGroup(
-          new BoomPosition((double) posConst.kStowBoom, m_boom),
-          new ColumnPosition((double) posConst.kStowColm, m_column)
-        ).withTimeout(5.0));
+      // // Top Grid Position
+      // s_Jop.povUp().onTrue(
+      //   new ParallelCommandGroup(
+      //     new BoomPosition((double) posConst.kTopBoom, m_boom),
+      //     new ColumnPosition((double) posConst.kTopColm, m_column).beforeStarting(new WaitCommand(.3))
+      //   ).withTimeout(5.0));
+      // // Middle Grid Position
+      // s_Jop.povRight().onTrue(
+      //   new ParallelCommandGroup(
+      //     new BoomPosition((double) posConst.kMidBoom, m_boom),
+      //     new ColumnPosition((double) posConst.kMidColm, m_column).beforeStarting(new WaitCommand(.2))
+      //   ).withTimeout(5.0));
+      // // Floor Grid Position
+      // s_Jop.povDown().onTrue(
+      //   new ParallelCommandGroup(
+      //     new BoomPosition((double) posConst.kBotBoom, m_boom).beforeStarting(new WaitCommand(.5)),
+      //     new ColumnPosition((double) posConst.kBotColm, m_column)
+      //   ).withTimeout(5.0));
+      // // Store Position
+      // s_Jop.povLeft().onTrue(
+      //   new ParallelCommandGroup(
+      //     new BoomPosition((double) posConst.kStowBoom, m_boom),
+      //     new ColumnPosition((double) posConst.kStowColm, m_column)
+      //   ).withTimeout(5.0));
 
       // Top Grid Position
       // s_Jop.povUp().onTrue(
@@ -362,6 +363,7 @@ public class RobotContainer {
     if (Math.abs(axisValue) < controllerConst.kOpAxisLeftYDeadband) {
       axisValue = 0.0;
     }
+    SmartDashboard.putNumber("Boom Stick Value", axisValue);
     return axisValue;
   } // END getOpLeftStickY()
 

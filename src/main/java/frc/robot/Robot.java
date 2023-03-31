@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
     // auto set the exposure because competition lighting is bright and sometimes varies
     cam1.setExposureAuto();
     // Set frames per second
-    cam1.setFPS(24);
+    cam1.setFPS(18);
     // Set pixel format for image streaming
     cam1.setPixelFormat(PixelFormat.kMJPEG);
 
@@ -61,7 +61,6 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
   }
-
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.

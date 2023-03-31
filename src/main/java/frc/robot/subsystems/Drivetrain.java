@@ -231,8 +231,8 @@ public class Drivetrain extends SubsystemBase {
     s_pidgey.getRawGyro(xyz_rot); // Gyro rate of rotation
 
     //Smartdahsboard Stuff
-    SmartDashboard.putNumber("Raw Left Drive Encoder", getLeftEncoder());
-    SmartDashboard.putNumber("Raw Right Drive Encoder", getRightEncoder());
+    SmartDashboard.putNumber("Left Drive Encoder", getLeftEncoder());
+    SmartDashboard.putNumber("Right Drive Encoder", getRightEncoder());
     SmartDashboard.putNumber("Yaw", getHeading());
     SmartDashboard.putNumber("Pitch",getPitch());
     SmartDashboard.putNumber("Roll",getRoll());

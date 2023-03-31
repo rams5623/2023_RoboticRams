@@ -39,7 +39,6 @@ public class Boom extends SubsystemBase {
     m_talonBoom.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); // _Relative maybe???
     //m_talonBoom.configReverseLimitSwitchSource(m_talonBoom,
     m_talonBoom.setSensorPhase(boomConst.kSensorPhase);
-    m_talonBoom.setSelectedSensorPosition(posConst.kFoldBoom); // On Robot start in starting config we want the sensor to read zero and not the home angle
         
     // PID for talon controller position
     m_talonBoom.selectProfileSlot(boomConst.kSlotidx, boomConst.kPIDidx);
@@ -48,7 +47,12 @@ public class Boom extends SubsystemBase {
     m_talonBoom.config_kP(boomConst.kSlotidx, boomConst.kP);
     m_talonBoom.config_kI(boomConst.kSlotidx, boomConst.kI);
     m_talonBoom.config_kD(boomConst.kSlotidx, boomConst.kD);
-    m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, 0.65);
+    m_talonBoom.configClosedLoopPeakOutput(boomConst.kSlotidx, 0.60);
+    m_talonBoom.configReverseSoftLimitEnable(false);
+    m_talonBoom.configForwardSoftLimitEnable(false);
+    m_talonBoom.setSelectedSensorPosition((int) 0); // On Robot start in starting config we want the sensor to read zero and not the home angle
+
+    m_talonBoom.setSafetyEnabled(false);
   }
 
   /*
@@ -57,18 +61,21 @@ public class Boom extends SubsystemBase {
    * less janky movements from the ControlBoom command. This function is to only be
    * used with the ControlBoom command.
    */
-  public void motorControl(ControlMode mode, double output, boolean bypassSwitch) {
-    if ((mode == ControlMode.PercentOutput && getSwitch() && (output < 0.0) && !bypassSwitch) // If move() conditions are true
-     || (mode == ControlMode.Position && getSwitch())) { // OR gotoPosition() conditions are true
-      // Don't move below the limit switch
-      stop();
-    } else if (mode == ControlMode.PercentOutput) {
-      // Otherwise move desired speed or to position
-      m_talonBoom.set(mode, output, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
-    } else if (mode == ControlMode.Position) {
-      m_talonBoom.set(mode, output * posConst.kBoomCountPerDegree);
-    }
-    SmartDashboard.putNumber("Boom Control Output", output);
+  public void motorControl(ControlMode mode, double output, boolean bypassSwitch) {    
+    //
+    // if (mode == ControlMode.Position) {
+    //   if (!getSwitch()) {
+    //     m_talonBoom.set(mode, output * posConst.kBoomCountPerDegree);
+    //   } else {
+    //     stop();
+    //   }
+    // } else { // ControlMode.PercentOutput
+    //   if ((!getSwitch() && (output > 0.0)) && bypassSwitch) {
+    //     m_talonBoom.set(mode, output, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
+    //   } else {
+    //     stop();
+    //   }
+    // }
   }
                                                
   /*
@@ -86,7 +93,6 @@ public class Boom extends SubsystemBase {
     } else {
       m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
     }
-    SmartDashboard.putNumber("Boom Auto Angle", angle);
   }
   
   /* 
@@ -105,7 +111,6 @@ public class Boom extends SubsystemBase {
        stop();
     } else {
        m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
-    SmartDashboard.putNumber("Boom Manual Speed", speed);
     }
   }
   
@@ -126,7 +131,7 @@ public class Boom extends SubsystemBase {
     if (getSwitch()) {
       stop();
     } else {
-      m_talonBoom.set(ControlMode.PercentOutput, boomConst.SPEED_DOWN);
+      m_talonBoom.set(ControlMode.PercentOutput, -boomConst.SPEED_DOWN);
     }
   }
   
@@ -138,7 +143,7 @@ public class Boom extends SubsystemBase {
    * feedforward providing additional output.
    */
   public void stop() {
-    m_talonBoom.stopMotor();
+    m_talonBoom.set(ControlMode.PercentOutput, 0.0);
   }
   
   /*
@@ -149,6 +154,10 @@ public class Boom extends SubsystemBase {
    */
   public void resetEncoder() {
     m_talonBoom.setSelectedSensorPosition(posConst.kMinBoom * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts/degree]
+  }
+
+  public void setFoldEncoder() {
+    m_talonBoom.setSelectedSensorPosition(posConst.kFoldBoom * posConst.kBoomCountPerDegree);
   }
   
   /*
@@ -170,7 +179,9 @@ public class Boom extends SubsystemBase {
    * to read as 'True' and all other conditions to be 'False'.
    */
   public boolean getSwitch() {
-    return !s_boomSwitch.get(); // Not(!) operator gets desired response of True at Home position
+    boolean switchState = !s_boomSwitch.get();
+    SmartDashboard.putBoolean("Boom Zero Switch", switchState); // [True/False]
+    return switchState; // Not(!) operator gets desired response of True at Home position
   }
   
   /*
@@ -183,7 +194,7 @@ public class Boom extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Boom Zero Switch", getSwitch()); // [True/False]
     SmartDashboard.putNumber("Boom Angle", getPosition()); // [Degrees]
-    SmartDashboard.putNumber("Boom Raw Encoder", getPosition() * posConst.kBoomCountPerDegree); // [Counts] = [Degrees] * [Counts/Degree]
-    SmartDashboard.putNumber("Boom Current", m_talonBoom.getSupplyCurrent());// [Amps]
+    // SmartDashboard.putNumber("Boom Raw Encoder", getPosition() * posConst.kBoomCountPerDegree); // [Counts] = [Degrees] * [Counts/Degree]
+    // SmartDashboard.putNumber("Boom Current", m_talonBoom.getSupplyCurrent());// [Amps]
   }
 }

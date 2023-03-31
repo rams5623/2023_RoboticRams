@@ -5,6 +5,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.Constants.posConst;
 import frc.robot.commands.BoomPosition;
+import frc.robot.commands.ColumnPosition;
+import frc.robot.commands.autos.AutoConstants.driveConst;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Column;
@@ -12,7 +14,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 
 public final class Autos {
@@ -31,7 +35,8 @@ public final class Autos {
    */
   public static CommandBase driveStraightAuto(Drivetrain drive) {
     return Commands.sequence(
-      new driveDistance(52.0, true, drive)
+      new InstantCommand(() -> drive.resetEncoder(), drive),
+      new driveDistance(driveConst.kDrivePos, false, drive)
     );
   }
 
@@ -39,9 +44,12 @@ public final class Autos {
    * DRIVE STRAIGHT 52 INCHES AND UNFOLD THE BOOM AND COLUMN
    */
   public static CommandBase driveUnfoldAuto(Drivetrain drive, Boom boom, Column column) {
-    return Commands.parallel(
-      new unfold(column, boom),
-      new driveDistance(52.0, true, drive)
+    return Commands.sequence(
+      new InstantCommand(() -> drive.resetEncoder(), drive),
+      new ParallelCommandGroup(
+        new unfold(column, boom),
+        new driveDistance(driveConst.kDrivePos, true, drive)
+      )
     );
   }
 
@@ -50,26 +58,33 @@ public final class Autos {
    */
   public static CommandBase driveBalanceAuto(Drivetrain drive, Boom boom, Column column) {
     return Commands.sequence(
-      new unfold(column, boom).withTimeout(3.2),
-      new InstantCommand(drive::resetEncoder, drive).withTimeout(1.0),
-      new driveDistance(75.0, false, drive).withTimeout(3.0),
-      new InstantCommand(drive::setDriveBrake, drive).withTimeout(1.0),
-      new driveBalance(drive.getPitch(), drive)
+      // Reset drive encoders so they are zero before driving
+      new InstantCommand(drive::resetEncoder, drive),
+      // Drive and unfold together at the same time
+      new ParallelCommandGroup(
+        new driveDistance(70.0, false, drive),
+        new unfold(column, boom)
+      ).withTimeout(4.5),
+      // Set drive to brake mode to prevent too much sliping
+      new InstantCommand(drive::setDriveBrake, drive),
+      // Balance
+      new driveBalance(-2.0, drive)
     );
   }
 
   /*
    * UNFOLD, DROP THE CUBE ON THE FLOOR, THEN DRIVE BACKWARDS
    */
-  public static CommandBase cubeFloorAuto(Drivetrain drive, Boom boom, Column column, Clamp clamp, Intake intake) {
+  public static CommandBase cubeFloorAuto(Drivetrain drive, Boom boom, Column column, Clamp clamp) {
     return Commands.sequence(
-      new unfold(column, boom).withTimeout(5.0), // Unfold to home positions
-      new ParallelCommandGroup( // Open and outtake
-        new StartEndCommand(intake::outake, intake::stop, intake),
-        new StartEndCommand(clamp::unclamp, clamp::stop, clamp)
-        ).withTimeout(2.0),
-      new BoomPosition(posConst.kMidBoom, boom).withTimeout(3.0),
-      new driveDistance(60.0, false, drive).withTimeout(6.0)
+      // Unfold with timeout so it doesnt unfold too much
+      new unfold(column, boom).withTimeout(4.8),
+      // Unclamp the clamp to release cube
+      new InstantCommand(() -> clamp.hold(false), clamp),
+      // Reset drive encoders to it will be zero before moving
+      new InstantCommand(() -> drive.resetEncoder(), drive),
+      // Drive backwards (negative position)
+      new driveDistance(-75.0, false, drive).withTimeout(7.0)
     );
   }
 
@@ -84,6 +99,7 @@ public final class Autos {
         new StartEndCommand(intake::outake, intake::stop, intake),
         new StartEndCommand(clamp::unclamp, clamp::stop, clamp)
         ).withTimeout(2.0),
+        new InstantCommand(() -> drive.resetEncoder(), drive).withTimeout(0.5),
       new driveDistance(60.0, false, drive).withTimeout(6.0)
     );
   }
