@@ -90,6 +90,8 @@ public class Boom extends SubsystemBase {
     } else if (mode == ControlMode.Position) {
       m_talonBoom.set(mode, output * posConst.kBoomCountPerDegree);
     }
+
+SmartDashboard.putNumber("Boom Control Output", output);
   }
                                                
   /*
@@ -106,6 +108,7 @@ public class Boom extends SubsystemBase {
       m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
     }
     // m_talonBoom.set(ControlMode.Position, angle * posConst.kBoomCountPerDegree); // [counts] = [degrees] * [counts / degrees]
+SmartDashboard.putNumber("Boom Auto Angle", angle);
   }
   
   /* 
@@ -127,6 +130,7 @@ public class Boom extends SubsystemBase {
        stop();
     } else {
        m_talonBoom.set(ControlMode.PercentOutput, speed, DemandType.ArbitraryFeedForward, boomConst.karbitraryBoom);
+SmartDashboard.putNumber("Boom Manual Speed", speed);
     }
   }
   
