@@ -35,7 +35,7 @@ public final class Constants {
      *                  | Z -> (+ Angle)
      */
     // Emergency Stow Position
-    public static final double kStowBoom = 80; // [Degrees]
+    public static final double kStowBoom = 120; // [Degrees]
     public static final double kStowColm = 0; // [Inches]
     
     // Pickup Position (From SUBSTATION)
@@ -47,24 +47,28 @@ public final class Constants {
     public static final double kPickupColm = 0; // [Inches]
 
     // Middle GRID Position
-    public static final double kMidBoom = 87; // [Degrees]
-    public static final double kMidColm = 2.24; // [Inches]
+    public static final double kMidBoom = 125; // [Degrees]
+    public static final double kMidColm = 0.0; // [Inches]
 
     // Top GRID Position
-    public static final double kTopBoom = 145; // [Degrees]
-    public static final double kTopColm = 11.1; // [Inches]
+    public static final double kTopBoom = 175; // [Degrees]
+    public static final double kTopColm = 8.1; // [Inches]
 
     // Floor GRID Position
-    public static final double kBotBoom = 30; // [Degrees]
+    public static final double kBotBoom = 70; // [Degrees]
     public static final double kBotColm = 0; // [Inches]
 
     // MAX BOOM AND COLUMN POSITIONS
-    public static final double kMaxBoom = 160; // [degrees] From floor to max robot height 4'8"
-    public static final double kMaxColm = 11.5; // [Inches] Max Forward Position
+    public static final double kMaxBoom = 175; // [degrees] From floor to max robot height 4'8"
+    public static final double kMaxColm = 8.2; // [Inches] Max Forward Position
     
     // MIN BOOM AND COLUMN POSITION
-    public static final double kMinBoom = 30.0; // [degrees] At floor
+    public static final double kMinBoom = 27.5; // [degrees] At floor
     public static final double kMinColm = 0; // [Inches] Max Reverse Position
+
+    // FOLD BOOM AND COLUMN POSITION
+    public static final double kFoldBoom = 210.0; // [degrees] At starting folded positon
+    public static final double kFoldColm = 4.5; // [Inches] Vertical but slightly forward
     
     // Column Inch Position Conversion Constant
     // TODO: REMEASURE AND GET MAX COLUMN LENGTH WITH NEW BRACKET THAT HAS SMALLER TRAVEL DISTANCE
@@ -74,7 +78,7 @@ public final class Constants {
     
     // Boom Angle Position Conversion Constant
     public static final double kBoomCalAngle = 60.0; // [Degrees] Arbitrary angle to calibrate the boom arm to
-    public static final int kBoomCalCount = -1724; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
+    public static final int kBoomCalCount = 1724; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
     public static final double kBoomCountPerDegree = kBoomCalCount / kBoomCalAngle; // [Pulse/Degree] Conversion constant to go between encoder counts and degrees
   }
 
@@ -100,6 +104,17 @@ public final class Constants {
     // Column rear limit switch for reseting encoder
     public static final int kswitchRev_column = 0;
     public static final int kswitchFwd_column = 1;
+    
+    // Column Positions Constant
+    public static enum columnPosition {
+      MANUAL,
+      HOME,
+      STOW,
+      FLOOR,
+      MIDDLE,
+      TOP,
+      FOLD
+    };
   }
 
   /** CONSTANTS FOR USE IN THE BOOM SUBSYSTEM **/
@@ -107,9 +122,9 @@ public final class Constants {
     // Talon CAN ID
     public static final int ktalon_boom = 16;
     // Talon SRX command deadband zone (Different then joystick deadband zone)
-    public static final double kDeadbandBoom = 0.05;
+    public static final double kDeadbandBoom = 0.04;
     // Talon SRX Arbitrarty Feedback for Gravity (NEED TO INCLUDE WEIGHT OF CONE)
-    public static final double karbitraryBoom = -0.085;
+    public static final double karbitraryBoom = 0.0;//-0.085;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
@@ -130,6 +145,17 @@ public final class Constants {
 
     // Boom rear limit switch for reseting encoder
     public static final int kswitch_boom = 2;
+    
+    // Column Positions Constant
+    public static enum boomPosition {
+      MANUAL,
+      HOME,
+      STOW,
+      FLOOR,
+      MIDDLE,
+      TOP,
+      FOLD
+    };
   }
 
   /** CONSTANTS FOR USE IN THE INTAKE SUBSYSTEM **/
@@ -154,15 +180,18 @@ public final class Constants {
     public static final int kPIDidx = 0;
     public static final double kF = 0.0; // Open Loop (???)
     public static final double kP = 0.1; // Proportional Constant (oomph to apply to difference in setpoint and actual position)
-    public static final double kI = 0.001; // Integral Constant (Accumulation of error from setpoint)
+    public static final double kI = 0.0; // Integral Constant (Accumulation of error from setpoint)
     public static final double kD = 0.0; // Derivative Constant (Smoothness of change in command)
     // Clamp Current Setpoint
     public static final double kCurrentClamp = 3.0; // [Amps]
+    public static final double kCurrentOpen = 1.0; // [Amps]
     public static final double kCurrentWatch = 5.6; // [Amps]
     // Speed reducer commands
-    public static final double SPEED_CLAMP = 0.55; // [Percent]
-    public static final double SPEED_RELEASE = 0.60; // [Percent]
-    public static final double SPEED_HOLD = 0.40; // [Percent]
+
+    public static final double SPEED_CLAMP = 0.7; // [Percent]
+    public static final double SPEED_RELEASE = 0.5; // [Percent]
+    public static final double SPEED_HOLD_CLAMP = 0.4; // [Percent]
+    public static final double SPEED_HOLD_OPEN = 0.1; // [Percent]
   }
 
   /** CONSTANTS FOR USE IN THE DRIVETRAIN SUBSYSTEM **/
@@ -196,9 +225,10 @@ public final class Constants {
         // Have Inches but Need Counts - Inches / kEncDistancePerPulse
 
     // Speed reducer commands
-    public static final double SPEED_TURN = 0.650; // [Percentage] Max turn speed percentage during normal mode (positive constant)
-    public static final double SPEED_STRT = 0.750; // [Percentage] Max straight speed percentage during normal mode (positive constant)
-    public static final double SPEED_SLOWSTRT = 0.40; // [Percentage] Max straight speed during slow mode (positive constant)
-    public static final double SPEED_SLOWTURN = 0.30; // [Percentage] Max turn speed during slow mode (Positive constant)
+    public static final double SPEED_TURN = 0.630; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_STRT = 0.750; // Max straight speed percentage (positive constant)  // [Percent]
+    public static final double SPEED_SLOWSTRT = 0.40;
+    public static final double SPEED_SLOWTURN = 0.44;
+
   }
 }

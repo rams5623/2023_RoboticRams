@@ -1,10 +1,52 @@
-- Column Encoder Functioning?
-- FWD Column Switch Functioning?
-- Boom Switch Zero Functioning?
-- Measure Column Counts from switch to switch
-- Measure Zero Position Angle of Boom
-- Record counts of 90 degrees of Boom movement (column back)
-- Convert count positions for boom to angles with conversion number
-- Create emergency stow command to run before robot collision
-- Tweak Auto parameters
-- Once auto charge pad is tweaked, make it a button for end game
+===================
+BEFORE NEXT COMP:
+===================
+- Inverse the intake and clamp to the green lights blinking on positive command. (Clamp and Intake)
+- Reconfigure intake and clamp commands to be correctly clamp on clamp and intake on intake. (RobotContainer)
+- Change the drive inverse and encoder phase so that forward is positive distance and percent output. (Drivetrain)
+- Why dont the putData(Subsystems) work!??!?!?!? (RobotContainer)
+- Maybe add isConnected for the controllers?
+- Try the new CommandXboxController button calls (RobotContainer Pickup/Drop)
+- Controller negative signs
+- 
+
+===================
+FUTURE STATE:
+===================
+- Look into adding talonSRX configurations into Constants file:
+IN CONSTANTS FILE
+    public static TalonSRXConfiguration getHoodTalonConfig() {
+      TalonSRXConfiguration hoodConfig = new TalonSRXConfiguration();
+
+      hoodConfig.primaryPID.selectedFeedbackCoefficient = 1.0;
+      hoodConfig.auxiliaryPID.selectedFeedbackSensor = FeedbackDevice.None;
+
+      hoodConfig.forwardLimitSwitchSource = LimitSwitchSource.Deactivated;
+      hoodConfig.reverseLimitSwitchSource = LimitSwitchSource.Deactivated;
+
+      hoodConfig.slot0.kP = 6.0;
+      hoodConfig.slot0.kI = 0.0;
+      hoodConfig.slot0.kD = 120.0;
+      hoodConfig.slot0.kF = 0.57;
+      hoodConfig.slot0.integralZone = 0;
+      hoodConfig.slot0.maxIntegralAccumulator = 0;
+      hoodConfig.slot0.allowableClosedloopError = 0;
+      hoodConfig.motionCruiseVelocity = 1500;
+      hoodConfig.motionAcceleration = 80_000;
+      hoodConfig.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_100Ms;
+      hoodConfig.velocityMeasurementWindow = 64;
+      hoodConfig.voltageCompSaturation = 12;
+      hoodConfig.voltageMeasurementFilter = 32;
+
+      hoodConfig.forwardSoftLimitThreshold = kForwardSoftLimts;
+      hoodConfig.forwardSoftLimitEnable = true;
+      hoodConfig.reverseSoftLimitThreshold = kReverseSoftLimits;
+      hoodConfig.reverseSoftLimitEnable = true;
+
+      return hoodConfig;
+    }
+IN SUBSYSTEM FILE
+    hoodTalon = new TalonSRX(ShooterConstants.kHoodTalonID);
+    hoodTalon.configFactoryDefault(Constants.kTalonConfigTimeout);
+    hoodTalon.configAllSettings(ShooterConstants.getHoodTalonConfig(), Constants.kTalonConfigTimeout);
+- 
