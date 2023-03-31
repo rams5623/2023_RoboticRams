@@ -65,6 +65,10 @@ public final class Constants {
     // MIN BOOM AND COLUMN POSITION
     public static final double kMinBoom = 27.5; // [degrees] At floor
     public static final double kMinColm = 0; // [Inches] Max Reverse Position
+
+    // FOLD BOOM AND COLUMN POSITION
+    public static final double kFoldBoom = 210.0; // [degrees] At starting folded positon
+    public static final double kFoldColm = 4.5; // [Inches] Vertical but slightly forward
     
     // Column Inch Position Conversion Constant
     public static final double kMaxColmLength = 11.5625; // [Inches] Full travel from rev switch to fwd switch
@@ -73,7 +77,7 @@ public final class Constants {
     
     // Boom Angle Position Conversion Constant
     public static final double kBoomCalAngle = 60.0; // [Degrees] Arbitrary angle to calibrate the boom arm to
-    public static final int kBoomCalCount = -1724; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
+    public static final int kBoomCalCount = 1724; // [Pulses] Arbitrary encoder count from zero to kBoomCalAngle degrees
     public static final double kBoomCountPerDegree = kBoomCalCount / kBoomCalAngle; // [Pulse/Degree] Conversion constant to go between encoder counts and degrees
   }
 
@@ -99,6 +103,17 @@ public final class Constants {
     // Column rear limit switch for reseting encoder
     public static final int kswitchRev_column = 0;
     public static final int kswitchFwd_column = 1;
+    
+    // Column Positions Constant
+    public static enum columnPosition {
+      MANUAL,
+      HOME,
+      STOW,
+      FLOOR,
+      MIDDLE,
+      TOP,
+      FOLD
+    };
   }
 
   /** CONSTANTS FOR USE IN THE BOOM SUBSYSTEM **/
@@ -108,7 +123,7 @@ public final class Constants {
     // Talon SRX command deadband zone (Different then joystick deadband zone)
     public static final double kDeadbandBoom = 0.04;
     // Talon SRX Arbitrarty Feedback for Gravity (NEED TO INCLUDE WEIGHT OF CONE)
-    public static final double karbitraryBoom = -0.045;//-0.085;
+    public static final double karbitraryBoom = 0.0;//-0.085;
     // Encoder PID Stuff
     public static final int kSlotidx = 0;
     public static final int kPIDidx = 0;
@@ -129,6 +144,17 @@ public final class Constants {
 
     // Boom rear limit switch for reseting encoder
     public static final int kswitch_boom = 2;
+    
+    // Column Positions Constant
+    public static enum boomPosition {
+      MANUAL,
+      HOME,
+      STOW,
+      FLOOR,
+      MIDDLE,
+      TOP,
+      FOLD
+    };
   }
 
   /** CONSTANTS FOR USE IN THE INTAKE SUBSYSTEM **/
