@@ -9,7 +9,9 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.columnConst;
@@ -158,11 +160,13 @@ public class Column extends SubsystemBase {
    */
   @Override
   public void periodic() {
+    // double col_pos = getPosition();
+    // boolean revSwitch = getRevSwitch();
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("Column Reverse Switch?", getRevSwitch()); // [True/False]
-    SmartDashboard.putBoolean("Column Forward Switch?", getFwdSwitch()); // [True/False]
-    SmartDashboard.putNumber("Column Position", getPosition()); // [Inches]
-    SmartDashboard.putNumber("Column Raw Encoder", getPosition() * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
-    SmartDashboard.putNumber("Column Current", m_talonColumn.getSupplyCurrent()); // [Amps]
+    // SmartDashboard.putBoolean("Column Reverse Switch?", revSwitch); // [True/False]
+    //SmartDashboard.putBoolean("Column Forward Switch?", getFwdSwitch()); // [True/False]
+    // SmartDashboard.putNumber("Column Position", col_pos); // [Inches]
+    //SmartDashboard.putNumber("Column Raw Encoder", getPosition() * posConst.kColmCountPerInch); // [Counts] = [Inches] * [Counts/Inch]
+    //SmartDashboard.putNumber("Column Current", m_talonColumn.getSupplyCurrent()); // [Amps]
   }
 }

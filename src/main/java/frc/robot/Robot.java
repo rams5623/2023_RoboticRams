@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
     // Start Camera Stream for normal USB camera through USB 0 on Roborio
     cam1 = CameraServer.startAutomaticCapture(0);
     // Set camera 1 resolution size
-    cam1.setResolution(640, 480);
+    cam1.setResolution(480, 360);
     // Set camera 1 brightness
     cam1.setBrightness(50);
     // auto set the white balance
@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
     // auto set the exposure because competition lighting is bright and sometimes varies
     cam1.setExposureAuto();
     // Set frames per second
-    cam1.setFPS(24);
+    cam1.setFPS(20);
     // Set pixel format for image streaming
     cam1.setPixelFormat(PixelFormat.kMJPEG);
 
@@ -88,6 +88,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)

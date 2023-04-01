@@ -5,7 +5,6 @@
 package frc.robot.commands.autos;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.unfoldBoom;
 import frc.robot.commands.unfoldColumn;
@@ -13,7 +12,7 @@ import frc.robot.commands.autos.AutoConstants.unfoldConst;
 import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Column;
 
-public class unfold extends SequentialCommandGroup {
+public class unfold extends ParallelCommandGroup {
   public unfold(Column column, Boom boom) {
     /*
      * 1) (INIT) Reset Boom Encoder and Column Encoder.
@@ -25,14 +24,13 @@ public class unfold extends SequentialCommandGroup {
 
     // Add your commands in the addCommands() call
     addCommands(
-      new ParallelCommandGroup(
-        // Unfold Boom Arm. Downwards direction will flip it out of starting config
-        new unfoldBoom(boom).withTimeout(unfoldConst.kBoomTimeout),
-        // After a short delay, begin moving column backwards to home position
+      // Unfold Boom Arm. Downwards direction will flip it out of starting config
+      new unfoldBoom(boom).alongWith(
         new unfoldColumn(column)
-        .beforeStarting(new WaitCommand(unfoldConst.kColumnStartDelay))
-        .withTimeout(unfoldConst.kColumnTimeout)
-      ) // END PARALLEL COMMAND GROUP
+          .beforeStarting(new WaitCommand(2.0))
+      )
+      // After a short delay, begin moving column backwards to home position
+      
     ); // END ADD COMMANDS
   }
 }

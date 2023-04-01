@@ -230,12 +230,15 @@ public class Drivetrain extends SubsystemBase {
     s_pidgey.getYawPitchRoll(ypr_rot); // Gyro angle of rotation
     s_pidgey.getRawGyro(xyz_rot); // Gyro rate of rotation
 
+    double leftEnc = getLeftEncoder();
+    double rightEnc = getRightEncoder();
+
     //Smartdahsboard Stuff
-    SmartDashboard.putNumber("Left Drive Encoder", getLeftEncoder());
-    SmartDashboard.putNumber("Right Drive Encoder", getRightEncoder());
-    SmartDashboard.putNumber("Yaw", getHeading());
+    SmartDashboard.putNumber("Left Drive Encoder", leftEnc);
+    SmartDashboard.putNumber("Right Drive Encoder", rightEnc);
+    // SmartDashboard.putNumber("Yaw", getHeading());
     SmartDashboard.putNumber("Pitch",getPitch());
-    SmartDashboard.putNumber("Roll",getRoll());
+    // SmartDashboard.putNumber("Roll",getRoll());
     // When a NavX is installed uncomment below
     // SmartDashboard.putNumber("Gyro Yaw", m_gyro.getYaw());
     // SmartDashboard.putNumber("Gyro Roll", m_gyro.getRoll());

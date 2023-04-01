@@ -179,7 +179,7 @@ public class Boom extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putBoolean("Boom Zero Switch", getSwitch()); // [True/False]
     SmartDashboard.putNumber("Boom Angle", getPosition()); // [Degrees]
-    SmartDashboard.putNumber("Boom Raw Encoder", getPosition() * posConst.kBoomCountPerDegree); // [Counts] = [Degrees] * [Counts/Degree]
-    SmartDashboard.putNumber("Boom Current", m_talonBoom.getSupplyCurrent());// [Amps]
+    // SmartDashboard.putNumber("Boom Raw Encoder", getPosition() * posConst.kBoomCountPerDegree); // [Counts] = [Degrees] * [Counts/Degree]
+    // SmartDashboard.putNumber("Boom Current", m_talonBoom.getSupplyCurrent());// [Amps]
   }
 }

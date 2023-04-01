@@ -16,7 +16,7 @@ import frc.robot.subsystems.Boom;
 import frc.robot.subsystems.Clamp;
 import frc.robot.subsystems.Column;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.Intake;
+// import frc.robot.subsystems.Intake;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,9 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -46,7 +44,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Boom m_boom = new Boom();
   private final Clamp m_clamp = new Clamp();
-  private final Intake m_intake = new Intake();
+  //  final Intake m_intake = new Intake();
   private final Column m_column = new Column();
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final GlobalVariables m_variables = new GlobalVariables();
@@ -69,20 +67,12 @@ public class RobotContainer {
     m_chooser.addOption("Drive Straight", Autos.driveStraightAuto(m_drivetrain));
     m_chooser.addOption("Drive Straight + Unfold", Autos.driveUnfoldAuto(m_drivetrain, m_boom, m_column));
     m_chooser.addOption("Drive Onto Charging Station", Autos.driveBalanceAuto(m_drivetrain, m_boom, m_column)); // [NEEDS TO BE TESTED]
-    //m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
+    m_chooser.addOption("Cube Floor", Autos.cubeFloorAuto(m_drivetrain, m_boom, m_column, m_clamp)); // [NEEDS TO BE TESTED]
     //m_chooser.addOption("Cube Middle", Autos.cubeMidAuto(m_drivetrain, m_boom, m_column, m_clamp, m_intake)); // [NEEDS TO BE TESTED]
     //m_chooser.addOption("Cube Top", Autos.cubeTopAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Floor & Pad", Autos.cubeFloorPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     //m_chooser.addOption("Cube Middle & Pad", Autos.cubeMidPadAuto(m_drivetrain, m_boom, m_column)); // [NOT CREATED YET]
     SmartDashboard.putData(m_chooser); // Place the Auto selector on the dashboard with all the options
-    
-    // Put all the subsystems on the dashboard
-    // TODO: WHY DONT THESE WORK????
-    SmartDashboard.putData("Clamp", m_clamp); 
-    SmartDashboard.putData("Intake", m_intake);
-    SmartDashboard.putData("Boom", m_boom);
-    SmartDashboard.putData("Column", m_column);
-    SmartDashboard.putData("Drivetrain", m_drivetrain);
     
     /*
      * New way to run default arcade drive that has not been tested out yet. Try this and if it doesnt work as

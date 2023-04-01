@@ -98,7 +98,7 @@ public final class Constants {
 
     // motor speed limiters (MOSTLY USED IN AUTO TO UNFOLD)
     public static final double SPEED_FORWARD = 0.5; // [Percent]
-    public static final double SPEED_BACKWARD = 0.5; // [Percent]
+    public static final double SPEED_BACKWARD = 0.65; // [Percent]
 
     // Column rear limit switch for reseting encoder
     public static final int kswitchRev_column = 0;
@@ -189,7 +189,7 @@ public final class Constants {
     public static final double SPEED_CLAMP = 0.7; // [Percent]
     public static final double SPEED_RELEASE = 0.5; // [Percent]
     public static final double SPEED_HOLD_CLAMP = 0.4; // [Percent]
-    public static final double SPEED_HOLD_OPEN = 0.1; // [Percent]
+    public static final double SPEED_HOLD_OPEN = 0.5; // [Percent]
   }
 
   /** CONSTANTS FOR USE IN THE DRIVETRAIN SUBSYSTEM **/

@@ -53,10 +53,8 @@ public class Clamp extends SubsystemBase {
     m_talonClamp.configPeakOutputForward(clampConst.SPEED_CLAMP);
     m_talonClamp.configPeakOutputReverse(-clampConst.SPEED_CLAMP);
 
-    hold(true);
+    //hold(true);
   }
-
-  // TODO: WHAT DIRECTION IS ACTUALLY CLAMP AND UNCLAMP!!!!!!
    
   /* 
    * Move Clamp in a Downwards Direction at a Constant Speed
@@ -119,6 +117,6 @@ public class Clamp extends SubsystemBase {
    */
   @Override
   public void periodic() {
-   SmartDashboard.putNumber("Clamp Current", m_talonClamp.getStatorCurrent());
+   // SmartDashboard.putNumber("Clamp Current", m_talonClamp.getStatorCurrent());
   }
 }

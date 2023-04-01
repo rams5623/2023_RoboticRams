@@ -34,8 +34,8 @@ public class driveDistance extends CommandBase {
     PIDError = drivetrain.getAvgEncoder(); //[Inches]
     PIDOut = (dist - PIDError) * driveConst.kDrivePgain;
     
-    if (PIDOut > driveConst.kMaxSpeed) {
-      PIDOut = driveConst.kMaxSpeed;
+    if (Math.abs(PIDOut) > driveConst.kMaxSpeed) {
+      PIDOut = Math.copySign(driveConst.kMaxSpeed, PIDOut);
     }
     
     if (driveGyro) {
@@ -56,7 +56,7 @@ public class driveDistance extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if ((dist - PIDError) < driveConst.kDrivePosDiff) {
+    if (Math.abs(dist - PIDError) < driveConst.kDrivePosDiff) {
       return true;
     } else {
       return false;
