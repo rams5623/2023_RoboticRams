@@ -8,6 +8,10 @@ public class GlobalVariables extends SubsystemBase {
   private boomPosition BoomPosition = boomPosition.MANUAL;
   private columnPosition ColumnPosition = columnPosition.MANUAL;
   private Boolean SwitchBypass = false;
+
+  // When the size of the array are already know use an "array literal" where
+  // the initialization and the assigning of values occurs in the same line.
+  private Double[] DriveSpeed = new Double[]{ 0.40,0.44 }; // { Straight,Turn }
   
   public GlobalVariables() {}
   
@@ -40,4 +44,13 @@ public class GlobalVariables extends SubsystemBase {
   public void setSwitchBypass(Boolean p_bypassSwitch) {
     SwitchBypass = p_bypassSwitch;
   }
+
+  public Double[] getDriveSpeed() {
+    return DriveSpeed;
+  }
+
+  public void setDriveSpeed(Double p_speedStraight, Double p_speedTurn) {
+    DriveSpeed[] = {p_speedStraight,p_speedTurn}; // { Straight,Turn}
+  }
 }
+  
