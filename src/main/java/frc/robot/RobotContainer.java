@@ -184,6 +184,25 @@ public class RobotContainer {
     new JoystickButton(s_Jdriver, 12).toggleOnTrue( // Button 12 on Driver Joystick
       new InstantCommand(m_drivetrain::resetEncoder, m_drivetrain)
     );
+
+    /*
+     *  PID DRIVE DISTANCE COMMAND TO PRACTICE PID TUNING WITH
+     */
+    new JoystickButton(s_Jdriver, 10).onTrue( // Button 10 on Driver Joystick
+      new PIDCommand(
+        new PIDController(
+          1.0, // Proportional Constant
+          0.0, // Integral Constant
+          0.0), // Derivative Constant
+        // PID feedback value
+        m_drivetrain::getAvgEncoder,
+        // Setpoint that PID loop is working towards
+        24, // inches
+        // Output of PID Loop
+        output -> m_drvetrain.drive(output, 0.0),
+        // Requirements of command
+        m_drivetrain
+    ).withTimeout(300)); // 5 minute timeout
     // } /* END DRIVER JOYSTICK SECTION */
     
     
