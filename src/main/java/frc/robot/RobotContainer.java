@@ -87,8 +87,10 @@ public class RobotContainer {
         m_drivetrain.drive(
           // double value for straight driving
           getDriveStickY() * driveConst.SPEED_SLOWSTRT,
+          //getDriveStickY() * m_variables.getDriveSpeed()[0],
           // double value for turn driving
           getDriveStickZ() * driveConst.SPEED_SLOWTURN
+          //getDriveStickZ() * m_variables.getDriveSpeed()[1]
         ),
         // Requirements for command
         m_drivetrain
@@ -154,6 +156,14 @@ public class RobotContainer {
     //    () -> getDriveStickZ() * driveConst.SPEED_TURN, // Turn Parameter
     //    m_drivetrain // Command Requirement
     // ));
+    // \/ TRY THIS IMPLEMENTATION BUT FOR SETTING DriveSpeed VARIABLE \/
+    //s_Jop.start().onTrue(
+    //    // Set the switch bypass global variable to true when start is pressed
+    //    new InstantCommand(() -> m_variables.setSwitchBypass(true), m_variables)
+    //  ).onFalse(
+    //    // Set the switch bypass global variable to false when start is released
+    //    new InstantCommand(() -> m_variables.setSwitchBypass(false), m_variables)
+    //);
     // END FAST BUTTON COMMAND
 
     /*
