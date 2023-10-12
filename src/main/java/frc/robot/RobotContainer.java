@@ -79,7 +79,8 @@ public class RobotContainer {
     SmartDashboard.putData("Drivetrain", m_drivetrain);
     
 
-    // Set the default command of the drivetrain to be driven by driver joystick
+    // Set the default command of the drivetrain to be driven by driver joystick. Doing it this way prevents the need for an
+    // ArcadeDrive() command file. Adujstable speeds could be done through a GlobalVar instead a ConstVar.
     m_drivetrain.setDefaultCommand(
       new RunCommand(()->
         // Command to run without suppliers
@@ -145,13 +146,14 @@ public class RobotContainer {
      */
     /* 
       * ENABLES TEMPORARY FAST MODE WHILE THE THUMB BUTTON (2) ON THE JOYSTICK IS BEING PRESSED
+      * (No longer works with ArcadeDrive() since it's removal from the comp build)
       */
-    new JoystickButton(s_Jdriver, 2).whileTrue( // Button 2 on Driver Joystick
-      new ArcadeDrive( // Run a new instance of this command
-        () -> getDriveStickY() * driveConst.SPEED_STRT, // Straight Parameter
-        () -> getDriveStickZ() * driveConst.SPEED_TURN, // Turn Parameter
-        m_drivetrain // Command Requirement
-    ));
+    //new JoystickButton(s_Jdriver, 2).whileTrue( // Button 2 on Driver Joystick
+    //  new ArcadeDrive( // Run a new instance of this command
+    //    () -> getDriveStickY() * driveConst.SPEED_STRT, // Straight Parameter
+    //    () -> getDriveStickZ() * driveConst.SPEED_TURN, // Turn Parameter
+    //    m_drivetrain // Command Requirement
+    // ));
     // END FAST BUTTON COMMAND
 
     /*
