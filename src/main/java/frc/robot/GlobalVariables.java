@@ -50,7 +50,9 @@ public class GlobalVariables extends SubsystemBase {
   }
 
   public void setDriveSpeed(Double p_speedStraight, Double p_speedTurn) {
-    DriveSpeed[] = {p_speedStraight,p_speedTurn}; // { Straight,Turn}
+    DriveSpeed[0] = p_speedStraight;
+    DriveSpeed[1] = p_speedTurn;
   }
+
 }
   

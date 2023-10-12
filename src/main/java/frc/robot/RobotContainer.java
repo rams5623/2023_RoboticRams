@@ -6,7 +6,6 @@ import frc.robot.Constants.driveConst;
 import frc.robot.Constants.posConst;
 import frc.robot.Constants.boomConst.boomPosition;
 import frc.robot.Constants.columnConst.columnPosition;
-import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.BoomControl;
 import frc.robot.commands.BoomPosition;
 import frc.robot.commands.ColumnControl;
@@ -86,11 +85,11 @@ public class RobotContainer {
         // Command to run without suppliers
         m_drivetrain.drive(
           // double value for straight driving
-          getDriveStickY() * driveConst.SPEED_SLOWSTRT,
-          //getDriveStickY() * m_variables.getDriveSpeed()[0],
+          //getDriveStickY() * driveConst.SPEED_SLOWSTRT,
+          getDriveStickY() * m_variables.getDriveSpeed()[0],
           // double value for turn driving
-          getDriveStickZ() * driveConst.SPEED_SLOWTURN
-          //getDriveStickZ() * m_variables.getDriveSpeed()[1]
+          //getDriveStickZ() * driveConst.SPEED_SLOWTURN
+          getDriveStickZ() * m_variables.getDriveSpeed()[1]
         ),
         // Requirements for command
         m_drivetrain
@@ -157,13 +156,12 @@ public class RobotContainer {
     //    m_drivetrain // Command Requirement
     // ));
     // \/ TRY THIS IMPLEMENTATION BUT FOR SETTING DriveSpeed VARIABLE \/
-    //s_Jop.start().onTrue(
-    //    // Set the switch bypass global variable to true when start is pressed
-    //    new InstantCommand(() -> m_variables.setSwitchBypass(true), m_variables)
-    //  ).onFalse(
-    //    // Set the switch bypass global variable to false when start is released
-    //    new InstantCommand(() -> m_variables.setSwitchBypass(false), m_variables)
-    //);
+    new JoystickButton(s_Jdriver, 2).whileTrue(
+       new InstantCommand(() -> m_variables.setDriveSpeed(driveConst.SPEED_STRT, driveConst.SPEED_TURN), m_variables)
+     ).onFalse(
+       // Set the switch bypass global variable to false when start is released
+       new InstantCommand(() -> m_variables.setDriveSpeed(driveConst.SPEED_SLOWSTRT, driveConst.SPEED_SLOWTURN), m_variables)
+    );
     // END FAST BUTTON COMMAND
 
     /*
